@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5cf32">
+  <meta name="description" content="Website resmi BEM kampus">
+  <title>BEM Kampus | Bersama Bergerak</title>
+
+  <style>
+    :root {
+      --yellow: #f5cf32;
+      --yellow-light: #fff9df;
+      --black: #191919;
+      --white: #ffffff;
+      --gray: #666666;
+      --border: #eae5d5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1100px, 90%);
+      margin: auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      min-height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 12px 0;
+    }
+
+    .brand {
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .brand span {
+      background: var(--yellow);
+      padding: 5px 9px;
+      border-radius: 7px;
+      margin-right: 5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .nav-links a:hover {
+      color: #987500;
+    }
+
+    .hero {
+      background: var(--yellow-light);
+      padding: 75px 0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 35px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--yellow);
+      padding: 5px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: clamp(35px, 5vw, 58px);
+      line-height: 1.13;
+      margin: 20px 0;
+    }
+
+    h1 span {
+      color: #bd9200;
+    }
+
+    .hero p {
+      color: var(--gray);
+      max-width: 520px;
+      margin-bottom: 24px;
+    }
+
+    .hero-art {
+      min-height: 260px;
+      background: var(--yellow);
+      border-radius: 40% 20% 35% 18%;
+      display: grid;
+      place-items: center;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .hero-art strong {
+      font-size: clamp(35px, 5vw, 58px);
+      line-height: 1.1;
+    }
+
+    .button {
+      display: inline-block;
+      background: var(--black);
+      color: white;
+      border-radius: 9px;
+      padding: 11px 19px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .button:hover {
+      opacity: 0.8;
+    }
+
+    section {
+      padding: 65px 0;
+    }
+
+    .section-heading {
+      margin-bottom: 25px;
+    }
+
+    .section-heading h2 {
+      font-size: 30px;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .section-heading p {
+      color: var(--gray);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+      gap: 17px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 22px;
+      background: white;
+    }
+
+    .card h3 {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    .card p, .card li {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    .symbol {
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      background: var(--yellow);
+      border-radius: 50%;
+      font-size: 21px;
+    }
+
+    .yellow-section {
+      background: var(--yellow-light);
+    }
+
+    .people {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-top: 15px;
+    }
+
+    .avatar {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: var(--yellow);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .people h3 {
+      margin: 0;
+    }
+
+    .people p {
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    .event-date {
+      display: inline-block;
+      background: var(--yellow-light);
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .list {
+      padding-left: 20px;
+    }
+
+    .list li {
+      margin: 8px 0;
+    }
+
+    .empty-note {
+      color: var(--gray);
+      font-size: 13px;
+      margin-top: 15px;
+    }
+
+    .quote {
+      background: var(--yellow);
+      padding: 35px 25px;
+      text-align: center;
+      border-radius: 18px;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    footer {
+      background: var(--black);
+      color: white;
+      padding: 35px 0;
+    }
+
+    footer p {
+      color: #d4d4d4;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 700px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 48px 0;
+      }
+
+      .hero-art {
+        min-height: 180px;
+      }
+
+      .nav-links {
+        gap: 12px;
+      }
+
+      section {
+        padding: 45px 0;
+      }
+
+      .section-heading h2 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <nav class="container">
+    <a href="#beranda" class="brand">
+      <span>B</span> BEM KAMPUS
+    </a>
+
+    <div class="nav-links">
+      <a href="#profil">Profil</a>
+      <a href="#pengurus">Pengurus</a>
+      <a href="#program">Program</a>
+      <a href="#sop">SOP</a>
+      <a href="#event">Event</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero" id="beranda">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">BADAN EKSEKUTIF MAHASISWA</span>
+        <h1>Bersama Mahasiswa,<br>
+          <span>Wujudkan Perubahan.</span>
+        </h1>
+        <p>
+          Ruang kolaborasi, aspirasi, dan pengembangan
+          mahasiswa untuk menciptakan lingkungan kampus
+          yang lebih baik.
+        </p>
+        <a href="#profil" class="button">Kenali Kami →</a>
+      </div>
+
+      <div class="hero-art">
+        <div>
+          <strong>GERAK<br>BERSAMA.</strong>
+          <p style="color:#191919;margin:12px 0 0">
+            Satu tujuan, banyak kontribusi.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="profil">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Tentang Kami</h2>
+        <p>Mengenal arah gerak dan komitmen organisasi.</p>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <div class="symbol">◎</div>
+          <h3>Visi</h3>
+          <p>
+            Menjadi BEM yang progresif, inklusif,
+            dan berintegritas dalam memperjuangkan
+            aspirasi mahasiswa.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="symbol">✦</div>
+          <h3>Misi</h3>
+          <ul class="list">
+            <li>Menyerap aspirasi mahasiswa.</li>
+            <li>Mengembangkan potensi mahasiswa.</li>
+            <li>Membangun kolaborasi yang positif.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="symbol">↗</div>
+          <h3>Komitmen</h3>
+          <p>
+            Menjalankan organisasi secara transparan,
+            bertanggung jawab, dan berdampak.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="yellow-section" id="pengurus">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Kepengurusan</h2>
+        <p>Kenali pengurus dan perangkat organisasi BEM.</p>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <h3>Ketua BEM</h3>
+          <div class="people">
+            <div class="avatar">K</div>
+            <div>
+              <h3>Nama Ketua</h3>
+              <p>Ketua Badan Eksekutif Mahasiswa</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Wakil Ketua BEM</h3>
+          <div class="people">
+            <div class="avatar">W</div>
+            <div>
+              <h3>Nama Wakil</h3>
+              <p>Wakil Ketua Badan Eksekutif Mahasiswa</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Kementerian dan Biro</h3>
+          <p>
+            Harmonisasi Kampus, Akademik dan Pengembangan
+            Karir, Pengembangan Bahasa, Hubungan Eksternal,
+            Pemuda dan Olahraga, Kaderisasi dan Pengembangan
+            SDM, Kesejahteraan Mahasiswa, serta biro
+            Administrasi, Keuangan, dan Desain Komunikasi
+            Visual.
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>Inspektorat Jenderal</h3>
+          <p>
+            Badan pengawas kegiatan dan pelaksanaan
+            program organisasi.
+          </p>
+        </article>
+      </div>
+      <p class="empty-note">
+        Nama dan jabatan di atas merupakan contoh.
+        Ganti dengan data resmi kepengurusan.
+      </p>
+    </div>
+  </section>
+
+  <section id="program">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Program Kerja</h2>
+        <p>Rencana aksi dan kontribusi setiap perangkat BEM.</p>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <div class="symbol">01</div>
+          <h3>Akademik dan Karir</h3>
+          <p>Informasi program akademik dan pengembangan karir.</p>
+        </article>
+
+        <article class="card">
+          <div class="symbol">02</div>
+          <h3>Bahasa</h3>
+          <p>Informasi program bahasa Arab dan bahasa Inggris.</p>
+        </article>
+
+        <article class="card">
+          <div class="symbol">03</div>
+          <h3>Kaderisasi</h3>
+          <p>Informasi pelatihan, kaderisasi, dan pengembangan SDM.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="yellow-section" id="sop">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Standar Operasional Prosedur</h2>
+        <p>
+          Pusat informasi pedoman dan prosedur resmi organisasi.
+        </p>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <div class="symbol">PDF</div>
+          <h3>SOP Umum Organisasi</h3>
+          <p>Pedoman dasar pelaksanaan kegiatan BEM.</p>
+          <p class="empty-note">Dokumen belum ditambahkan.</p>
+        </article>
+
+        <article class="card">
+          <div class="symbol">PDF</div>
+          <h3>SOP Administrasi</h3>
+          <p>Pedoman surat-menyurat dan dokumentasi.</p>
+          <p class="empty-note">Dokumen belum ditambahkan.</p>
+        </article>
+
+        <article class="card">
+          <div class="symbol">PDF</div>
+          <h3>SOP Keuangan</h3>
+          <p>Pedoman anggaran dan pelaporan keuangan.</p>
+          <p class="empty-note">Dokumen belum ditambahkan.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="event">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Next Event</h2>
+        <p>Jangan lewatkan agenda mendatang dari BEM.</p>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <span class="event-date">TANGGAL MENYUSUL</span>
+          <h3>Nama Kegiatan BEM</h3>
+          <p>Lokasi: Menyusul</p>
+          <p>
+            Deskripsi singkat kegiatan, tujuan,
+            dan informasi bagi peserta.
+          </p>
+        </article>
+
+        <article class="card">
+          <span class="event-date">TANGGAL MENYUSUL</span>
+          <h3>Agenda Berikutnya</h3>
+          <p>Lokasi: Menyusul</p>
+          <p>
+            Informasi kegiatan mendatang akan
+            diumumkan melalui website ini.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="quote">
+        "Organisasi bukan sekadar tentang jabatan,
+        tetapi tentang kontribusi dan dampak."
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-row">
+    <div>
+      <strong>BEM KAMPUS</strong>
+      <p>Bersama Mahasiswa, Wujudkan Perubahan.</p>
+    </div>
+
+    <div>
+      <strong>Kontak Resmi</strong>
+      <p>Email: email-bem@kampus.ac.id</p>
+      <p>Instagram: @bemkampus</p>
+    </div>
+
+    <div>
+      <p>© <span id="tahun"></span> BEM Kampus.</p>
+      <p>Seluruh hak cipta dilindungi.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("tahun").textContent =
+    new Date().getFullYear();
+</script>
+
+</body>
+</html>
