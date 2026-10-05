@@ -840,4 +840,148 @@ footer a:hover{color:var(--gold)}
       ruang: "Seluruh kegiatan olahraga di bawah BEM.",
       dasar: ["Program kerja Kemenpora"],
       langkah: [
-        { j: "Perencanaan", pic: "Panitia", u: "Menyusun p
+        { j: "Perencanaan", pic: "Panitia", u: "Menyusun proposal, jadwal, dan anggaran." },
+        { j: "Pelaksanaan", pic: "Panitia", u: "Kegiatan dijalankan sesuai rencana." },
+        { j: "Evaluasi dan LPJ", pic: "Panitia", u: "Evaluasi dan laporan pertanggungjawaban diserahkan." }
+      ],
+      form: ["Template Proposal", "Template LPJ"], catatan: "", file: "" },
+    { id: "keuangan-01", bagian: "keuangan", demo: true, no: "SOP/KEU/01", judul: "Pengajuan dan Pencairan Dana",
+      ringkas: "Prosedur pengajuan anggaran kegiatan sampai pencairan dan pelaporan.", versi: "1.0", berlaku: "Oktober 2026", pj: "Biro Keuangan",
+      tujuan: "Dana digunakan tepat sasaran dan dapat dipertanggungjawabkan.",
+      ruang: "Seluruh pengajuan dana unit kerja.",
+      dasar: ["Pedoman keuangan BEM"],
+      langkah: [
+        { j: "Pengajuan RAB", pic: "Unit pemohon", u: "Mengajukan Rencana Anggaran Biaya." },
+        { j: "Verifikasi", pic: "Biro Keuangan", u: "RAB diperiksa kewajarannya." },
+        { j: "Pencairan", pic: "Bendahara", u: "Dana dicairkan setelah disetujui." },
+        { j: "Pelaporan", pic: "Unit pemohon", u: "Nota dan laporan diserahkan setelah kegiatan." }
+      ],
+      form: ["Formulir RAB"], catatan: "Dana yang belum dilaporkan menghambat pengajuan berikutnya.", file: "" },
+    { id: "irjen-01", bagian: "irjen", demo: true, no: "SOP/IRJEN/01", judul: "Monitoring dan Evaluasi Kinerja",
+      ringkas: "Pemeriksaan berkala kinerja kementerian dan biro.", versi: "1.0", berlaku: "Oktober 2026", pj: "Inspektur Jenderal",
+      tujuan: "Menjaga akuntabilitas dan kualitas kerja seluruh pengurus.",
+      ruang: "Seluruh kementerian, biro, dan pimpinan.",
+      dasar: ["Misi ke-1 dan ke-2 Kabinet Samasta"],
+      langkah: [
+        { j: "Penjadwalan", pic: "Irjen", u: "Jadwal pemeriksaan ditetapkan dan diumumkan." },
+        { j: "Pemeriksaan", pic: "Irjen", u: "Capaian dan dokumen unit diperiksa." },
+        { j: "Laporan dan rekomendasi", pic: "Irjen", u: "Hasil dan rekomendasi disampaikan kepada pimpinan." }
+      ],
+      form: ["Lembar Evaluasi Kinerja"], catatan: "", file: "" }
+  ];
+
+  (function(){
+    var sp = document.getElementById("sp"), listV = document.getElementById("sp-listview"), detV = document.getElementById("sp-detailview");
+    var chipsEl = document.getElementById("sp-chips"), q = document.getElementById("sp-q"), clr = document.getElementById("sp-clear");
+    var cur = "all", listScroll = 0;
+    function bg(id){ return BAGIAN.filter(function(b){ return b.id === id; })[0]; }
+    function norm(t){ return String(t || "").toLowerCase(); }
+    function hay(s){
+      var b = bg(s.bagian);
+      return norm([s.judul, s.no, s.ringkas, s.tujuan, s.ruang, s.catatan, b && b.nama, s.dasar.join(" "), s.form.join(" "),
+        s.langkah.map(function(l){ return l.j + " " + l.pic + " " + l.u; }).join(" ")].join(" "));
+    }
+    function count(id){ return SOP_DATA.filter(function(s){ return id === "all" || s.bagian === id; }).length; }
+
+    function renderChips(){
+      var h = '<button type="button" class="chip' + (cur === "all" ? " on" : "") + '" data-b="all">Semua bagian <b>' + count("all") + '</b></button>', g = "";
+      BAGIAN.forEach(function(b){
+        if (b.grup !== g){ g = b.grup; h += '<span class="chip-sep">' + esc(g) + '</span>'; }
+        h += '<button type="button" class="chip' + (cur === b.id ? " on" : "") + '" data-b="' + b.id + '" aria-pressed="' + (cur === b.id) + '">' + esc(b.s) + ' <b>' + count(b.id) + '</b></button>';
+      });
+      chipsEl.innerHTML = h;
+      var on = chipsEl.querySelector(".on");
+      if (on) chipsEl.scrollTo({ left: on.offsetLeft - 40, behavior: "smooth" });
+    }
+
+    function renderList(){
+      var term = norm(q.value).trim(), words = term.split(/\s+/).filter(Boolean);
+      clr.classList.toggle("on", !!term);
+      var rows = SOP_DATA.filter(function(s){
+        if (cur !== "all" && s.bagian !== cur) return false;
+        var hs = hay(s); return words.every(function(w){ return hs.indexOf(w) > -1; });
+      });
+      var b = bg(cur);
+      document.getElementById("sp-title").textContent = term ? 'Hasil untuk "' + q.value.trim() + '"' : (b ? b.nama : "Semua SOP");
+      document.getElementById("sp-n").textContent = rows.length + " SOP" + (term && cur !== "all" ? " di " + b.s : "");
+      var h = "";
+      rows.forEach(function(s){
+        var bb = bg(s.bagian);
+        h += '<button type="button" class="sp-card" data-id="' + s.id + '"><span class="no">' + esc(s.no) + (s.demo ? ' &nbsp;<span class="tag demo">Contoh</span>' : "") + '</span><h4>' + esc(s.judul) + '</h4><p>' + esc(s.ringkas) + '</p><span class="meta"><span>' + esc(bb ? bb.s : "") + ' &middot; v' + esc(s.versi) + '</span><span>Lihat detail &#8594;</span></span></button>';
+      });
+      if (!rows.length){
+        h = '<div class="sp-empty" style="grid-column:1/-1"><h4>' + (term ? "Tidak ada SOP yang cocok" : "SOP bagian ini belum tersedia") + '</h4><p>' + (term ? "Coba kata kunci lain" + (cur !== "all" ? " atau cari di semua bagian." : ".") : "Dokumen akan ditambahkan setelah disosialisasikan.") + '</p>' + (cur !== "all" ? '<button type="button" class="link-btn" data-b="all">Lihat semua bagian</button>' : "") + '</div>';
+      }
+      document.getElementById("sp-list").innerHTML = h;
+    }
+
+    function list(ol){ return '<ul class="dot">' + ol.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; }
+    function renderDetail(s){
+      var b = bg(s.bagian), n = 0;
+      function sec(t, body){ return '<section class="sp-sec"><h3><i>' + (++n) + '</i>' + t + '</h3>' + body + '</section>'; }
+      var h = '<nav class="sp-crumb" aria-label="Jejak"><a href="#sop-center">Pusat SOP</a><span>/</span><span>' + esc(b.s) + '</span></nav>' +
+        '<header class="sp-dh"><span class="tag' + (s.demo ? " demo" : "") + '">' + (s.demo ? "Contoh isi" : esc(b.nama)) + '</span><h2>' + esc(s.judul) + '</h2><p>' + esc(s.ringkas) + '</p></header>' +
+        '<div class="sp-dgrid"><div>' +
+        sec("Tujuan", "<p>" + esc(s.tujuan) + "</p>") + sec("Ruang lingkup", "<p>" + esc(s.ruang) + "</p>") +
+        (s.dasar.length ? sec("Dasar acuan", list(s.dasar)) : "") +
+        sec("Alur prosedur", '<ol class="flow">' + s.langkah.map(function(l){ return "<li><div><h4>" + esc(l.j) + '</h4><span class="pic">' + esc(l.pic) + "</span><p>" + esc(l.u) + "</p></div></li>"; }).join("") + "</ol>") +
+        (s.form.length ? sec("Formulir terkait", list(s.form)) : "") +
+        (s.catatan ? '<div class="sp-note"><b>Catatan.</b> ' + esc(s.catatan) + "</div>" : "") +
+        '</div><aside class="sp-side"><dl><div><dt>Nomor</dt><dd>' + esc(s.no) + '</dd></div><div><dt>Bagian</dt><dd>' + esc(b.nama) + '</dd></div><div><dt>Penanggung jawab</dt><dd>' + esc(s.pj) + '</dd></div><div><dt>Versi / berlaku</dt><dd>v' + esc(s.versi) + " &middot; " + esc(s.berlaku) + "</dd></div></dl>" +
+        (s.file ? '<a class="btn btn-gold" href="' + esc(s.file) + '" download>Unduh PDF</a>' : '<a class="btn btn-gold" aria-disabled="true">PDF segera tersedia</a>') + "</aside></div>";
+      document.getElementById("sp-detail").innerHTML = h;
+    }
+
+    function route(h){
+      h = h || "";
+      var open = h.indexOf("#sop-center") === 0;
+      document.body.classList.toggle("sop-open", open);
+      sp.setAttribute("aria-hidden", !open);
+      if (!open){
+        var was0 = sp.classList.contains("open");
+        sp.classList.remove("open");
+        var tg = h.length > 1 && document.getElementById(h.slice(1));
+        if (was0 && tg) tg.scrollIntoView();
+        return;
+      }
+      var id = h.split("/")[1], s = id && SOP_DATA.filter(function(x){ return x.id === id; })[0];
+      if (!sp.classList.contains("open")){ sp.classList.add("open"); renderChips(); renderList(); }
+      if (s){
+        if (listV.hidden === false) listScroll = sp.scrollTop;
+        renderDetail(s); listV.hidden = true; detV.hidden = false; sp.scrollTop = 0;
+      } else {
+        var was = detV.hidden === false;
+        detV.hidden = true; listV.hidden = false; sp.scrollTop = was ? listScroll : 0;
+      }
+    }
+
+    // Navigasi tidak bergantung pada hashchange agar tetap jalan di pratinjau/iframe
+    function go(h){
+      try { history.pushState(null, "", h); } catch (err) {}
+      route(h);
+    }
+    document.addEventListener("click", function(e){
+      var a = e.target.closest('a[href^="#sop-center"], #sp-back');
+      if (!a) return;
+      e.preventDefault(); go(a.getAttribute("href"));
+    });
+    chipsEl.addEventListener("click", function(e){ var b = e.target.closest("[data-b]"); if (b){ cur = b.getAttribute("data-b"); renderChips(); renderList(); } });
+    document.getElementById("sp-list").addEventListener("click", function(e){
+      var c = e.target.closest(".sp-card"), b = e.target.closest("[data-b]");
+      if (c) go("#sop-center/" + c.getAttribute("data-id"));
+      else if (b){ cur = "all"; renderChips(); renderList(); }
+    });
+    q.addEventListener("input", renderList);
+    clr.addEventListener("click", function(){ q.value = ""; renderList(); q.focus(); });
+    document.getElementById("sp-l").addEventListener("click", function(){ chipsEl.scrollBy({ left: -300, behavior: "smooth" }); });
+    document.getElementById("sp-r").addEventListener("click", function(){ chipsEl.scrollBy({ left: 300, behavior: "smooth" }); });
+    document.addEventListener("keydown", function(e){ if (e.key === "Escape" && sp.classList.contains("open")) go("#sop"); });
+    window.addEventListener("popstate", function(){ route(location.hash); });
+    window.addEventListener("hashchange", function(){ route(location.hash); });
+    route(location.hash);
+  })();
+
+  renderCal(); renderPanel();
+</script>
+</body>
+</html>
