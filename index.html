@@ -1,592 +1,380 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f5cf32">
-  <meta name="description" content="Website resmi BEM kampus">
-  <title>BEM Kampus | Bersama Bergerak</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17140b">
+<meta name="description" content="Website resmi BEM STDI Imam Syafii Jember, Kabinet Samasta: profil, kepengurusan, program kerja, SOP, dan agenda kegiatan.">
+<meta property="og:title" content="BEM STDI Imam Syafii Jember | Kabinet Samasta">
+<meta property="og:description" content="Ruang aspirasi, kolaborasi, dan pengembangan mahasiswa.">
+<meta property="og:type" content="website">
+<title>BEM STDI Imam Syafii Jember | Kabinet Samasta</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M12 60V30a20 20 0 0 1 40 0v30z' fill='%23f2c230'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --yellow: #f5cf32;
-      --yellow-light: #fff9df;
-      --black: #191919;
-      --white: #ffffff;
-      --gray: #666666;
-      --border: #eae5d5;
-    }
+<style>
+:root{
+  --ink:#17140b;
+  --ink-2:#26221360;
+  --paper:#fbf8ef;
+  --sand:#f2ecda;
+  --gold:#f2c230;
+  --gold-deep:#8a6b00;
+  --muted:#5d584a;
+  --line:#e1d9bf;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --arch:999px 999px 0 0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:128px}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
+.wrap{width:min(1120px,calc(100% - 40px));margin-inline:auto}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+/* ---------- Header ---------- */
+.site-header{position:sticky;top:0;z-index:50;background:rgba(251,248,239,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.01em}
+.brand-mark{width:30px;height:36px;background:var(--gold);border-radius:var(--arch);flex-shrink:0}
+.brand small{display:block;font-weight:500;font-size:12px;color:var(--muted);line-height:1.2}
+.brand b{display:block;line-height:1.2;font-size:15px}
+.nav{display:flex;gap:6px;font-size:14px;font-weight:500}
+.nav a{padding:8px 14px;border-radius:999px;color:var(--muted);transition:background .2s,color .2s}
+.nav a:hover{color:var(--ink);background:var(--sand)}
+.nav a.active{color:var(--ink);background:var(--gold)}
+.menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:10px;width:44px;height:44px;cursor:pointer;color:var(--ink)}
+.menu-btn span,.menu-btn span::before,.menu-btn span::after{display:block;width:18px;height:2px;background:currentColor;margin:auto;position:relative;transition:transform .2s}
+.menu-btn span::before,.menu-btn span::after{content:"";position:absolute;left:0}
+.menu-btn span::before{top:-6px}.menu-btn span::after{top:6px}
 
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 90px;
-    }
+/* ---------- Hero ---------- */
+.hero{background:var(--ink);color:#f6f1de;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:end;padding:88px 0 0}
+.hero-copy{padding-bottom:88px}
+.hero-tag{display:inline-flex;align-items:center;gap:10px;font-size:14px;color:#d9d2b6;margin-bottom:26px}
+.hero-tag::before{content:"";width:28px;height:2px;background:var(--gold)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(38px,5.6vw,68px);line-height:1.08;letter-spacing:-.015em}
+.hero p.lead{margin:26px 0 34px;max-width:480px;color:#cfc8ab;font-size:17px}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:999px;font-weight:600;font-size:15px;border:1.5px solid transparent;transition:transform .2s,background .2s,border-color .2s}
+.btn-gold{background:var(--gold);color:var(--ink)}
+.btn-gold:hover{background:#ffd54a;transform:translateY(-2px)}
+.btn-line{border-color:#5a5436;color:#f6f1de}
+.btn-line:hover{border-color:var(--gold);color:var(--gold)}
+.arch{background:var(--gold);color:var(--ink);border-radius:var(--arch);min-height:440px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding:0 28px 38px;position:relative}
+.arch::before{content:"";position:absolute;inset:16px 16px 0;border:1.5px solid rgba(23,20,11,.35);border-bottom:0;border-radius:var(--arch);pointer-events:none}
+.arch-title{font-family:var(--serif);font-weight:700;font-size:clamp(34px,4.4vw,52px);line-height:1;letter-spacing:-.02em}
+.arch-sub{margin-top:12px;font-size:14px;font-weight:500;max-width:220px}
+.hero-grid>*{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+.hero-grid>.arch{animation-delay:.15s}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 
-    body {
-      font-family: Arial, sans-serif;
-      color: var(--black);
-      background: var(--white);
-      line-height: 1.7;
-    }
+/* ---------- Sections ---------- */
+section{padding:96px 0}
+.sec-head{display:grid;grid-template-columns:1fr 1.2fr;gap:40px;align-items:end;margin-bottom:48px}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(30px,3.8vw,44px);line-height:1.15;letter-spacing:-.01em}
+.sec-head p{color:var(--muted);max-width:520px}
+.alt{background:var(--sand)}
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+/* Profil */
+.profile{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid var(--ink)}
+.profile>div{padding:30px 30px 0 0}
+.profile>div+div{padding-left:30px;border-left:1px solid var(--line)}
+.profile h3{font-family:var(--serif);font-size:22px;margin-bottom:12px}
+.profile p,.profile li{color:var(--muted);font-size:15.5px}
+.profile li{padding-left:20px;position:relative;margin-bottom:8px}
+.profile li::before{content:"";position:absolute;left:0;top:.7em;width:8px;height:8px;background:var(--gold);border-radius:50%}
 
-    .container {
-      width: min(1100px, 90%);
-      margin: auto;
-    }
+/* Pengurus */
+.leaders{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-bottom:56px}
+.leader{display:flex;gap:24px;align-items:flex-end;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:26px 28px 0;overflow:hidden}
+.portrait{width:112px;height:136px;background:var(--gold);border-radius:var(--arch);display:grid;place-items:center;font-family:var(--serif);font-size:44px;font-weight:700;flex-shrink:0}
+.portrait img{width:100%;height:100%;object-fit:cover;border-radius:var(--arch)}
+.leader-info{padding-bottom:28px}
+.leader-info p{color:var(--muted);font-size:14px}
+.leader-info h3{font-family:var(--serif);font-size:24px;line-height:1.25;margin:2px 0 4px}
+.groups{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px}
+.groups h3{font-size:15px;font-weight:700;padding-bottom:12px;border-bottom:1.5px solid var(--ink);margin-bottom:6px}
+.groups li{padding:11px 0;border-bottom:1px solid var(--line);font-size:15px;color:var(--muted)}
+.note{margin-top:28px;font-size:13px;color:var(--muted)}
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: white;
-      border-bottom: 1px solid var(--border);
-    }
+/* Program */
+.rows{border-top:1.5px solid var(--ink)}
+.row{display:grid;grid-template-columns:.9fr 1.6fr;gap:40px;padding:26px 0;border-bottom:1px solid var(--line);transition:background .25s,padding .25s}
+.row:hover{background:var(--sand);padding-inline:20px}
+.row h3{font-family:var(--serif);font-size:22px;line-height:1.3}
+.row p{color:var(--muted);font-size:15.5px}
+.tag{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:600;background:var(--sand);padding:3px 12px;border-radius:999px;color:var(--gold-deep)}
+.alt .tag{background:var(--paper)}
 
-    nav {
-      min-height: 72px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      padding: 12px 0;
-    }
+/* SOP */
+.doc{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}
+.doc-ico{width:44px;height:52px;background:var(--paper);border:1.5px solid var(--ink);border-radius:6px;display:grid;place-items:end center;padding-bottom:6px;font-size:11px;font-weight:700;position:relative}
+.doc-ico::after{content:"";position:absolute;top:-1.5px;right:-1.5px;width:14px;height:14px;background:var(--gold);border-left:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);border-radius:0 6px 0 6px}
+.doc h3{font-size:17px;font-weight:700;line-height:1.35}
+.doc p{color:var(--muted);font-size:14.5px}
+.status{font-size:13px;font-weight:600;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);color:var(--muted);white-space:nowrap}
+a.status{background:var(--ink);border-color:var(--ink);color:#fff}
+a.status:hover{background:var(--gold);border-color:var(--gold);color:var(--ink)}
 
-    .brand {
-      font-size: 19px;
-      font-weight: 800;
-    }
+/* Event */
+.event{display:grid;grid-template-columns:150px 1fr;gap:32px;padding:30px 0;border-bottom:1px solid var(--line)}
+.date{background:var(--gold);border-radius:var(--arch);height:150px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:20px;text-align:center;font-weight:700;line-height:1.2}
+.date strong{font-family:var(--serif);font-size:30px}
+.date span{font-size:13px}
+.event h3{font-family:var(--serif);font-size:24px;margin:6px 0 6px}
+.event p{color:var(--muted);max-width:620px}
+.meta{font-size:14px;font-weight:600;color:var(--gold-deep)}
 
-    .brand span {
-      background: var(--yellow);
-      padding: 5px 9px;
-      border-radius: 7px;
-      margin-right: 5px;
-    }
+/* Kutipan */
+.quote{background:var(--ink);color:#f6f1de;text-align:center;padding:96px 0}
+blockquote{font-family:var(--serif);font-weight:500;font-size:clamp(26px,3.6vw,42px);line-height:1.3;max-width:820px;margin:auto;letter-spacing:-.01em}
+.quote .brand-mark{margin:0 auto 28px;width:34px;height:40px}
 
-    .nav-links {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      font-size: 13px;
-    }
+/* Footer */
+footer{background:#0f0d07;color:#cfc8ab;padding:64px 0 32px}
+.foot{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid #2f2a17}
+footer h4{color:#fff;font-size:15px;margin-bottom:12px}
+footer p,footer li{font-size:14.5px;margin-bottom:6px}
+footer a:hover{color:var(--gold)}
+.copy{padding-top:24px;font-size:13px;color:#8c866c}
 
-    .nav-links a:hover {
-      color: #987500;
-    }
+/* ---------- Ticker info terbaru ---------- */
+.ticker{display:flex;background:var(--gold);color:var(--ink);font-size:13.5px;font-weight:600;border-top:1px solid rgba(23,20,11,.12)}
+.ticker-label{background:var(--ink);color:var(--gold);padding:9px 18px;flex-shrink:0;position:relative;z-index:1;display:flex;align-items:center;gap:8px}
+.ticker-label::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 1.6s ease-in-out infinite}
+.ticker-view{flex:1;overflow:hidden}
+.ticker-track{display:inline-flex;white-space:nowrap;animation:marq 40s linear infinite;will-change:transform}
+.ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
+.ticker-item{background:none;border:0;font:inherit;color:inherit;cursor:pointer;padding:9px 0 9px 32px;display:inline-flex;align-items:center}
+.ticker-item::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink);margin-left:32px;opacity:.55}
+.ticker-item:hover{text-decoration:underline}
+@keyframes marq{to{transform:translateX(-50%)}}
+@keyframes pulse{50%{transform:scale(1.7);opacity:.35}}
 
-    .hero {
-      background: var(--yellow-light);
-      padding: 75px 0;
-    }
+/* ---------- Efek bounce saat diklik ---------- */
+@keyframes bounce{0%{transform:scale(1)}28%{transform:scale(.88)}58%{transform:scale(1.08)}78%{transform:scale(.97)}100%{transform:scale(1)}}
+.pop{animation:bounce .5s cubic-bezier(.34,1.56,.64,1)}
+.btn:active,.cal-nav:active,.day:active{transform:scale(.92)}
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 35px;
-      align-items: center;
-    }
+/* ---------- Kalender ---------- */
+.cal-wrap{display:grid;grid-template-columns:1.35fr 1fr;gap:28px;align-items:start}
+.cal{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.cal-head h3{font-family:var(--serif);font-size:24px}
+.cal-nav{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--ink);background:var(--paper);font-size:20px;line-height:1;cursor:pointer;color:var(--ink);transition:background .2s}
+.cal-nav:hover{background:var(--gold)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dow{text-align:center;font-size:12.5px;font-weight:700;color:var(--muted);padding:6px 0}
+.day{position:relative;min-height:56px;border-radius:14px;border:1.5px solid transparent;background:var(--paper);font:inherit;font-weight:600;font-size:15px;color:var(--ink);cursor:pointer;transition:background .2s,border-color .2s}
+.day:hover{background:var(--sand)}
+.day.today{border-color:var(--ink)}
+.day.sel{background:var(--ink);color:#fff}
+.day.has::after{content:"";position:absolute;bottom:8px;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--gold)}
+.day.sel.has::after{background:var(--gold)}
+.cal-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px;font-size:13px;color:var(--muted)}
+.cal-foot i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:8px}
+.link-btn{background:none;border:0;font:inherit;font-weight:700;font-size:13.5px;color:var(--ink);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.panel{background:var(--ink);color:#f6f1de;border-radius:22px;padding:30px;position:sticky;top:140px}
+.panel-date{font-size:14px;color:var(--gold);font-weight:600;margin-bottom:18px}
+.ev{padding:18px 0;border-top:1px solid #3a3520}
+.ev:first-child{border-top:0;padding-top:0}
+.ev h4{font-family:var(--serif);font-size:22px;line-height:1.3;margin-bottom:8px}
+.ev .badge{display:inline-block;background:var(--gold);color:var(--ink);font-size:12px;font-weight:700;padding:2px 12px;border-radius:999px;margin-bottom:10px}
+.ev dl{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;font-size:14px;color:#d9d2b6;margin-bottom:8px}
+.ev dt{color:#9c9577}
+.ev p{font-size:14.5px;color:#cfc8ab}
+.empty{color:#cfc8ab;font-size:15px}
+.empty .link-btn{color:var(--gold);display:block;margin-top:14px;text-align:left}
+@media (max-width:900px){
+  .cal-wrap{grid-template-columns:1fr}
+  .panel{position:static}
+}
+@media (max-width:480px){
+  .cal{padding:16px}
+  .day{min-height:46px;font-size:14px;border-radius:10px}
+  .cal-grid{gap:4px}
+  .ticker-label{padding:9px 12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .ticker-view{overflow-x:auto}
+}
 
-    .eyebrow {
-      display: inline-block;
-      background: var(--yellow);
-      padding: 5px 14px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    h1 {
-      font-size: clamp(35px, 5vw, 58px);
-      line-height: 1.13;
-      margin: 20px 0;
-    }
-
-    h1 span {
-      color: #bd9200;
-    }
-
-    .hero p {
-      color: var(--gray);
-      max-width: 520px;
-      margin-bottom: 24px;
-    }
-
-    .hero-art {
-      min-height: 260px;
-      background: var(--yellow);
-      border-radius: 40% 20% 35% 18%;
-      display: grid;
-      place-items: center;
-      padding: 25px;
-      text-align: center;
-    }
-
-    .hero-art strong {
-      font-size: clamp(35px, 5vw, 58px);
-      line-height: 1.1;
-    }
-
-    .button {
-      display: inline-block;
-      background: var(--black);
-      color: white;
-      border-radius: 9px;
-      padding: 11px 19px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .button:hover {
-      opacity: 0.8;
-    }
-
-    section {
-      padding: 65px 0;
-    }
-
-    .section-heading {
-      margin-bottom: 25px;
-    }
-
-    .section-heading h2 {
-      font-size: 30px;
-      line-height: 1.3;
-      margin-bottom: 8px;
-    }
-
-    .section-heading p {
-      color: var(--gray);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns:
-        repeat(auto-fit, minmax(220px, 1fr));
-      gap: 17px;
-    }
-
-    .card {
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      padding: 22px;
-      background: white;
-    }
-
-    .card h3 {
-      margin: 10px 0;
-      font-size: 18px;
-    }
-
-    .card p, .card li {
-      font-size: 14px;
-      color: var(--gray);
-    }
-
-    .symbol {
-      width: 45px;
-      height: 45px;
-      display: grid;
-      place-items: center;
-      background: var(--yellow);
-      border-radius: 50%;
-      font-size: 21px;
-    }
-
-    .yellow-section {
-      background: var(--yellow-light);
-    }
-
-    .people {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      margin-top: 15px;
-    }
-
-    .avatar {
-      width: 55px;
-      height: 55px;
-      border-radius: 50%;
-      background: var(--yellow);
-      display: grid;
-      place-items: center;
-      font-size: 22px;
-      flex-shrink: 0;
-    }
-
-    .people h3 {
-      margin: 0;
-    }
-
-    .people p {
-      color: var(--gray);
-      font-size: 13px;
-    }
-
-    .event-date {
-      display: inline-block;
-      background: var(--yellow-light);
-      padding: 4px 9px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .list {
-      padding-left: 20px;
-    }
-
-    .list li {
-      margin: 8px 0;
-    }
-
-    .empty-note {
-      color: var(--gray);
-      font-size: 13px;
-      margin-top: 15px;
-    }
-
-    .quote {
-      background: var(--yellow);
-      padding: 35px 25px;
-      text-align: center;
-      border-radius: 18px;
-      font-size: 21px;
-      font-weight: bold;
-    }
-
-    footer {
-      background: var(--black);
-      color: white;
-      padding: 35px 0;
-    }
-
-    footer p {
-      color: #d4d4d4;
-      font-size: 13px;
-      margin-top: 8px;
-    }
-
-    .footer-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    @media (max-width: 700px) {
-      .hero-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        padding: 48px 0;
-      }
-
-      .hero-art {
-        min-height: 180px;
-      }
-
-      .nav-links {
-        gap: 12px;
-      }
-
-      section {
-        padding: 45px 0;
-      }
-
-      .section-heading h2 {
-        font-size: 26px;
-      }
-    }
-  </style>
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:40px;padding-top:56px}
+  .hero-copy{padding-bottom:0}
+  .arch{min-height:300px;max-width:420px;width:100%;margin-inline:auto}
+  .sec-head,.groups,.foot{grid-template-columns:1fr;gap:28px}
+  .profile{grid-template-columns:1fr}
+  .profile>div,.profile>div+div{padding:26px 0;border-left:0;border-bottom:1px solid var(--line)}
+  .leaders{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr;gap:8px}
+  section{padding:68px 0}
+}
+@media (max-width:760px){
+  .menu-btn{display:block}
+  .nav{position:absolute;top:70px;left:0;right:0;flex-direction:column;background:var(--paper);padding:12px 20px 20px;border-bottom:1px solid var(--line);display:none}
+  .nav.open{display:flex}
+  .nav a{padding:12px 14px}
+}
+@media (max-width:560px){
+  .doc{grid-template-columns:auto 1fr}
+  .doc .status{grid-column:1/-1;justify-self:start}
+  .event{grid-template-columns:1fr;gap:18px}
+  .date{width:120px;height:120px}
+  .leader{flex-direction:column;align-items:flex-start;padding:24px 24px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  <nav class="container">
-    <a href="#beranda" class="brand">
-      <span>B</span> BEM KAMPUS
+<header class="site-header">
+  <div class="wrap bar">
+    <a href="#beranda" class="brand" aria-label="Beranda BEM">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span><b>BEM STDI Imam Syafii</b><small>Kabinet Samasta</small></span>
     </a>
-
-    <div class="nav-links">
+    <button class="menu-btn" aria-label="Buka menu" aria-expanded="false" aria-controls="nav"><span></span></button>
+    <nav class="nav" id="nav" aria-label="Navigasi utama">
       <a href="#profil">Profil</a>
       <a href="#pengurus">Pengurus</a>
       <a href="#program">Program</a>
       <a href="#sop">SOP</a>
-      <a href="#event">Event</a>
-    </div>
-  </nav>
+      <a href="#kalender">Kalender</a>
+    </nav>
+  </div>
+  <div class="ticker" role="region" aria-label="Info kegiatan terbaru">
+    <span class="ticker-label">Info terbaru</span>
+    <div class="ticker-view"><div class="ticker-track" id="ticker"></div></div>
+  </div>
 </header>
 
 <main>
 
-  <section class="hero" id="beranda">
-    <div class="container hero-grid">
-      <div>
-        <span class="eyebrow">BADAN EKSEKUTIF MAHASISWA</span>
-        <h1>Bersama Mahasiswa,<br>
-          <span>Wujudkan Perubahan.</span>
-        </h1>
-        <p>
-          Ruang kolaborasi, aspirasi, dan pengembangan
-          mahasiswa untuk menciptakan lingkungan kampus
-          yang lebih baik.
-        </p>
-        <a href="#profil" class="button">Kenali Kami →</a>
-      </div>
-
-      <div class="hero-art">
-        <div>
-          <strong>GERAK<br>BERSAMA.</strong>
-          <p style="color:#191919;margin:12px 0 0">
-            Satu tujuan, banyak kontribusi.
-          </p>
-        </div>
+<!-- ========== BERANDA ========== -->
+<div class="hero" id="beranda">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="hero-tag">Badan Eksekutif Mahasiswa</p>
+      <h1>Bersama mahasiswa, menjaga kampus tetap bergerak.</h1>
+      <p class="lead">Ruang aspirasi, kolaborasi, dan pengembangan diri untuk seluruh mahasiswa STDI Imam Syafii Jember.</p>
+      <div class="actions">
+        <a href="#profil" class="btn btn-gold">Kenali kami</a>
+        <a href="#kalender" class="btn btn-line">Lihat kalender</a>
       </div>
     </div>
-  </section>
-
-  <section id="profil">
-    <div class="container">
-      <div class="section-heading">
-        <h2>Tentang Kami</h2>
-        <p>Mengenal arah gerak dan komitmen organisasi.</p>
-      </div>
-
-      <div class="grid">
-        <article class="card">
-          <div class="symbol">◎</div>
-          <h3>Visi</h3>
-          <p>
-            Menjadi BEM yang progresif, inklusif,
-            dan berintegritas dalam memperjuangkan
-            aspirasi mahasiswa.
-          </p>
-        </article>
-
-        <article class="card">
-          <div class="symbol">✦</div>
-          <h3>Misi</h3>
-          <ul class="list">
-            <li>Menyerap aspirasi mahasiswa.</li>
-            <li>Mengembangkan potensi mahasiswa.</li>
-            <li>Membangun kolaborasi yang positif.</li>
-          </ul>
-        </article>
-
-        <article class="card">
-          <div class="symbol">↗</div>
-          <h3>Komitmen</h3>
-          <p>
-            Menjalankan organisasi secara transparan,
-            bertanggung jawab, dan berdampak.
-          </p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="yellow-section" id="pengurus">
-    <div class="container">
-      <div class="section-heading">
-        <h2>Kepengurusan</h2>
-        <p>Kenali pengurus dan perangkat organisasi BEM.</p>
-      </div>
-
-      <div class="grid">
-        <article class="card">
-          <h3>Ketua BEM</h3>
-          <div class="people">
-            <div class="avatar">K</div>
-            <div>
-              <h3>Nama Ketua</h3>
-              <p>Ketua Badan Eksekutif Mahasiswa</p>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <h3>Wakil Ketua BEM</h3>
-          <div class="people">
-            <div class="avatar">W</div>
-            <div>
-              <h3>Nama Wakil</h3>
-              <p>Wakil Ketua Badan Eksekutif Mahasiswa</p>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <h3>Kementerian dan Biro</h3>
-          <p>
-            Harmonisasi Kampus, Akademik dan Pengembangan
-            Karir, Pengembangan Bahasa, Hubungan Eksternal,
-            Pemuda dan Olahraga, Kaderisasi dan Pengembangan
-            SDM, Kesejahteraan Mahasiswa, serta biro
-            Administrasi, Keuangan, dan Desain Komunikasi
-            Visual.
-          </p>
-        </article>
-
-        <article class="card">
-          <h3>Inspektorat Jenderal</h3>
-          <p>
-            Badan pengawas kegiatan dan pelaksanaan
-            program organisasi.
-          </p>
-        </article>
-      </div>
-      <p class="empty-note">
-        Nama dan jabatan di atas merupakan contoh.
-        Ganti dengan data resmi kepengurusan.
-      </p>
-    </div>
-  </section>
-
-  <section id="program">
-    <div class="container">
-      <div class="section-heading">
-        <h2>Program Kerja</h2>
-        <p>Rencana aksi dan kontribusi setiap perangkat BEM.</p>
-      </div>
-
-      <div class="grid">
-        <article class="card">
-          <div class="symbol">01</div>
-          <h3>Akademik dan Karir</h3>
-          <p>Informasi program akademik dan pengembangan karir.</p>
-        </article>
-
-        <article class="card">
-          <div class="symbol">02</div>
-          <h3>Bahasa</h3>
-          <p>Informasi program bahasa Arab dan bahasa Inggris.</p>
-        </article>
-
-        <article class="card">
-          <div class="symbol">03</div>
-          <h3>Kaderisasi</h3>
-          <p>Informasi pelatihan, kaderisasi, dan pengembangan SDM.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="yellow-section" id="sop">
-    <div class="container">
-      <div class="section-heading">
-        <h2>Standar Operasional Prosedur</h2>
-        <p>
-          Pusat informasi pedoman dan prosedur resmi organisasi.
-        </p>
-      </div>
-
-      <div class="grid">
-        <article class="card">
-          <div class="symbol">PDF</div>
-          <h3>SOP Umum Organisasi</h3>
-          <p>Pedoman dasar pelaksanaan kegiatan BEM.</p>
-          <p class="empty-note">Dokumen belum ditambahkan.</p>
-        </article>
-
-        <article class="card">
-          <div class="symbol">PDF</div>
-          <h3>SOP Administrasi</h3>
-          <p>Pedoman surat-menyurat dan dokumentasi.</p>
-          <p class="empty-note">Dokumen belum ditambahkan.</p>
-        </article>
-
-        <article class="card">
-          <div class="symbol">PDF</div>
-          <h3>SOP Keuangan</h3>
-          <p>Pedoman anggaran dan pelaporan keuangan.</p>
-          <p class="empty-note">Dokumen belum ditambahkan.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section id="event">
-    <div class="container">
-      <div class="section-heading">
-        <h2>Next Event</h2>
-        <p>Jangan lewatkan agenda mendatang dari BEM.</p>
-      </div>
-
-      <div class="grid">
-        <article class="card">
-          <span class="event-date">TANGGAL MENYUSUL</span>
-          <h3>Nama Kegiatan BEM</h3>
-          <p>Lokasi: Menyusul</p>
-          <p>
-            Deskripsi singkat kegiatan, tujuan,
-            dan informasi bagi peserta.
-          </p>
-        </article>
-
-        <article class="card">
-          <span class="event-date">TANGGAL MENYUSUL</span>
-          <h3>Agenda Berikutnya</h3>
-          <p>Lokasi: Menyusul</p>
-          <p>
-            Informasi kegiatan mendatang akan
-            diumumkan melalui website ini.
-          </p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <div class="quote">
-        "Organisasi bukan sekadar tentang jabatan,
-        tetapi tentang kontribusi dan dampak."
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <div class="container footer-row">
-    <div>
-      <strong>BEM KAMPUS</strong>
-      <p>Bersama Mahasiswa, Wujudkan Perubahan.</p>
-    </div>
-
-    <div>
-      <strong>Kontak Resmi</strong>
-      <p>Email: email-bem@kampus.ac.id</p>
-      <p>Instagram: @bemkampus</p>
-    </div>
-
-    <div>
-      <p>© <span id="tahun"></span> BEM Kampus.</p>
-      <p>Seluruh hak cipta dilindungi.</p>
+    <div class="arch" aria-hidden="true">
+      <div class="arch-title">Samasta</div>
+      <p class="arch-sub">Satu tujuan, banyak kontribusi.</p>
     </div>
   </div>
-</footer>
+</div>
 
-<script>
-  document.getElementById("tahun").textContent =
-    new Date().getFullYear();
-</script>
+<!-- ========== PROFIL ========== -->
+<section id="profil">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Arah gerak dan komitmen kami</h2>
+      <p>Tiga hal yang menjadi pegangan setiap kementerian dan biro dalam bekerja.</p>
+    </div>
+    <div class="profile">
+      <div>
+        <h3>Visi</h3>
+        <p>Menjadi BEM yang progresif, inklusif, dan berintegritas dalam memperjuangkan aspirasi mahasiswa.</p>
+      </div>
+      <div>
+        <h3>Misi</h3>
+        <ul>
+          <li>Menyerap dan menyalurkan aspirasi mahasiswa.</li>
+          <li>Mengembangkan potensi dan karakter mahasiswa.</li>
+          <li>Membangun kolaborasi yang positif di dalam dan luar kampus.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Komitmen</h3>
+        <p>Menjalankan organisasi secara transparan, bertanggung jawab, dan memberi dampak nyata.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-</body>
-</html>
+<!-- ========== PENGURUS ========== -->
+<section id="pengurus" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Kepengurusan</h2>
+      <p>Pimpinan, kementerian, biro, dan pengawas yang menjalankan roda organisasi.</p>
+    </div>
+
+    <div class="leaders">
+      <!-- Untuk foto: ganti isi .portrait dengan <img src="foto-ketua.jpg" alt="Nama Ketua"> -->
+      <article class="leader">
+        <div class="portrait">K</div>
+        <div class="leader-info">
+          <p>Ketua BEM</p>
+          <h3>Nama Ketua</h3>
+        </div>
+      </article>
+      <article class="leader">
+        <div class="portrait">W</div>
+        <div class="leader-info">
+          <p>Wakil Ketua BEM</p>
+          <h3>Nama Wakil Ketua</h3>
+        </div>
+      </article>
+    </div>
+
+    <div class="groups">
+      <div>
+        <h3>Kementerian</h3>
+        <ul>
+          <li>Harmonisasi Kampus</li>
+          <li>Akademik dan Pengembangan Karir</li>
+          <li>Pengembangan Bahasa</li>
+          <li>Hubungan Eksternal</li>
+          <li>Pemuda dan Olahraga</li>
+          <li>Kaderisasi dan Pengembangan SDM</li>
+          <li>Kesejahteraan Mahasiswa</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Biro</h3>
+        <ul>
+          <li>Administrasi</li>
+          <li>Keuangan</li>
+          <li>Desain Komunikasi Visual</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Pengawas</h3>
+        <ul>
+          <li>Inspektorat Jenderal</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Nama pada kartu pimpinan adalah contoh. Ganti dengan data resmi kepengurusan.</p>
+  </div>
+</section>
+
+<!-- ========== PROGRAM ========== -->
+<section id="program">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Program kerja</h2>
+      <p>Fokus utama setiap perangkat BEM selama masa kepengurusan.</p>
+    </div>
+    <div class="rows">
+      <article class="row">
+        <h3>Akademik dan Pengembangan Karir</h3>
+        <div><p>Informasi program akademik, bimbingan belajar, dan persiapan dunia kerja bagi mahasiswa.</p><span class="tag">Segera diumumkan</span></div>
