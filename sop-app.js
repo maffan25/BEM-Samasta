@@ -142,16 +142,58 @@ function renderDoc(s){
   }
 }
 /* ---- rute ---- */
-function setNav(on){document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("active",on&&a.getAttribute("href")==="#sop"));}
+function setNav(k){document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("active",!!k&&a.getAttribute("href")==="#"+k));}
 function resetState(){st.q="";st.role=null;st.grp=null;st.y=0;$("sp-q").value="";chips();}
-function showHome(){if(!app.hidden)resetState();home.hidden=false;app.hidden=true;document.title=TITLE0;if(spy)spy.disconnect();}
+function showHome(){if(!app.hidden)resetState();if(!pdapp.hidden)resetPd();home.hidden=false;app.hidden=true;pdapp.hidden=true;document.title=TITLE0;if(spy)spy.disconnect();}
+/* ---- Buku panduan ---- */
+const PDIR="panduan/";/* folder PDF buku panduan. Nama file: lihat daftar di bawah */
+const PG=[["Pimpinan",[["Presiden","presiden"],["Wakil Presiden","wakil-presiden"],["Sekretaris Jenderal","sekretaris-jenderal"]]],
+["Kementerian",[["Kementerian PSDM","psdm"],["Kementerian Akademik dan Karier","akademik-karier"],["Kementerian Harmonisasi Kampus","harmonisasi-kampus"],["Kementerian Pemuda dan Olahraga","kemenpora"],["Kementerian Hubungan Eksternal","hubeks"],["Kementerian Kesejahteraan Mahasiswa","kesma"],["Kementerian Pengembangan Bahasa","pengembangan-bahasa"]]],
+["Biro",[["Biro Administrasi","biro-administrasi"],["Biro Keuangan","biro-keuangan"],["Biro DKV","biro-dkv"]]],
+["Pengawas",[["Inspektorat Jenderal","inspektorat-jenderal"]]]];
+const BOOKS=[];PG.forEach(g=>g[1].forEach(b=>BOOKS.push({n:b[0],f:b[1],g:g[0],u:PDIR+b[1]+".pdf"})));
+const pdapp=$("pd-app"),pdout=$("pd-out"),pst={q:"",sel:null,av:{},checked:false};
+const bparts=b=>{const m=b.n.match(/^(Kementerian|Biro) (.+)$/);return m?[m[1],m[2]]:[b.g,b.n];};
+function pdChips(){
+  let h='<button type="button" class="chip" data-b="" aria-pressed="'+(!pst.sel)+'">Semua bagian <em>'+BOOKS.length+'</em></button>',cur="";
+  BOOKS.forEach(b=>{if(b.g!==cur){cur=b.g;h+='<span class="sp-gl">'+b.g+'</span>';}
+    h+='<button type="button" class="chip" data-b="'+b.f+'" aria-pressed="'+(pst.sel===b.f)+'">'+esc(bparts(b)[1])+'</button>';});
+  $("pd-chips").innerHTML=h;
+}
+function book(b,i){
+  const p=bparts(b),na=pst.av[b.f]===false;
+  return '<article class="pd-book'+(na?' na':'')+'" style="--i:'+i+'"><div class="pd-cover"><span class="pd-mark"></span><small>BUKU PANDUAN</small><b class="pd-kick">'+esc(p[0])+'</b><h4>'+esc(p[1])+'</h4><i class="pd-foot">BEM STDIIS · Kabinet Samasta</i>'+(na?'<span class="pd-ribbon">Belum ada</span>':'')+'</div>'
+   +'<div class="pd-act"><a class="btn btn-line pd-open" '+(na?'aria-disabled="true"':'href="'+b.u+'" target="_blank" rel="noopener"')+'>Buka</a><a class="btn btn-gold pd-dl" '+(na?'aria-disabled="true"':'href="'+b.u+'" download="Buku Panduan '+esc(b.n)+'.pdf"')+'>Unduh PDF</a></div>'
+   +'<p class="pd-msg" role="status" hidden>Buku panduan ini belum tersedia di server. Pastikan file '+b.u+' sudah diunggah.</p></article>';
+}
+function pdRender(fresh){
+  const w=pst.q.toLowerCase().split(/\s+/).filter(Boolean);
+  const list=BOOKS.filter(b=>(!pst.sel||b.f===pst.sel)&&w.every(x=>(b.n+" "+b.g).toLowerCase().indexOf(x)>=0));
+  let h='<div class="sp-bar"><h2>'+(pst.q?'Hasil untuk “'+esc(pst.q)+'”':pst.sel&&list[0]?esc(list[0].n):'Semua buku panduan')+'</h2><span>'+list.length+' buku</span></div>';
+  if(!list.length)h+='<div class="sp-empty">Tidak ada buku panduan yang cocok.<button type="button" class="link-btn" id="pd-reset">Hapus pencarian dan filter</button></div>';
+  else{let g=null,i=0;list.forEach(b=>{if(b.g!==g){if(g)h+='</div>';g=b.g;h+='<h3 class="sp-gh">'+esc(g)+'</h3><div class="pd-books'+(fresh?' fresh':'')+'">';}h+=book(b,i++);});h+='</div>';}
+  pdout.innerHTML=h;
+}
+function pdCheck(){
+  if(pst.checked||!/^https?:/.test(location.protocol)||!window.fetch)return;pst.checked=true;
+  Promise.all(BOOKS.map(b=>fetch(b.u,{method:"HEAD"}).then(r=>{const ct=r.headers.get("content-type")||"";pst.av[b.f]=r.ok&&ct.indexOf("html")<0;}).catch(()=>{}))).then(()=>{if(!pdapp.hidden)pdRender(false);});
+}
+function resetPd(){pst.q="";pst.sel=null;$("pd-q").value="";pdChips();}
+function openPd(){
+  if(!app.hidden)resetState();
+  app.hidden=true;home.hidden=true;pdapp.hidden=false;setNav("panduan");
+  document.title="Buku Panduan | BEM STDIIS";if(spy)spy.disconnect();
+  pdRender(true);window.scrollTo(0,0);pdCheck();
+}
 let cur=location.hash;
 function route(){
   const h=cur,m=h.match(/^#sop\/(SOP-[A-Z]+-\d{3})$/);
   if(/^#sop(\/|$)/.test(h)){
-    home.hidden=true;app.hidden=false;setNav(true);
+    if(!pdapp.hidden)resetPd();pdapp.hidden=true;home.hidden=true;app.hidden=false;setNav("sop");
     if(m&&BY[m[1]]){lv.hidden=true;dv.hidden=false;renderDoc(BY[m[1]]);window.scrollTo(0,0);}
     else{if(!dv.hidden)document.title=TITLE0;dv.hidden=true;lv.hidden=false;renderList();window.scrollTo(0,st.y||0);}
+  }else if(h==="#panduan"){
+    openPd();
   }else{
     const was=home.hidden;showHome();
     if(was){const el=h.length>1&&document.getElementById(h.slice(1));window.scrollTo(0,0);if(el)el.scrollIntoView();}
@@ -176,15 +218,28 @@ document.addEventListener("click",e=>{
   const a=e.target.closest('a[href^="#"]');if(!a)return;
   const h=a.getAttribute("href");if(h.length<2)return;
   e.preventDefault();
-  if(/^#sop(\/|$)/.test(h)||home.hidden){go(h);return;}
+  if(/^#(sop(\/|$)|panduan$)/.test(h)||home.hidden){go(h);return;}
   const el=document.getElementById(h.slice(1));
   try{history.pushState(null,"",h);}catch(x){}cur=h;
   if(el)el.scrollIntoView({behavior:"smooth"});
+});
+$("pd-chips").addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(!b)return;const v=b.getAttribute("data-b")||null;pst.sel=v===pst.sel?null:v;pdChips();pdRender(false);});
+let tp;$("pd-q").addEventListener("input",e=>{clearTimeout(tp);const v=e.target.value;tp=setTimeout(()=>{pst.q=v.trim();pdRender(false);},120);});
+pdout.addEventListener("click",e=>{
+  if(e.target.id==="pd-reset"){resetPd();pdRender(false);return;}
+  const a=e.target.closest(".pd-dl");if(!a||a.getAttribute("aria-disabled"))return;
+  e.preventDefault();
+  const u=a.getAttribute("href"),msg=a.closest(".pd-book").querySelector(".pd-msg");
+  const run=()=>{const l=document.createElement("a");l.href=u;l.download=a.getAttribute("download");document.body.appendChild(l);l.click();l.remove();};
+  msg.hidden=true;
+  if(!window.fetch){run();return;}
+  fetch(u,{method:"HEAD"}).then(r=>{if(r.ok)run();else msg.hidden=false;}).catch(run);
 });
 $("sp-roles").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(!b)return;st.role=b.getAttribute("data-role")===st.role?null:(b.getAttribute("data-role")||null);chips();renderList();});
 $("sp-grps").addEventListener("click",e=>{const b=e.target.closest("[data-grp]");if(!b)return;const v=+b.getAttribute("data-grp")||null;st.grp=v===st.grp?null:v;chips();renderList();});
 out.addEventListener("click",e=>{if(e.target.id==="sp-reset"){st.q="";st.role=null;st.grp=null;$("sp-q").value="";chips();renderList();}});
 let tm;$("sp-q").addEventListener("input",e=>{clearTimeout(tm);const v=e.target.value;tm=setTimeout(()=>{st.q=v.trim();renderList();},120);});
 const tn=$("sp-teaser-n");if(tn)tn.textContent=DATA.length;
-chips();route();
+const pc=$("pd-count");if(pc)pc.textContent=BOOKS.length;
+chips();pdChips();route();
 })();
