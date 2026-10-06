@@ -125,7 +125,7 @@ function renderDoc(s){
   const mm=s.m||{};
   const idx=DATA.filter(x=>x.gk===s.gk),p=idx[idx.indexOf(s)-1],n=idx[idx.indexOf(s)+1];
   const toc=a=>a.map(c=>'<a href="#sop/'+s.c+'" data-t="'+sid(c)+'"><b>'+(c.p==="C"?"C"+c.n:c.n)+'</b><span>'+esc(c.t)+'</span></a>').join("");
-  let h='<a class="sp-back" href="#sop" id="sp-bk">‹ Semua SOP</a><header class="sp-dh"><span class="sp-code">'+esc(s.c)+'</span><h2>'+esc(s.t)+'</h2><div class="sp-meta"><span><b>Pemilik</b> '+fmt(s.o)+'</span><span><b>Revisi</b> '+esc(s.r)+'</span><span><b>Status</b> '+esc(s.st.replace(/\.$/,""))+'</span><span><b>Kelompok</b> '+(s.gk<10?"0":"")+s.gk+' · '+esc(GNAME[s.gk])+'</span></div>'+'</header>';
+  let h='<a class="sp-back" href="#sop" id="sp-bk">‹ Semua SOP</a><header class="sp-dh"><span class="sp-code">'+esc(s.c)+'</span><h2>'+esc(s.t)+'</h2><div class="sp-meta"><span><b>Pemilik</b> '+fmt(s.o)+'</span><span><b>Revisi</b> '+esc(s.r)+'</span><span><b>Status</b> '+esc(s.st.replace(/\.$/,""))+'</span><span><b>Kelompok</b> '+(s.gk<10?"0":"")+s.gk+' · '+esc(GNAME[s.gk])+'</span></div><a class="btn btn-gold sp-dl" href="sop/'+s.c+'.pdf" download="'+esc(s.c+" "+s.t)+'.pdf"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M4 20h16"/></svg>Unduh PDF</a><p class="sp-dlmsg" role="status" hidden>File PDF untuk SOP ini belum tersedia di server. Pastikan file sop/'+s.c+'.pdf sudah diunggah.</p></header>';
   h+='<div class="sp-layout"><nav class="sp-toc" aria-label="Isi dokumen"><h4>Isi utama</h4>'+toc(B.filter(c=>c.t!=="Tujuan"||true))+'<h4>Lampiran</h4>'+toc(C)+'</nav><article>';
   h+=body.filter(c=>c.p==="B"||c.p==="C").map(c=>'<section class="sp-sec" id="'+sid(c)+'"><h3><b>'+(c.p==="C"?"C"+c.n:c.n)+'</b>'+esc(c.t)+'</h3>'+c.c.map(b=>block(b,SEC_CLS[c.t])).join("")+'</section>').join("");
   const ids=[["Penyusun",mm.Penyusun],["Pemeriksa",mm.Pemeriksa],["Pengesah",mm.Pengesah],["Tanggal berlaku",mm["Tanggal berlaku"]]].filter(x=>x[1]);
@@ -165,6 +165,12 @@ document.addEventListener("click",e=>{
   const ti=e.target.closest(".ticker-item");if(ti&&home.hidden){history.replaceState(null,"","#kalender");showHome();}
 });
 document.addEventListener("click",e=>{
+  const dl=e.target.closest(".sp-dl");
+  if(dl){e.preventDefault();const u=dl.getAttribute("href"),msg=dl.parentNode.querySelector(".sp-dlmsg");
+    const run=()=>{const a=document.createElement("a");a.href=u;a.download=dl.getAttribute("download");document.body.appendChild(a);a.click();a.remove();};
+    msg.hidden=true;
+    fetch(u,{method:"HEAD"}).then(r=>{if(r.ok)run();else msg.hidden=false;}).catch(run);
+    return;}
   if(e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey)return;
   const a=e.target.closest('a[href^="#"]');if(!a)return;
   const h=a.getAttribute("href");if(h.length<2)return;
