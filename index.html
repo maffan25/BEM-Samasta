@@ -354,7 +354,15 @@ html[data-dir=up]{--rvy:-30px}
 .site-header{transition:box-shadow .3s,background .3s}
 .site-header.scrolled{box-shadow:0 10px 26px -14px rgba(13,42,56,.38)}
 .brand-mark{transition:transform .35s var(--ease)}.site-header.scrolled .brand-mark{transform:scale(.86)}
-.arch-logo{translate:0 var(--py,0px)}
+.arch-logo.thump{animation:logothump .95s cubic-bezier(.2,.9,.3,1.15) backwards,logoglow 2.1s ease-out backwards}
+@keyframes logothump{0%{transform:scale(1.32) translateY(-26px) rotate(-2deg)}34%{transform:scale(.86) translateY(5px) rotate(.8deg)}52%{transform:scale(1.07) rotate(-.4deg)}70%{transform:scale(.975)}86%{transform:scale(1.015)}100%{transform:scale(1)}}
+@keyframes logoglow{
+ 0%{box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 18px 40px rgba(13,42,56,.35),0 0 0 0 rgba(255,255,255,0),0 0 0 0 rgba(255,244,190,0)}
+ 30%{box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 18px 40px rgba(13,42,56,.35),0 0 80px 34px rgba(255,255,255,.95),0 0 170px 70px rgba(255,246,200,.75)}
+ 100%{box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 18px 40px rgba(13,42,56,.35),0 0 60px 10px rgba(255,255,255,0),0 0 120px 30px rgba(255,244,190,0)}}
+.arch-title,.arch-sub{position:relative;z-index:1}
+.arch.thump{animation:archglow 2.1s ease-out backwards}
+@keyframes archglow{0%{filter:drop-shadow(0 0 0 rgba(var(--glow),0))}28%{filter:drop-shadow(0 0 48px rgba(var(--glow),1)) drop-shadow(0 0 110px rgba(var(--glow),.7))}100%{filter:drop-shadow(0 0 0 rgba(var(--glow),0))}}
 .nav a:hover{transform:translateY(-1px)}
 @keyframes navin{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
 @media (max-width:760px){.nav.open a{animation:navin .38s var(--ease) backwards}.nav.open a:nth-child(2){animation-delay:.04s}.nav.open a:nth-child(3){animation-delay:.08s}.nav.open a:nth-child(4){animation-delay:.12s}.nav.open a:nth-child(5){animation-delay:.16s}.nav.open a:nth-child(6){animation-delay:.2s}}
@@ -648,6 +656,7 @@ html[data-dir=up]{--rvy:-30px}
   </div>
 </footer>
 
+<script src="events.js"></script>
 <script>
   document.getElementById("tahun").textContent = new Date().getFullYear();
 
@@ -677,14 +686,8 @@ html[data-dir=up]{--rvy:-30px}
     links.forEach(function (a) { var s = document.querySelector(a.getAttribute("href")); if (s) io.observe(s); });
   }
 
-  // ============================================================
-  //  DATA KEGIATAN: edit bagian ini saja.
-  //  Format tanggal: "TAHUN-BULAN-HARI". "end" opsional untuk kegiatan beberapa hari.
-  //  Kalender, teks berjalan, dan statistik otomatis memakai data ini.
-  // ============================================================
-  var EVENTS = [
-    { date: "2026-10-09", title: "Rapat Evaluasi, Peresmian, dan Pembahasan Proker serta Sosialisasi SOP", cat: "Internal", time: "", place: "", desc: "Rapat evaluasi, peresmian, pembahasan program kerja, dan sosialisasi SOP Kabinet Samasta." }
-  ];
+  // DATA KEGIATAN dibaca dari events.js (diedit lewat admin-kalender.html)
+  var EVENTS = window.EVENTS || [];
 
   var MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
   var DOW = ["Sen","Sel","Rab","Kam","Jum","Sab","Min"];
@@ -825,19 +828,29 @@ html[data-dir=up]{--rvy:-30px}
 (function(){
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var root = document.documentElement, bar = document.getElementById("progress"),
-      hd = document.querySelector(".site-header"), arch = document.querySelector(".arch-logo");
+      hd = document.querySelector(".site-header"), hero = document.querySelector(".arch"), logo = document.querySelector(".arch-logo");
   var last = window.pageYOffset, busy = false;
   function frame(){
     var y = window.pageYOffset, max = root.scrollHeight - window.innerHeight;
     if (Math.abs(y - last) > 4) { root.setAttribute("data-dir", y > last ? "down" : "up"); last = y; }
     if (bar) bar.style.setProperty("--p", max > 0 ? Math.min(1, y / max) : 0);
     if (hd) hd.classList.toggle("scrolled", y > 8);
-    if (arch && !reduce) arch.style.setProperty("--py", Math.min(y, 700) * 0.06 + "px");
     busy = false;
   }
   window.addEventListener("scroll", function(){ if (!busy) { busy = true; requestAnimationFrame(frame); } }, {passive:true});
   frame();
   if (reduce || !("IntersectionObserver" in window)) return;
+  /* Logo: hentakan lalu cahaya di belakangnya setiap kali hero terlihat (saat dibuka, atau digulir kembali ke atas) */
+  if (hero && logo) {
+    var first = true;
+    function slam(){ logo.classList.remove("thump"); hero.classList.remove("thump"); void logo.offsetWidth; logo.classList.add("thump"); hero.classList.add("thump"); }
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (e.isIntersecting) { if (first) { first = false; setTimeout(slam, 750); } else slam(); }
+        else { logo.classList.remove("thump"); hero.classList.remove("thump"); }
+      });
+    }, {threshold: 0.4}).observe(hero);
+  }
   var th = []; for (var i = 0; i <= 20; i++) th.push(i / 20);
   var io = new IntersectionObserver(function(es){
     es.forEach(function(e){
