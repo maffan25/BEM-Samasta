@@ -161,6 +161,33 @@
       .catch(function () { clearTimeout(to_); done(); say("Pesan belum terkirim. Periksa koneksimu lalu coba lagi.", "err"); });
   });
 
+  /* ---------- Navigasi halaman: mandiri, tetap jalan walau sop-app.js belum diperbarui ---------- */
+  var page = document.getElementById("asp-app"), home = document.getElementById("home"),
+      others = [document.getElementById("pd-app"), document.getElementById("sop-app")], title0 = document.title;
+  function syncPage() {
+    var on = location.hash === "#aspirasi";
+    if (on) {
+      var fresh = page.hidden;
+      home.hidden = true; others.forEach(function (n) { if (n) n.hidden = true; }); page.hidden = false;
+      document.title = "Pujian dan Kritik | BEM STDIIS"; if (fresh) window.scrollTo(0, 0);
+    } else if (!page.hidden) { page.hidden = true; document.title = title0; }
+    [].forEach.call(document.querySelectorAll(".nav a"), function (a) {
+      if (on) a.classList.toggle("active", a.getAttribute("href") === "#aspirasi");
+      else if (a.getAttribute("href") === "#aspirasi") a.classList.remove("active");
+    });
+  }
+  document.addEventListener("click", function (e) {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var a = e.target.closest('a[href="#aspirasi"]'); if (!a) return;
+    e.preventDefault();
+    if (location.hash !== "#aspirasi") { try { history.pushState(null, "", "#aspirasi"); } catch (x) { location.hash = "#aspirasi"; } }
+    syncPage();
+  }, true);
+  document.addEventListener("click", function (e) { if (e.target.closest('a[href^="#"]')) setTimeout(syncPage, 0); });
+  window.addEventListener("hashchange", syncPage);
+  window.addEventListener("popstate", syncPage);
+  syncPage();
+
   render(); refreshTarget();
 
 })();

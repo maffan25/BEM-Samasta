@@ -1,0 +1,49 @@
+MENYAMBUNGKAN FORM PUJIAN & KRITIK KE GOOGLE SPREADSHEETS
+=========================================================
+
+File yang terlibat:
+  aspirasi-config.js       TEMPAT MENEMPEL URL (satu-satunya file yang kamu isi)
+  aspirasi.js              logika form di website (sudah jadi, tidak perlu diubah)
+  apps-script-aspirasi.gs  kode yang ditempel di Google Sheets
+
+LANGKAH
+1. Buat Google Sheet baru (nama bebas, misal "Aspirasi BEM STDIIS").
+2. Di Sheet itu: menu Ekstensi > Apps Script.
+3. Hapus kode bawaan, lalu tempel seluruh isi apps-script-aspirasi.gs. Klik ikon simpan.
+4. Ikon gigi (Setelan project) > Zona waktu: pilih (GMT+07:00) Jakarta.
+5. Klik Terapkan > Deployment baru > ikon gigi > pilih "Aplikasi web", isi:
+     Jalankan sebagai : Saya
+     Yang memiliki akses : Siapa saja
+   Klik Terapkan, lalu Izinkan akses. Bila muncul peringatan "Google belum memverifikasi
+   aplikasi ini", pilih Lanjutan > Buka (aman, ini skrip milikmu sendiri).
+6. Salin "URL aplikasi web" (berakhiran /exec).
+7. Buka aspirasi-config.js, tempel URL di antara tanda kutip lurus ("):
+     window.ASPIRASI_ENDPOINT = "https://script.google.com/macros/s/.../exec";
+   Sunting dengan editor teks biasa atau editor GitHub, JANGAN dengan WPS/Word
+   (bisa mengubah tanda kutip dan merusak file).
+8. Unggah SEMUA file hasil zip ke GitHub (index.html, sop-app.js, aspirasi.js,
+   aspirasi-config.js). Setelah itu buka website lalu muat ulang paksa
+   (Ctrl+Shift+R, atau di HP: hapus cache browser) agar versi lama tidak terpakai.
+9. Tes: kirim satu pesan dari website. Tab baru bernama "Aspirasi" akan dibuat otomatis,
+   berisi kolom Waktu, Jenis, Bagian, Penerima, Pesan.
+
+CATATAN PENTING
+- "Siapa saja" hanya berlaku untuk URL penerima pesan. Spreadsheet-nya tetap privat
+  dan hanya bisa dibuka akun yang kamu beri akses. Jangan bagikan link Sheet secara luas.
+- Anonim: yang tersimpan hanya waktu, jenis, bagian, penerima, dan isi pesan.
+  Tidak ada nama, email, akun, atau IP pengirim.
+- Bila suatu hari kode .gs diubah: Terapkan > Kelola deployment > ikon pensil >
+  Versi: Versi baru > Terapkan. URL tetap sama.
+- Tes cepat endpoint: buka URL /exec di browser, harus muncul {"ok":true,...}.
+- Jeda 20 detik antar kiriman dan batas 10 sampai 1000 karakter bisa diubah di bagian
+  CONFIG pada aspirasi.js (dan MIN_LEN / MAX_LEN di file .gs).
+- Daftar bagian dan nama di form dibaca otomatis dari bagian Kepengurusan di index.html,
+  jadi bila ada nama yang diganti di sana, form ikut berubah.
+
+KODE PESAN GAGAL DI WEBSITE
+- C0 : aspirasi-config.js tidak terbaca (belum diunggah atau isinya rusak).
+- C1 : URL di aspirasi-config.js masih kosong.
+- C2 : URL salah format. Harus diawali https://script.google.com/macros/s/ dan diakhiri /exec.
+- Pesan "terkirim" tetapi baris tidak muncul di Sheet: cek Deployment harus
+  "Jalankan sebagai: Saya" dan "Yang memiliki akses: Siapa saja", lalu buka URL /exec
+  di browser, harus tampil {"ok":true,...}. Kalau meminta login Google, pengaturan akses salah.

@@ -8,6 +8,7 @@ const BY={};DATA.forEach((s,i)=>{BY[s.c]=s;s.i=i;});
 const gk=s=>{const n=GORD.indexOf(pre(s.c));return n<12?n+1:13;};
 const GNAME={};DATA.forEach(s=>{const k=gk(s);if(k<13)GNAME[k]=s.g;});GNAME[13]="SOP Khusus Unit";
 const $=id=>document.getElementById(id);
+const aspapp=$("asp-app");
 const esc=t=>String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ABBR={Sekjen:"Sekretaris Jenderal",Irjen:"Inspektur / Inspektorat Jenderal",Wapres:"Wakil Presiden",Kabiro:"Kepala Biro"};
 function fmt(t){
@@ -144,7 +145,7 @@ function renderDoc(s){
 /* ---- rute ---- */
 function setNav(k){document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("active",!!k&&a.getAttribute("href")==="#"+k));}
 function resetState(){st.q="";st.role=null;st.grp=null;st.y=0;$("sp-q").value="";chips();}
-function showHome(){if(!app.hidden)resetState();if(!pdapp.hidden)resetPd();home.hidden=false;app.hidden=true;pdapp.hidden=true;document.title=TITLE0;if(spy)spy.disconnect();}
+function showHome(){if(!app.hidden)resetState();if(!pdapp.hidden)resetPd();home.hidden=false;app.hidden=true;pdapp.hidden=true;aspapp.hidden=true;document.title=TITLE0;if(spy)spy.disconnect();}
 /* ---- Buku panduan ---- */
 const PDIR="panduan/";/* folder PDF buku panduan. Nama file: lihat daftar di bawah */
 const PG=[["Pimpinan",[["Presiden","presiden"],["Wakil Presiden","wakil-presiden"],["Sekretaris Jenderal","sekretaris-jenderal"]]],
@@ -181,7 +182,7 @@ function pdCheck(){
 function resetPd(){pst.q="";pst.sel=null;$("pd-q").value="";pdChips();}
 function openPd(){
   if(!app.hidden)resetState();
-  app.hidden=true;home.hidden=true;pdapp.hidden=false;setNav("panduan");
+  app.hidden=true;aspapp.hidden=true;home.hidden=true;pdapp.hidden=false;setNav("panduan");
   document.title="Buku Panduan | BEM STDIIS";if(spy)spy.disconnect();
   pdRender(true);window.scrollTo(0,0);pdCheck();
 }
@@ -189,11 +190,15 @@ let cur=location.hash;
 function route(){
   const h=cur,m=h.match(/^#sop\/(SOP-[A-Z]+-\d{3})$/);
   if(/^#sop(\/|$)/.test(h)){
-    if(!pdapp.hidden)resetPd();pdapp.hidden=true;home.hidden=true;app.hidden=false;setNav("sop");
+    if(!pdapp.hidden)resetPd();pdapp.hidden=true;aspapp.hidden=true;home.hidden=true;app.hidden=false;setNav("sop");
     if(m&&BY[m[1]]){lv.hidden=true;dv.hidden=false;renderDoc(BY[m[1]]);window.scrollTo(0,0);}
     else{if(!dv.hidden)document.title=TITLE0;dv.hidden=true;lv.hidden=false;renderList();window.scrollTo(0,st.y||0);}
   }else if(h==="#panduan"){
     openPd();
+  }else if(h==="#aspirasi"){
+    if(!pdapp.hidden)resetPd();if(!app.hidden)resetState();
+    app.hidden=true;pdapp.hidden=true;home.hidden=true;aspapp.hidden=false;setNav("aspirasi");
+    document.title="Pujian dan Kritik | BEM STDIIS";if(spy)spy.disconnect();window.scrollTo(0,0);
   }else{
     const was=home.hidden;showHome();
     if(was){const el=h.length>1&&document.getElementById(h.slice(1));window.scrollTo(0,0);if(el)el.scrollIntoView();}
@@ -218,7 +223,7 @@ document.addEventListener("click",e=>{
   const a=e.target.closest('a[href^="#"]');if(!a)return;
   const h=a.getAttribute("href");if(h.length<2)return;
   e.preventDefault();
-  if(/^#(sop(\/|$)|panduan$)/.test(h)||home.hidden){go(h);return;}
+  if(/^#(sop(\/|$)|panduan$|aspirasi$)/.test(h)||home.hidden){go(h);return;}
   const el=document.getElementById(h.slice(1));
   try{history.pushState(null,"",h);}catch(x){}cur=h;
   if(el)el.scrollIntoView({behavior:"smooth"});
