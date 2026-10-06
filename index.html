@@ -329,10 +329,44 @@ abbr{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}.sp-
   *,*::before,*::after{animation:none!important;transition:none!important}
   .ticker-view{overflow-x:auto}
 }
+
+/* ===== Buku panduan ===== */
+.pd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:8px}
+.pd-card{display:flex;flex-direction:column;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);transition:border-color .2s,transform .25s var(--ease)}
+.pd-card:hover{border-color:var(--ink);transform:translateY(-3px)}
+.pd-top{display:flex;gap:14px;align-items:center}
+.pd-ic{flex:none;width:48px;height:48px;border-radius:14px;background:var(--gold);color:var(--ink);display:grid;place-items:center}
+.pd-card small{display:block;font-size:12.5px;color:var(--muted);font-weight:600}
+.pd-card h4{font-family:var(--serif);font-size:19px;line-height:1.25}
+.pd-dl{margin-top:auto;align-self:flex-start;padding:10px 20px;font-size:14.5px;gap:8px}
+.pd-msg{font-size:13.5px;color:var(--bronze);line-height:1.5}
+/* ===== Animasi scroll ===== */
+:root{--rvy:30px}
+html[data-dir=up]{--rvy:-30px}
+.rv{opacity:0}
+.rv.in{animation:rv .75s var(--ease) both;animation-delay:var(--d,0s)}
+.rv-z.in{animation-name:rvz}.rv-l.in{animation-name:rvl}.rv-r.in{animation-name:rvr}
+@keyframes rv{from{opacity:0;translate:0 var(--rvy)}to{opacity:1;translate:0 0}}
+@keyframes rvz{from{opacity:0;scale:.92;translate:0 calc(var(--rvy)*.6)}to{opacity:1;scale:1;translate:0 0}}
+@keyframes rvl{from{opacity:0;translate:-38px 0}to{opacity:1;translate:0 0}}
+@keyframes rvr{from{opacity:0;translate:38px 0}to{opacity:1;translate:0 0}}
+.sp-progress{position:fixed;left:0;top:0;height:3px;width:100%;z-index:100;transform-origin:0 50%;transform:scaleX(var(--p,0));background:linear-gradient(90deg,var(--gold),var(--bronze));pointer-events:none}
+.site-header{transition:box-shadow .3s,background .3s}
+.site-header.scrolled{box-shadow:0 10px 26px -14px rgba(13,42,56,.38)}
+.brand-mark{transition:transform .35s var(--ease)}.site-header.scrolled .brand-mark{transform:scale(.86)}
+.arch-logo{translate:0 var(--py,0px)}
+.nav a:hover{transform:translateY(-1px)}
+@keyframes navin{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
+@media (max-width:760px){.nav.open a{animation:navin .38s var(--ease) backwards}.nav.open a:nth-child(2){animation-delay:.04s}.nav.open a:nth-child(3){animation-delay:.08s}.nav.open a:nth-child(4){animation-delay:.12s}.nav.open a:nth-child(5){animation-delay:.16s}.nav.open a:nth-child(6){animation-delay:.2s}}
+@keyframes viewin{from{opacity:0;translate:0 14px}}
+#sp-listview:not([hidden]),#sp-docview:not([hidden]){animation:viewin .45s var(--ease) backwards}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1!important}.sp-progress{display:none}}
+@media print{.rv{opacity:1!important}.sp-progress{display:none}}
 </style>
 </head>
 
 <body>
+<div class="sp-progress" id="progress" aria-hidden="true"></div>
 <a class="skip" href="#profil">Lewati ke konten</a>
 
 <header class="site-header">
@@ -347,6 +381,7 @@ abbr{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}.sp-
       <a href="#pengurus">Pengurus</a>
       <a href="#program">Program</a>
       <a href="#sop">SOP</a>
+      <a href="#panduan">Panduan</a>
       <a href="#kalender">Kalender</a>
     </nav>
   </div>
@@ -484,8 +519,18 @@ abbr{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}.sp-
   </div>
 </section>
 
+<section id="panduan">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Buku panduan</h2>
+      <p>Pegangan kerja untuk setiap bagian. Pilih bagianmu, lalu unduh dalam format PDF.</p>
+    </div>
+    <div id="pd-root"></div>
+  </div>
+</section>
+
 <!-- ========== KALENDER ========== -->
-<section id="kalender">
+<section id="kalender" class="alt">
   <div class="wrap">
     <div class="sec-head">
       <h2>Kalender kegiatan</h2>
@@ -732,6 +777,80 @@ abbr{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}.sp-
   })();
 
   renderCal(); renderPanel();
+</script>
+<script>
+/* ===== Buku panduan: edit daftar ini bila ada bagian baru. Format: [nama tampil, nama-file-tanpa-.pdf] ===== */
+(function(){
+  var DIR = "panduan/";
+  var GROUPS = [
+    ["Pimpinan", [["Presiden","presiden"],["Wakil Presiden","wakil-presiden"],["Sekretaris Jenderal","sekretaris-jenderal"]]],
+    ["Kementerian", [["Kementerian PSDM","psdm"],["Kementerian Akademik dan Karier","akademik-karier"],["Kementerian Harmonisasi Kampus","harmonisasi-kampus"],["Kementerian Pemuda dan Olahraga","kemenpora"],["Kementerian Hubungan Eksternal","hubeks"],["Kementerian Kesejahteraan Mahasiswa","kesma"],["Kementerian Pengembangan Bahasa","pengembangan-bahasa"]]],
+    ["Biro", [["Biro Administrasi","biro-administrasi"],["Biro Keuangan","biro-keuangan"],["Biro DKV","biro-dkv"]]],
+    ["Pengawas", [["Inspektorat Jenderal","inspektorat-jenderal"]]]
+  ];
+  var ICON = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5V5.5M9 8h6"/></svg>';
+  var DL = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg>';
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  var root = document.getElementById("pd-root"); if (!root) return;
+  root.innerHTML = GROUPS.map(function(g){
+    return '<h3 class="org-title">'+esc(g[0])+'</h3><div class="pd-grid">'+g[1].map(function(b){
+      var f = DIR+b[1]+".pdf";
+      return '<article class="pd-card"><div class="pd-top"><span class="pd-ic">'+ICON+'</span><div><small>Buku panduan</small><h4>'+esc(b[0])+'</h4></div></div>'
+        +'<a class="btn btn-gold pd-dl" href="'+f+'" download="Buku Panduan '+esc(b[0])+'.pdf">'+DL+'Unduh PDF</a>'
+        +'<p class="pd-msg" role="status" hidden>Buku panduan ini belum tersedia di server. Pastikan file '+f+' sudah diunggah.</p></article>';
+    }).join("")+'</div>';
+  }).join("");
+  root.addEventListener("click", function(e){
+    var a = e.target.closest(".pd-dl"); if (!a) return;
+    e.preventDefault();
+    var u = a.getAttribute("href"), msg = a.parentNode.querySelector(".pd-msg");
+    function run(){var l=document.createElement("a");l.href=u;l.download=a.getAttribute("download");document.body.appendChild(l);l.click();l.remove();}
+    msg.hidden = true;
+    if (!window.fetch) { run(); return; }
+    fetch(u,{method:"HEAD"}).then(function(r){ if (r.ok) run(); else msg.hidden = false; }).catch(run);
+  });
+})();
+/* ===== Animasi scroll: muncul dinamis saat digulir ke bawah maupun ke atas ===== */
+(function(){
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement, bar = document.getElementById("progress"),
+      hd = document.querySelector(".site-header"), arch = document.querySelector(".arch-logo");
+  var last = window.pageYOffset, busy = false;
+  function frame(){
+    var y = window.pageYOffset, max = root.scrollHeight - window.innerHeight;
+    if (Math.abs(y - last) > 4) { root.setAttribute("data-dir", y > last ? "down" : "up"); last = y; }
+    if (bar) bar.style.setProperty("--p", max > 0 ? Math.min(1, y / max) : 0);
+    if (hd) hd.classList.toggle("scrolled", y > 8);
+    if (arch && !reduce) arch.style.setProperty("--py", Math.min(y, 700) * 0.06 + "px");
+    busy = false;
+  }
+  window.addEventListener("scroll", function(){ if (!busy) { busy = true; requestAnimationFrame(frame); } }, {passive:true});
+  frame();
+  if (reduce || !("IntersectionObserver" in window)) return;
+  var th = []; for (var i = 0; i <= 20; i++) th.push(i / 20);
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      var el = e.target;
+      if (!e.isIntersecting) { el.classList.remove("in"); return; }
+      if (e.intersectionRect.height >= Math.min(60, e.boundingClientRect.height * 0.5)) el.classList.add("in");
+    });
+  }, {threshold: th});
+  function rv(nodes, cls){
+    var cnt = new Map();
+    [].forEach.call(nodes, function(el){
+      if (el.classList.contains("rv")) return;
+      var p = el.parentNode, n = cnt.get(p) || 0; cnt.set(p, n + 1);
+      el.classList.add("rv"); if (cls) el.classList.add(cls);
+      el.style.setProperty("--d", (n % 6) * 0.08 + "s");
+      io.observe(el);
+    });
+  }
+  window.__rv = rv;
+  rv(document.querySelectorAll("#home .sec-head,#home .org-title,#home .unit,#home .soon,#home .cal-wrap>*"));
+  rv(document.querySelectorAll("#home .vm>div:first-child"), "rv-l");
+  rv(document.querySelectorAll("#home .vm>div:last-child"), "rv-r");
+  rv(document.querySelectorAll("#home .leader,#home .stats li,#home .pd-card"), "rv-z");
+})();
 </script>
 <script src="sop-data.js"></script>
 <script src="sop-app.js"></script>

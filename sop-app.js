@@ -132,6 +132,7 @@ function renderDoc(s){
   h+='<section class="sp-sec"><h3><b>A</b>Identitas dokumen</h3><div class="sp-tw"><table><tbody>'+ids.map(x=>'<tr><td>'+x[0]+'</td><td>'+fmt(x[1])+'</td></tr>').join("")+'<tr><td>Halaman di PDF induk</td><td>'+s.pg[0]+' sampai '+s.pg[1]+'</td></tr></tbody></table></div></section>';
   h+='<div class="sp-pn">'+(p?'<a href="#sop/'+p.c+'"><small>‹ Sebelumnya</small><b>'+esc(p.c)+' '+esc(p.t)+'</b></a>':'<span></span>')+(n?'<a href="#sop/'+n.c+'"><small>Berikutnya ›</small><b>'+esc(n.c)+' '+esc(n.t)+'</b></a>':'<span></span>')+'</div></article></div>';
   $("sp-doc").innerHTML=h;
+  if(window.__rv)window.__rv(document.querySelectorAll("#sp-doc .sp-dh,#sp-doc .sp-sec,#sp-doc .sp-pn"));
   document.title=s.c+" · "+s.t+" | BEM STDIIS";
   if(spy)spy.disconnect();
   if("IntersectionObserver"in window){
