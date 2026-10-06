@@ -93,8 +93,13 @@ h1{font-family:var(--serif);font-weight:600;font-size:clamp(38px,5.6vw,66px);lin
 .btn-line:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 18px -4px rgba(var(--glow),.55)}
 .arch{position:relative;background:linear-gradient(165deg,#fde37a 0%,#f8d24a 55%,#f1c332 100%);color:var(--ink);border-radius:var(--arch);aspect-ratio:5/6;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding:0 28px 40px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)}
 .arch::before{content:"";position:absolute;inset:16px 16px 0;border:1.5px solid rgba(13,42,56,.3);border-bottom:0;border-radius:var(--arch);pointer-events:none}
-.arch-logo{width:62%;aspect-ratio:1;border-radius:26%;background:var(--logo) center/cover,var(--gold);box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 18px 40px rgba(13,42,56,.35);margin-bottom:28px;transition:transform .5s var(--ease),box-shadow .5s}
-.arch:hover .arch-logo{transform:translateY(-4px) scale(1.02);box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 0 46px 6px rgba(var(--glow),.55),0 18px 40px rgba(13,42,56,.35)}
+.logo-stage{position:relative;width:62%;aspect-ratio:1;margin-bottom:28px}
+.arch-logo{position:relative;z-index:1;width:100%;height:100%;border-radius:26%;background:var(--logo) center/cover,var(--gold);box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 18px 40px rgba(13,42,56,.35)}
+/* Cahaya dari belakang logo: hanya memudar masuk, tanpa gerakan */
+.logo-glow{position:absolute;inset:-32%;z-index:0;pointer-events:none;border-radius:50%;opacity:0;transition:opacity 1.8s ease;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.96) 0%,rgba(255,249,214,.82) 24%,rgba(var(--glow),.5) 44%,rgba(var(--glow),.16) 58%,rgba(var(--glow),0) 70%)}
+.arch.glow-on .logo-glow{opacity:1;animation:glowbreath 6s ease-in-out 1.8s infinite alternate}
+@keyframes glowbreath{from{opacity:1}to{opacity:.7}}
 .arch-title{font-family:var(--serif);font-weight:700;font-size:clamp(34px,4.4vw,52px);line-height:1;letter-spacing:-.02em}
 .arch-sub{font-size:13px;font-weight:600;margin-top:8px;color:var(--bronze)}
 .hero-grid>*{animation:rise .9s var(--ease) both}
@@ -354,15 +359,7 @@ html[data-dir=up]{--rvy:-30px}
 .site-header{transition:box-shadow .3s,background .3s}
 .site-header.scrolled{box-shadow:0 10px 26px -14px rgba(13,42,56,.38)}
 .brand-mark{transition:transform .35s var(--ease)}.site-header.scrolled .brand-mark{transform:scale(.86)}
-.arch-logo.thump{animation:logothump .95s cubic-bezier(.2,.9,.3,1.15) backwards,logoglow 2.1s ease-out backwards}
-@keyframes logothump{0%{transform:scale(1.32) translateY(-26px) rotate(-2deg)}34%{transform:scale(.86) translateY(5px) rotate(.8deg)}52%{transform:scale(1.07) rotate(-.4deg)}70%{transform:scale(.975)}86%{transform:scale(1.015)}100%{transform:scale(1)}}
-@keyframes logoglow{
- 0%{box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 18px 40px rgba(13,42,56,.35),0 0 0 0 rgba(255,255,255,0),0 0 0 0 rgba(255,244,190,0)}
- 30%{box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 18px 40px rgba(13,42,56,.35),0 0 80px 34px rgba(255,255,255,.95),0 0 170px 70px rgba(255,246,200,.75)}
- 100%{box-shadow:0 0 0 6px var(--paper),0 0 0 7.5px var(--champagne),0 18px 40px rgba(13,42,56,.35),0 0 60px 10px rgba(255,255,255,0),0 0 120px 30px rgba(255,244,190,0)}}
 .arch-title,.arch-sub{position:relative;z-index:1}
-.arch.thump{animation:archglow 2.1s ease-out backwards}
-@keyframes archglow{0%{filter:drop-shadow(0 0 0 rgba(var(--glow),0))}28%{filter:drop-shadow(0 0 48px rgba(var(--glow),1)) drop-shadow(0 0 110px rgba(var(--glow),.7))}100%{filter:drop-shadow(0 0 0 rgba(var(--glow),0))}}
 .nav a:hover{transform:translateY(-1px)}
 @keyframes navin{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
 @media (max-width:760px){.nav.open a{animation:navin .38s var(--ease) backwards}.nav.open a:nth-child(2){animation-delay:.04s}.nav.open a:nth-child(3){animation-delay:.08s}.nav.open a:nth-child(4){animation-delay:.12s}.nav.open a:nth-child(5){animation-delay:.16s}.nav.open a:nth-child(6){animation-delay:.2s}}
@@ -395,6 +392,51 @@ html[data-dir=up]{--rvy:-30px}
 .pd-books.fresh .pd-book{animation:viewin .55s var(--ease) backwards;animation-delay:calc(var(--i)*45ms)}
 @media (max-width:560px){.pd-books{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}.pd-cover{padding:18px 12px 14px 22px}.pd-cover::before{inset:8px 8px 8px 16px}.pd-act{flex-direction:column}.pd-teaser{padding:22px}.pd-teaser .pd-cover{width:180px}}
 @media print{#pd-app{display:none!important}}
+
+/* ===== Pujian dan kritik ===== */
+.asp-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.92fr);gap:28px;align-items:start}
+.asp-pick{display:flex;flex-direction:column;gap:30px;min-width:0}
+.asp-g h3{font:700 15px var(--sans);color:var(--indigo);padding-bottom:10px;border-bottom:1.5px solid var(--ink);margin-bottom:14px}
+.asp-chips{display:flex;flex-wrap:wrap;gap:8px}
+.asp-pick .chip{min-height:42px}
+.asp-names{margin-top:14px;padding:16px 18px 18px;background:var(--sand);border-left:4px solid var(--gold);border-radius:0 16px 16px 0}
+.asp-names[hidden]{display:none}
+.asp-names:not([hidden]){animation:viewin .4s var(--ease) backwards}
+.asp-names p{font-size:14px;color:var(--muted);margin-bottom:10px}
+.chip.person[aria-pressed=true]{background:var(--gold);border-color:var(--ink);color:var(--ink)}
+.chip.person[aria-pressed=true] small{color:var(--ink)}
+
+.asp-card{--c-bg:#fff;--c-fg:var(--ink);--c-mute:var(--muted);--c-line:var(--line);--c-field:var(--paper);--c-btn-bg:var(--ink);--c-btn-fg:#fff;--c-err:#b3261e;
+  position:sticky;top:140px;padding:28px;border-radius:24px;border:1px solid var(--c-line);box-shadow:var(--shadow);
+  background-color:var(--c-bg);color:var(--c-fg);transition:background-color .6s ease,color .45s ease,border-color .6s ease}
+.asp-card[data-mode=pujian]{--c-bg:#fff0a8;--c-fg:#2b2710;--c-mute:#6a5f2a;--c-line:#e3d170;--c-field:rgba(255,255,255,.62);--c-btn-bg:#2b2710;--c-btn-fg:#fff0a8}
+.asp-card[data-mode=kritik]{--c-bg:#2d3135;--c-fg:#eef0f2;--c-mute:#aab1b7;--c-line:#484e54;--c-field:rgba(255,255,255,.06);--c-btn-bg:#eef0f2;--c-btn-fg:#1b1e21;--c-err:#ffb4a9}
+.asp-card :focus-visible{outline-color:var(--c-fg)}
+.asp-to{min-height:62px;padding-bottom:18px;border-bottom:1px solid var(--c-line);transition:border-color .6s ease}
+.asp-to b{display:block;font-family:var(--serif);font-size:26px;line-height:1.2;font-weight:600;overflow-wrap:anywhere}
+.asp-to span{display:block;font-size:14px;color:var(--c-mute);margin-top:2px}
+.asp-to .asp-empty{font-size:15px;color:var(--c-mute);padding-top:6px}
+.asp-mode{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 22px}
+.asp-mode button{display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 12px;border-radius:14px;border:1.5px solid var(--c-line);background:transparent;color:var(--c-fg);font:700 15px var(--sans);cursor:pointer;transition:background-color .3s,color .3s,border-color .3s}
+.asp-mode button:hover{border-color:var(--c-fg)}
+.asp-mode button[aria-pressed=true]{background:var(--c-fg);color:var(--c-bg);border-color:var(--c-fg)}
+.sw{width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;flex:none}
+.sw-p{background:#fff0a8}.sw-k{background:#2d3135}
+.asp-q{display:block;font-family:var(--serif);font-size:21px;line-height:1.3;font-weight:600;margin-bottom:12px;text-wrap:balance}
+#asp-msg{display:block;width:100%;min-height:160px;resize:vertical;padding:14px 16px;border-radius:14px;border:1.5px solid var(--c-line);background-color:var(--c-field);color:inherit;font:inherit;font-size:16px;line-height:1.6;transition:background-color .6s ease,border-color .6s ease,opacity .3s}
+#asp-msg::placeholder{color:var(--c-mute);opacity:.85}
+#asp-msg:disabled{opacity:.6;cursor:not-allowed}
+#asp-msg:focus{outline:0;border-color:var(--c-fg)}
+.asp-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--c-mute);margin-top:8px}
+.asp-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+.asp-send{width:100%;margin-top:16px;cursor:pointer;background:var(--c-btn-bg);color:var(--c-btn-fg);transition:background-color .45s,color .45s,transform .2s,opacity .2s}
+.asp-send:hover{background:var(--c-btn-bg);opacity:.9;transform:translateY(-1px)}
+.asp-send:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.asp-status{min-height:22px;margin-top:14px;font-size:14.5px;line-height:1.5}
+.asp-status.ok{font-weight:600}.asp-status.err{color:var(--c-err);font-weight:600}
+.asp-note{margin-top:6px;font-size:13px;line-height:1.55;color:var(--c-mute)}
+@media (max-width:900px){.asp-wrap{grid-template-columns:minmax(0,1fr)}.asp-card{position:static;scroll-margin-top:96px}}
+@media (max-width:560px){.asp-card{padding:22px}.asp-to b{font-size:23px}}
 </style>
 </head>
 
@@ -416,6 +458,7 @@ html[data-dir=up]{--rvy:-30px}
       <a href="#sop">SOP</a>
       <a href="#panduan">Panduan</a>
       <a href="#kalender">Kalender</a>
+      <a href="#aspirasi">Aspirasi</a>
     </nav>
   </div>
   <div class="ticker" role="region" aria-label="Info kegiatan terbaru">
@@ -439,7 +482,7 @@ html[data-dir=up]{--rvy:-30px}
       </div>
     </div>
     <div class="arch">
-      <div class="arch-logo" role="img" aria-label="Logo BEM STDIIS"></div>
+      <div class="logo-stage"><div class="logo-glow" aria-hidden="true"></div><div class="arch-logo" role="img" aria-label="Logo BEM STDIIS"></div></div>
       <div class="arch-title">Samasta</div>
       <div class="arch-sub">Kabinet BEM STDIIS</div>
     </div>
@@ -597,6 +640,33 @@ html[data-dir=up]{--rvy:-30px}
   </div>
 </section>
 
+<!-- ========== PUJIAN & KRITIK ========== -->
+<section id="aspirasi">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Pujian dan kritik untuk pengurus</h2>
+      <p>Pilih bagian dan orang yang dituju, lalu tulis pujian atau kritikmu. Pesan selalu dikirim secara anonim.</p>
+    </div>
+    <div class="asp-wrap">
+      <div class="asp-pick" id="asp-pick" aria-label="Pilih penerima"></div>
+      <form class="asp-card" id="asp-form" data-mode="" novalidate autocomplete="off">
+        <div class="asp-to" id="asp-to" aria-live="polite"></div>
+        <div class="asp-mode" role="group" aria-label="Jenis pesan">
+          <button type="button" data-mode="pujian" aria-pressed="false"><i class="sw sw-p" aria-hidden="true"></i>Pujian</button>
+          <button type="button" data-mode="kritik" aria-pressed="false"><i class="sw sw-k" aria-hidden="true"></i>Kritik</button>
+        </div>
+        <label class="asp-q" id="asp-q" for="asp-msg" aria-live="polite">Pilih pujian atau kritik dulu.</label>
+        <textarea id="asp-msg" name="pesan" rows="6" maxlength="1000" disabled placeholder="Kolom ini terbuka setelah kamu memilih pujian atau kritik."></textarea>
+        <div class="asp-meta"><span id="asp-count">0/1000</span><span>Anonim</span></div>
+        <input class="asp-hp" type="text" name="website" id="asp-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button type="submit" class="btn asp-send" id="asp-send">Kirim secara anonim</button>
+        <p class="asp-status" id="asp-status" role="status"></p>
+        <p class="asp-note">Formulir ini tidak meminta nama, email, atau akun apa pun, dan tidak menyimpan identitas pengirim.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
 </main>
 <main id="pd-app" hidden>
   <div class="sp-top"><div class="wrap">
@@ -642,6 +712,7 @@ html[data-dir=up]{--rvy:-30px}
           <li><a href="#program">Program</a></li>
           <li><a href="#sop">SOP</a></li>
           <li><a href="#kalender">Kalender</a></li>
+          <li><a href="#aspirasi">Aspirasi</a></li>
         </ul>
       </div>
       <div>
@@ -730,7 +801,7 @@ html[data-dir=up]{--rvy:-30px}
     el.addEventListener("animationend", function f(){ el.classList.remove("pop"); el.removeEventListener("animationend", f); });
   }
   document.addEventListener("click", function(e){
-    var t = e.target.closest(".btn,.nav a,.cal-nav,.ticker-item,.menu-btn,a.status,.brand,.link-btn");
+    var t = e.target.closest(".btn,.nav a,.cal-nav,.ticker-item,.menu-btn,a.status,.link-btn");
     if (t) bounce(t);
   });
 
@@ -839,18 +910,12 @@ html[data-dir=up]{--rvy:-30px}
   }
   window.addEventListener("scroll", function(){ if (!busy) { busy = true; requestAnimationFrame(frame); } }, {passive:true});
   frame();
-  if (reduce || !("IntersectionObserver" in window)) return;
-  /* Logo: hentakan lalu cahaya di belakangnya setiap kali hero terlihat (saat dibuka, atau digulir kembali ke atas) */
-  if (hero && logo) {
-    var first = true;
-    function slam(){ logo.classList.remove("thump"); hero.classList.remove("thump"); void logo.offsetWidth; logo.classList.add("thump"); hero.classList.add("thump"); }
-    new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        if (e.isIntersecting) { if (first) { first = false; setTimeout(slam, 750); } else slam(); }
-        else { logo.classList.remove("thump"); hero.classList.remove("thump"); }
-      });
-    }, {threshold: 0.4}).observe(hero);
+  /* Logo: cahaya lembut dari belakang saat hero terlihat (tanpa hentakan) */
+  if (hero) {
+    if (reduce || !("IntersectionObserver" in window)) hero.classList.add("glow-on");
+    else new IntersectionObserver(function(es){ es.forEach(function(e){ hero.classList.toggle("glow-on", e.isIntersecting); }); }, {threshold: 0.35}).observe(hero);
   }
+  if (reduce || !("IntersectionObserver" in window)) return;
   var th = []; for (var i = 0; i <= 20; i++) th.push(i / 20);
   var io = new IntersectionObserver(function(es){
     es.forEach(function(e){
@@ -878,5 +943,6 @@ html[data-dir=up]{--rvy:-30px}
 </script>
 <script src="sop-data.js"></script>
 <script src="sop-app.js"></script>
+<script src="aspirasi.js"></script>
 </body>
 </html>
