@@ -2,4 +2,4 @@
    (berakhiran /exec) di antara tanda kutip lurus ("), tanpa spasi.
    Sunting file ini dengan editor teks biasa atau editor GitHub, bukan WPS/Word.
    Contoh: window.ASPIRASI_ENDPOINT = "https://script.google.com/macros/s/AKfyc.../exec"; */
-window.ASPIRASI_ENDPOINT = "";
+window.ASPIRASI_ENDPOINT = "https://script.google.com/macros/s/AKfycbxsyI9XpcVXZOQypHc314nzPPn8CQplHxYfboA_YL9wyXAYTA3EOzxGQ0s2UjDhWlVMpA/exec";
