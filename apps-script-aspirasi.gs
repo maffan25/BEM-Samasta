@@ -1,8 +1,10 @@
 /**
- * BEM STDIIS | Penerima Pujian & Kritik anonim
+ * BEM STDIIS | Penerima Pujian & Kritik anonim (versi 2)
  * Tempel seluruh kode ini di Google Sheets: Ekstensi > Apps Script.
  * Panduan lengkap: PANDUAN-ASPIRASI.txt
  */
+var SHEET_ID = '';          // OPSIONAL. Isi ID Spreadsheet bila skrip dibuat terpisah dari Sheet.
+                            // ID = bagian di URL Sheet: docs.google.com/spreadsheets/d/<ID>/edit
 var SHEET_NAME = 'Aspirasi';
 var MIN_LEN = 10;
 var MAX_LEN = 1000;
@@ -23,23 +25,43 @@ function doPost(e) {
     var pesan = clean_(d.pesan, MAX_LEN);
     if (!bagian || !penerima || pesan.length < MIN_LEN) return reply_({ ok: false, error: 'data' });
 
+    var sh = sheet_();
+    if (!sh) return reply_({ ok: false, error: 'nosheet' });
+
     var lock = LockService.getScriptLock();
     lock.waitLock(15000);
     try {
       // Hanya waktu server yang dicatat. Tidak ada nama, email, atau IP pengirim.
-      sheet_().appendRow([new Date(), jenis, bagian, penerima, pesan]);
+      sh.appendRow([new Date(), jenis, bagian, penerima, pesan]);
+      SpreadsheetApp.flush();
     } finally {
       lock.releaseLock();
     }
     return reply_({ ok: true });
   } catch (err) {
+    console.error(err);
     return reply_({ ok: false, error: 'server' });
   }
 }
 
-// Buka URL Web App di browser untuk mengecek apakah endpoint aktif
+// Buka URL Web App di browser: harus muncul "ok":true DAN "sheet":"terhubung"
 function doGet() {
-  return reply_({ ok: true, info: 'Endpoint Aspirasi BEM STDIIS aktif' });
+  var sh = null, msg = '';
+  try { sh = sheet_(); } catch (err) { msg = String(err); }
+  return reply_({
+    ok: true,
+    info: 'Endpoint Aspirasi BEM STDIIS aktif',
+    sheet: sh ? 'terhubung' : 'TIDAK terhubung ke Spreadsheet',
+    detail: msg
+  });
+}
+
+// Jalankan SEKALI secara manual (pilih "setup" lalu klik Jalankan) untuk memberi izin
+// dan membuat tab "Aspirasi". Setelah itu lakukan Terapkan > Deployment baru.
+function setup() {
+  var sh = sheet_();
+  if (!sh) throw new Error('Tidak ada Spreadsheet. Pasang kode lewat Ekstensi > Apps Script dari dalam Sheet, atau isi SHEET_ID.');
+  Logger.log('OK, tab "' + sh.getName() + '" siap di Spreadsheet: ' + sh.getParent().getUrl());
 }
 
 function clean_(v, max) {
@@ -50,7 +72,8 @@ function clean_(v, max) {
 }
 
 function sheet_() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) return null;
   var sh = ss.getSheetByName(SHEET_NAME);
   if (!sh) {
     sh = ss.insertSheet(SHEET_NAME);

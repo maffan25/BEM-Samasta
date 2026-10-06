@@ -40,10 +40,17 @@ CATATAN PENTING
 - Daftar bagian dan nama di form dibaca otomatis dari bagian Kepengurusan di index.html,
   jadi bila ada nama yang diganti di sana, form ikut berubah.
 
-KODE PESAN GAGAL DI WEBSITE
-- C0 : aspirasi-config.js tidak terbaca (belum diunggah atau isinya rusak).
-- C1 : URL di aspirasi-config.js masih kosong.
-- C2 : URL salah format. Harus diawali https://script.google.com/macros/s/ dan diakhiri /exec.
-- Pesan "terkirim" tetapi baris tidak muncul di Sheet: cek Deployment harus
-  "Jalankan sebagai: Saya" dan "Yang memiliki akses: Siapa saja", lalu buka URL /exec
-  di browser, harus tampil {"ok":true,...}. Kalau meminta login Google, pengaturan akses salah.
+JIKA PESAN TIDAK MASUK KE SHEET (cek berurutan)
+1. Di editor Apps Script, pilih fungsi "setup" di bar atas, klik Jalankan, setujui izin.
+   Tab "Aspirasi" harus muncul di Sheet. Kalau error "Tidak ada Spreadsheet", kode ditempel
+   di tempat yang salah: buka Sheet dulu, baru Ekstensi > Apps Script (jangan dari script.google.com).
+2. Terapkan > Deployment baru (atau Kelola deployment > pensil > Versi baru). Kode yang diubah TIDAK
+   aktif sebelum dideploy ulang. Akses harus "Siapa saja" (bukan "Siapa saja dengan akun Google").
+3. Buka URL /exec di browser (mode incognito). Harus tampil "ok":true dan "sheet":"terhubung".
+4. Website versi ini membaca jawaban skrip, jadi bila gagal akan tampil kode:
+   C0/C1/C2 : file aspirasi-config.js kosong/rusak/format URL salah.
+   N1       : tidak bisa menghubungi skrip (akses bukan "Siapa saja", URL salah, atau offline).
+   N2       : jawaban bukan dari skrip (biasanya halaman login Google, akses salah).
+   S1/S2    : data form ditolak skrip. S3: skrip tidak terhubung ke Sheet. S4: gagal menulis.
+5. PENTING saat mengunggah ke GitHub: aspirasi-config.js harus tetap berisi URL /exec milikmu.
+   Jangan menimpanya dengan file kosong dari zip.

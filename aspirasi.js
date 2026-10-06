@@ -154,11 +154,32 @@
       return say("Alamat Google Sheets belum benar, harus berakhiran /exec (kode C2). Mohon hubungi pengurus.", "err");
     busy = true; send.disabled = true; send.textContent = "Mengirim..."; say("", "");
     var ctl = window.AbortController ? new AbortController() : null, to_ = ctl && setTimeout(function () { ctl.abort(); }, 20000);
+    /* Mode "cors" (bukan "no-cors") supaya jawaban skrip bisa dibaca.
+       Dengan no-cors, website selalu mengira berhasil walau skrip gagal menulis ke Sheet. */
+    var ctl = window.AbortController ? new AbortController() : null, to_ = ctl && setTimeout(function () { ctl.abort(); }, 25000);
+    var ERR = {
+      jenis: "Jenis pesan tidak dikenali (kode S1).",
+      data: "Data pesan belum lengkap atau terlalu pendek (kode S2).",
+      nosheet: "Skrip belum terhubung ke Spreadsheet. Pasang kode di Ekstensi > Apps Script dari dalam Sheet, atau isi SHEET_ID (kode S3).",
+      server: "Skrip gagal menyimpan ke Spreadsheet (kode S4). Mohon hubungi pengurus."
+    };
     fetch(EP, {
-      method: "POST", mode: "no-cors", credentials: "omit", referrerPolicy: "no-referrer",
+      method: "POST", mode: "cors", credentials: "omit", referrerPolicy: "no-referrer", redirect: "follow",
       headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload), signal: ctl ? ctl.signal : undefined
-    }).then(function () { clearTimeout(to_); done(); success(); })
-      .catch(function () { clearTimeout(to_); done(); say("Pesan belum terkirim. Periksa koneksimu lalu coba lagi.", "err"); });
+    }).then(function (r) { return r.text(); })
+      .then(function (t) {
+        clearTimeout(to_); done();
+        var j = null; try { j = JSON.parse(t); } catch (x) {}
+        if (j && j.ok) return success();
+        if (j) return say(ERR[j.error] || ERR.server, "err");
+        if (window.console) console.warn("[Aspirasi] Respons bukan JSON dari skrip:", String(t).slice(0, 200));
+        say("Respons bukan dari skrip Google (kode N2). Cek Deployment: 'Yang memiliki akses' harus 'Siapa saja'.", "err");
+      })
+      .catch(function (err) {
+        clearTimeout(to_); done();
+        if (window.console) console.warn("[Aspirasi] Gagal menghubungi skrip:", err);
+        say("Pesan belum terkirim (kode N1). Periksa koneksi, atau pastikan Deployment diset 'Siapa saja' dan URL berakhiran /exec.", "err");
+      });
   });
 
   /* ---------- Navigasi halaman: mandiri, tetap jalan walau sop-app.js belum diperbarui ---------- */
