@@ -448,6 +448,7 @@ html[data-dir=up]{--rvy:-30px}
 @media (max-width:560px){.asp-duo{width:180px}}
 @media print{#asp-app{display:none!important}}
 </style>
+<link rel="stylesheet" href="ai.css?v=1">
 </head>
 
 <body>
@@ -469,6 +470,7 @@ html[data-dir=up]{--rvy:-30px}
       <a href="#panduan">Panduan</a>
       <a href="#kalender">Kalender</a>
       <a href="#aspirasi">Aspirasi</a>
+      <a href="#tanya-ai" class="nav-ai">Tanya AI</a>
     </nav>
   </div>
   <div class="ticker" role="region" aria-label="Info kegiatan terbaru">
@@ -622,6 +624,23 @@ html[data-dir=up]{--rvy:-30px}
   </div>
 </section>
 
+<section id="ai-info" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Tanya AI</h2>
+      <p>Bingung prosedur, format, atau aturan? Tanyakan saja, jawabannya diambil dari SOP dan buku panduan.</p>
+    </div>
+    <div class="pd-teaser ai-teaser">
+      <div class="ai-orb" aria-hidden="true"><span class="ai-orb-a"></span><span class="ai-orb-b"></span><b>AI</b></div>
+      <div>
+        <h3>Asisten SOP dan Panduan</h3>
+        <p>Pilih bagianmu dulu (presiden, sekjen, kementerian, biro, dan lainnya), lalu ketik masalahmu. Jawaban disusun singkat, lengkap dengan langkah, tabel, dan alur, serta menyebut SOP yang jadi acuannya.</p>
+        <a href="#tanya-ai" class="btn btn-gold">Mulai bertanya</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ========== KALENDER ========== -->
 <section id="kalender" class="alt">
   <div class="wrap">
@@ -695,6 +714,29 @@ html[data-dir=up]{--rvy:-30px}
     </div>
   </div></div>
 </main>
+<main id="ai-app" hidden>
+  <div class="sp-top"><div class="wrap">
+    <p class="sp-crumb"><a href="#beranda">Beranda</a> / Tanya AI</p>
+    <h1>Tanya AI Kabinet Samasta</h1>
+    <p class="sp-lead">Jawaban diambil dari SOP dan buku panduan BEM STDIIS. Pilih bagianmu dulu agar jawabannya tepat sasaran.</p>
+  </div></div>
+  <div class="ai-body"><div class="wrap">
+    <section class="ai-step" id="ai-pick" aria-label="Pilih bagian"></section>
+    <section class="ai-chat" id="ai-chat" hidden aria-label="Percakapan dengan AI">
+      <div class="ai-who">
+        <div><small>Bertanya sebagai</small><b id="ai-who-name"></b></div>
+        <button type="button" class="link-btn" id="ai-change">Ganti bagian</button>
+      </div>
+      <div class="ai-feed" id="ai-feed" aria-live="polite"></div>
+      <div class="ai-sugg" id="ai-sugg"></div>
+      <form class="ai-form" id="ai-form" autocomplete="off">
+        <textarea id="ai-q" rows="1" maxlength="500" placeholder="Tulis pertanyaanmu di sini" aria-label="Pertanyaan"></textarea>
+        <button type="submit" class="btn btn-gold" id="ai-send" aria-label="Kirim pertanyaan"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
+      </form>
+      <p class="ai-foot">AI bisa keliru. Untuk keputusan penting, cek SOP atau buku panduan yang disebut di jawaban.</p>
+    </section>
+  </div></div>
+</main>
 <main id="pd-app" hidden>
   <div class="sp-top"><div class="wrap">
     <p class="sp-crumb"><a href="#beranda">Beranda</a> / Buku Panduan</p>
@@ -754,6 +796,26 @@ html[data-dir=up]{--rvy:-30px}
   </div>
 </footer>
 
+<script src="anggota.js?v=1"></script>
+<script>
+/* Nama pengurus dibaca dari anggota.js (diedit lewat admin-anggota.html).
+   Bila file itu tidak terbaca, daftar bawaan di HTML tetap dipakai. */
+(function(){
+  var A = window.ANGGOTA; if (!A || !A.unit) return;
+  function esc(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  var L = document.querySelector("#pengurus .leaders");
+  if (L && A.pimpinan && A.pimpinan.length) L.innerHTML = A.pimpinan.map(function(p){
+    return '<article class="leader"><p>' + esc(p.jabatan) + '</p><h4>' + esc(p.nama) + '</h4></article>'; }).join("");
+  [].forEach.call(document.querySelectorAll("#pengurus .units"), function(box){
+    var t = box.previousElementSibling ? box.previousElementSibling.textContent.trim() : "";
+    var items = A.unit.filter(function(u){ return u.grup === t; });
+    if (!items.length) return;
+    box.innerHTML = items.map(function(u){
+      return '<details class="unit"><summary><span class="u-name">' + esc(u.nama) + '</span><span class="unit-meta"></span><span class="chev" aria-hidden="true"></span></summary><div class="u-body"><ol>' +
+        (u.anggota || []).map(function(n){ return '<li>' + esc(n) + '</li>'; }).join("") + '</ol></div></details>'; }).join("");
+  });
+})();
+</script>
 <script src="events.js"></script>
 <script>
   document.getElementById("tahun").textContent = new Date().getFullYear();
@@ -972,5 +1034,8 @@ html[data-dir=up]{--rvy:-30px}
 <script src="sop-app.js?v=3"></script>
 <script src="aspirasi-config.js?v=4"></script>
 <script src="aspirasi.js?v=4"></script>
+<script src="ai-config.js?v=1"></script>
+<script src="panduan-data.js?v=1"></script>
+<script src="ai.js?v=1"></script>
 </body>
 </html>

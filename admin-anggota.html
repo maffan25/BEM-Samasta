@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Editor Anggota | BEM STDIIS</title>
+<style>
+:root{--ink:#0d2a38;--gold:#f8d24a;--gold2:#fde9a0;--cream:#fffbef;--sand:#f6efd5;--line:#e6dbb4;--muted:#5d6b73;--green:#0f6b5a;--red:#b3261e;--r:16px;
+  --serif:Georgia,"Times New Roman",serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font:16px/1.55 var(--sans);background:var(--cream);color:var(--ink);padding:env(safe-area-inset-top) 0 calc(96px + env(safe-area-inset-bottom))}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+header{background:var(--ink);color:#f6f1de;padding:28px 0 26px}
+header h1{font:700 clamp(26px,5vw,36px)/1.15 var(--serif);color:#fff}
+header p{color:#cde0dc;margin-top:6px;max-width:560px}
+.tag{display:inline-block;background:var(--gold);color:var(--ink);font-weight:700;font-size:12.5px;border-radius:999px;padding:3px 12px;margin-bottom:12px}
+.status{position:sticky;top:0;z-index:20;background:var(--sand);border-bottom:1px solid var(--line);padding:10px 0;font-size:14.5px}
+.status .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.status b{font-weight:700}.dot{width:10px;height:10px;border-radius:50%;background:#9db3ad;flex:none}
+.status.dirty .dot{background:var(--gold);box-shadow:0 0 0 4px rgba(248,210,74,.35)}
+.status.done .dot{background:var(--green)}
+.btn{font:600 15px var(--sans);border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:9px 18px;cursor:pointer;transition:background .15s,transform .15s;display:inline-flex;gap:8px;align-items:center;justify-content:center}
+.btn:hover{background:var(--sand)}.btn:active{transform:scale(.97)}
+.btn.gold{background:var(--gold);border-color:var(--gold)}.btn.gold:hover{background:#f3c92f}
+.btn.dark{background:var(--ink);color:#fff}.btn.dark:hover{background:#17435a}
+.btn.sm{padding:6px 14px;font-size:13.5px}.btn.red{border-color:var(--red);color:var(--red)}.btn.red:hover{background:#fbe9e7}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 14px}
+.bar .grow{flex:1;min-width:200px}
+input,select,textarea{font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;width:100%}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 4px rgba(248,210,74,.45)}
+textarea{min-height:110px;resize:vertical}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;font:600 14px var(--sans);cursor:pointer;color:var(--muted)}
+.tab[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.list{display:grid;gap:12px}
+.ev{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r);padding:16px 18px;box-shadow:0 6px 18px -12px rgba(13,42,56,.35)}
+.dt{background:var(--sand);border-radius:12px;text-align:center;padding:8px 4px;align-self:start}
+.dt b{display:block;font:700 24px/1 var(--serif)}.dt span{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.ev h3{font:700 18px/1.3 var(--serif);margin-bottom:6px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.meta i{font-style:normal;font-size:12.5px;font-weight:600;background:var(--sand);border-radius:999px;padding:2px 10px;color:#2a5560}
+.ev p{font-size:14.5px;color:var(--muted);margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.act{display:flex;gap:8px;flex-wrap:wrap}
+.empty{background:#fff;border:1.5px dashed var(--line);border-radius:var(--r);padding:36px 20px;text-align:center;color:var(--muted)}
+.how{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:4px 20px;margin-top:26px}
+.how summary{cursor:pointer;font-weight:700;padding:14px 0}
+.how ol{padding:0 0 14px 20px;color:#2b4652}.how li{margin-bottom:6px}
+.banner{background:#fff7d6;border:1px solid #ecd67a;border-radius:var(--r);padding:14px 18px;margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.banner span{flex:1;min-width:200px}
+dialog{border:0;border-radius:22px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);box-shadow:0 30px 80px -20px rgba(13,42,56,.6);color:var(--ink)}
+dialog::backdrop{background:rgba(13,42,56,.55);backdrop-filter:blur(3px)}
+.fh{background:var(--ink);color:#fff;padding:18px 24px;font:700 20px var(--serif)}
+.fb{padding:20px 24px;display:grid;gap:14px;overflow:auto;max-height:calc(100dvh - 190px)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weight:400;color:var(--muted)}
+.ff{padding:14px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;background:var(--cream)}
+.err{color:var(--red);font-size:13.5px;min-height:1.2em}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;border-radius:999px;padding:10px 12px 10px 20px;display:flex;gap:14px;align-items:center;transition:.3s;z-index:60;max-width:calc(100vw - 24px)}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{background:var(--gold);border:0;border-radius:999px;padding:6px 14px;font:700 13.5px var(--sans);cursor:pointer;color:var(--ink)}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;box-shadow:0 14px 30px -10px rgba(13,42,56,.55)}
+@media (max-width:520px){.ev{grid-template-columns:52px minmax(0,1fr);gap:12px;padding:14px}.row2{grid-template-columns:1fr}.dt b{font-size:20px}}
+
+.pcard{background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r);padding:6px 18px 18px;margin-bottom:14px;box-shadow:0 6px 18px -12px rgba(13,42,56,.35)}
+.pcard>summary{cursor:pointer;list-style:none;display:flex;gap:12px;align-items:center;padding:14px 0;font:700 18px/1.3 var(--serif)}
+.pcard>summary::-webkit-details-marker{display:none}
+.pcard>summary .cnt{margin-left:auto;font:600 12.5px var(--sans);background:var(--sand);color:#2a5560;border-radius:999px;padding:3px 12px;white-space:nowrap}
+.grp{font:700 13px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin:28px 0 12px}
+.mrow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;margin-bottom:8px}
+.mrow.lead{grid-template-columns:minmax(120px,32%) minmax(0,1fr)}
+.mrow .n{font-size:13px;font-weight:700;color:var(--muted);text-align:center}
+.mrow input{padding:9px 12px}
+.ico{display:flex;gap:4px}
+.ico button{width:36px;height:36px;border:1.5px solid var(--line);background:#fff;border-radius:10px;cursor:pointer;font-size:15px;color:var(--ink);line-height:1}
+.ico button:hover{border-color:var(--ink)}.ico button.x:hover{border-color:var(--red);color:var(--red)}
+.ico button:disabled{opacity:.3;pointer-events:none}
+.addrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.mrow.hit input{border-color:var(--gold);box-shadow:0 0 0 3px rgba(248,210,74,.4)}
+@media (max-width:520px){.mrow.lead{grid-template-columns:1fr}.ico button{width:34px;height:34px}}
+
+</style>
+</head>
+<body>
+<header><div class="wrap"><span class="tag">Khusus pengelola</span><h1>Editor Anggota</h1><p>Ganti nama pimpinan dan anggota setiap kementerian, biro, atau inspektorat di sini. Setelah selesai, unduh <b>anggota.js</b> lalu unggah ke GitHub.</p></div></header>
+
+<div class="status" id="status" role="status"><div class="wrap"><i class="dot"></i><span id="stxt"></span><span style="flex:1"></span><button class="btn gold sm" id="dl">Unduh anggota.js</button></div></div>
+
+<main class="wrap">
+  <div class="banner" id="draft" hidden><span>Ada draf yang belum diterbitkan dari sesi sebelumnya di perangkat ini.</span><button class="btn sm dark" id="draft-ok">Pulihkan draf</button><button class="btn sm" id="draft-no">Buang</button></div>
+  <div class="bar"><input class="grow" id="q" type="search" placeholder="Cari nama anggota" aria-label="Cari nama"></div>
+  <div id="root"></div>
+
+  <details class="how" open>
+    <summary>Cara menerbitkan perubahan ke situs</summary>
+    <ol>
+      <li>Ketik langsung di kolom nama untuk mengganti. Tekan <b>Enter</b> untuk menambah nama di bawahnya, tanda panah untuk memindah urutan, dan tanda silang untuk menghapus.</li>
+      <li>Mengganti banyak nama sekaligus? Tekan <b>Tempel daftar</b> pada kementerian atau biro itu, lalu tempel satu nama per baris.</li>
+      <li>Selesai, tekan <b>Unduh anggota.js</b>.</li>
+      <li>Buka repositori situs di GitHub, tekan <b>Add file</b>, lalu <b>Upload files</b>, dan seret <b>anggota.js</b>. Nama harus persis sama sehingga file lama tertimpa.</li>
+      <li>Tekan <b>Commit changes</b>, tunggu 1 sampai 2 menit, lalu muat ulang situs. Daftar di halaman Kepengurusan, hitungan anggota, dan pilihan nama di form Pujian dan Kritik ikut berubah sendiri.</li>
+    </ol>
+    <div class="act" style="padding-bottom:16px">
+      <button class="btn sm" id="copy">Salin kode</button>
+      <button class="btn sm" id="imp">Muat file anggota.js</button>
+      <button class="btn sm red" id="reset">Kembali ke versi situs</button>
+      <input type="file" id="file" accept=".js,.json,text/javascript" hidden>
+    </div>
+  </details>
+</main>
+
+<dialog id="dlg">
+  <form method="dialog" id="form" novalidate>
+    <div class="fh" id="ftitle">Tempel daftar</div>
+    <div class="fb">
+      <label>Satu nama per baris <small>Daftar lama pada bagian ini akan diganti seluruhnya.</small><textarea id="f-list" rows="10" style="min-height:220px"></textarea></label>
+      <div class="err" id="err" role="alert"></div>
+    </div>
+    <div class="ff"><button class="btn" type="button" id="cancel">Batal</button><button class="btn gold" type="submit">Ganti daftar</button></div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast"><span id="ttxt"></span></div>
+
+<script src="anggota.js"></script>
+<script>
+(function(){
+  var KEY = "bem-anggota-draft-v1";
+  function $(id){ return document.getElementById(id); }
+  function esc(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function nm(s){ return String(s == null ? "" : s).replace(/\s+/g, " ").trim(); }
+  function clean(m){
+    return {
+      pimpinan: (m.pimpinan || []).map(function(p){ return {jabatan: nm(p.jabatan), nama: nm(p.nama)}; }).filter(function(p){ return p.jabatan || p.nama; }),
+      unit: (m.unit || []).map(function(u){ return {grup: u.grup, nama: nm(u.nama), anggota: (u.anggota || []).map(nm).filter(Boolean)}; })
+    };
+  }
+  function copy(o){ return JSON.parse(JSON.stringify(o)); }
+  var SITE = clean(window.ANGGOTA || {pimpinan: [], unit: []}), SITESIG = JSON.stringify(SITE);
+  var M = copy(SITE), downloaded = false, q = "", tT, editU = -1;
+
+  function dirty(){ return JSON.stringify(clean(M)) !== SITESIG; }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(M)); } catch (e) {} }
+  function status(){
+    var d = dirty(), st = $("status"), total = clean(M).unit.reduce(function(a, u){ return a + u.anggota.length; }, 0);
+    st.className = "status" + (d ? (downloaded ? " done" : " dirty") : "");
+    $("stxt").innerHTML = !d ? "Sama dengan versi di situs. <b>" + total + " anggota</b>." :
+      downloaded ? "<b>File sudah diunduh.</b> Tinggal unggah <b>anggota.js</b> ke GitHub." : "<b>Ada perubahan belum diterbitkan.</b>";
+  }
+  function touch(){ downloaded = false; save(); status(); }
+  function toast(msg){ $("ttxt").textContent = msg; $("toast").classList.add("on"); clearTimeout(tT); tT = setTimeout(function(){ $("toast").classList.remove("on"); }, 2600); }
+
+  function row(u, i, n, total, hit){
+    return '<div class="mrow' + (hit ? " hit" : "") + '"><span class="n">' + (i + 1) + '</span><input data-u="' + u + '" data-i="' + i + '" value="' + esc(n) + '" maxlength="80" placeholder="Nama lengkap" aria-label="Nama anggota ' + (i + 1) + '"><span class="ico"><button type="button" data-a="up" data-u="' + u + '" data-i="' + i + '" aria-label="Naikkan"' + (i === 0 ? " disabled" : "") + '>&#8593;</button><button type="button" data-a="down" data-u="' + u + '" data-i="' + i + '" aria-label="Turunkan"' + (i === total - 1 ? " disabled" : "") + '>&#8595;</button><button type="button" class="x" data-a="del" data-u="' + u + '" data-i="' + i + '" aria-label="Hapus">&#10005;</button></span></div>';
+  }
+  function render(focus){
+    var s = q.toLowerCase(), h = '<div class="grp">Pimpinan inti</div><div class="pcard" style="padding-top:18px">';
+    M.pimpinan.forEach(function(p, i){
+      var hit = s && (p.nama + " " + p.jabatan).toLowerCase().indexOf(s) >= 0;
+      if (s && !hit) return;
+      h += '<div class="mrow lead' + (hit ? " hit" : "") + '"><input data-l="j" data-i="' + i + '" value="' + esc(p.jabatan) + '" maxlength="60" aria-label="Jabatan"><input data-l="n" data-i="' + i + '" value="' + esc(p.nama) + '" maxlength="80" placeholder="Nama lengkap" aria-label="Nama ' + esc(p.jabatan) + '"></div>';
+    });
+    h += '</div>';
+    var cur = "";
+    M.unit.forEach(function(u, ui){
+      var match = !s || u.anggota.some(function(n){ return n.toLowerCase().indexOf(s) >= 0; }) || u.nama.toLowerCase().indexOf(s) >= 0;
+      if (!match) return;
+      if (u.grup !== cur){ cur = u.grup; h += '<div class="grp">' + esc(cur) + '</div>'; }
+      h += '<details class="pcard" ' + (s || ui === focus ? "open" : "") + ' data-ud="' + ui + '"><summary>' + esc(u.nama) + '<span class="cnt">' + u.anggota.length + ' anggota</span></summary>';
+      u.anggota.forEach(function(n, i){ h += row(ui, i, n, u.anggota.length, s && n.toLowerCase().indexOf(s) >= 0); });
+      h += '<div class="addrow"><button type="button" class="btn sm dark" data-a="add" data-u="' + ui + '">+ Tambah nama</button><button type="button" class="btn sm" data-a="bulk" data-u="' + ui + '">Tempel daftar</button></div></details>';
+    });
+    $("root").innerHTML = h; status();
+  }
+
+  var root = $("root");
+  root.addEventListener("input", function(e){
+    var t = e.target; if (t.tagName !== "INPUT") return;
+    var i = +t.getAttribute("data-i");
+    if (t.hasAttribute("data-l")) M.pimpinan[i][t.getAttribute("data-l") === "j" ? "jabatan" : "nama"] = t.value;
+    else M.unit[+t.getAttribute("data-u")].anggota[i] = t.value;
+    touch();
+  });
+  root.addEventListener("keydown", function(e){
+    var t = e.target; if (e.key !== "Enter" || t.tagName !== "INPUT" || t.hasAttribute("data-l")) return;
+    e.preventDefault();
+    var u = +t.getAttribute("data-u"), i = +t.getAttribute("data-i");
+    M.unit[u].anggota.splice(i + 1, 0, ""); touch(); render(u);
+    var n = root.querySelector('input[data-u="' + u + '"][data-i="' + (i + 1) + '"]'); if (n) n.focus();
+  });
+  root.addEventListener("click", function(e){
+    var b = e.target.closest("[data-a]"); if (!b) return;
+    var a = b.getAttribute("data-a"), u = +b.getAttribute("data-u"), i = +b.getAttribute("data-i"), L = M.unit[u].anggota;
+    if (a === "add"){ L.push(""); touch(); render(u); var n = root.querySelector('input[data-u="' + u + '"][data-i="' + (L.length - 1) + '"]'); if (n) n.focus(); }
+    if (a === "del"){
+      if (L[i] && !confirm("Hapus " + L[i] + " dari " + M.unit[u].nama + "?")) return;
+      L.splice(i, 1); touch(); render(u); toast("Nama dihapus.");
+    }
+    if (a === "up" && i > 0){ var x = L[i]; L[i] = L[i - 1]; L[i - 1] = x; touch(); render(u); }
+    if (a === "down" && i < L.length - 1){ var y = L[i]; L[i] = L[i + 1]; L[i + 1] = y; touch(); render(u); }
+    if (a === "bulk"){ editU = u; $("ftitle").textContent = "Tempel daftar: " + M.unit[u].nama; $("f-list").value = L.join("\n"); $("err").textContent = ""; $("dlg").showModal(); $("f-list").focus(); }
+  });
+  $("form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var list = $("f-list").value.split(/\r?\n/).map(nm).filter(Boolean);
+    if (editU < 0) return;
+    M.unit[editU].anggota = list; $("dlg").close(); touch(); render(editU); toast("Daftar diganti: " + list.length + " nama.");
+  });
+  $("cancel").onclick = function(){ $("dlg").close(); };
+  $("q").addEventListener("input", function(e){ q = e.target.value.trim(); render(); });
+
+  function output(){
+    var c = clean(M), L = [];
+    L.push("/* anggota.js: data nama pengurus BEM STDIIS.\n   Jangan diedit manual. Gunakan admin-anggota.html, lalu unduh file ini dan unggah ke GitHub.\n   Terakhir dibuat: " + new Date().toLocaleString("id-ID") + " */");
+    L.push("window.ANGGOTA = {");
+    L.push(' "pimpinan": [\n' + c.pimpinan.map(function(p){ return "  " + JSON.stringify(p); }).join(",\n") + "\n ],");
+    L.push(' "unit": [\n' + c.unit.map(function(u){ return "  " + JSON.stringify(u); }).join(",\n") + "\n ]");
+    L.push("};");
+    return L.join("\n") + "\n";
+  }
+  $("dl").onclick = function(){
+    var blob = new Blob([output()], {type: "text/javascript"}), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "anggota.js"; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+    downloaded = true; status(); toast("anggota.js diunduh. Sekarang unggah ke GitHub.");
+  };
+  $("copy").onclick = function(){
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(output()).then(function(){ toast("Kode disalin."); }, function(){ toast("Gagal menyalin. Gunakan tombol unduh."); });
+    else toast("Peramban tidak mendukung salin. Gunakan tombol unduh.");
+  };
+  $("imp").onclick = function(){ $("file").click(); };
+  $("file").addEventListener("change", function(e){
+    var f = e.target.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function(){
+      try {
+        var t = String(r.result), a = t.indexOf("{", t.indexOf("window.ANGGOTA")), b = t.lastIndexOf("}"), o = JSON.parse(t.slice(a, b + 1));
+        if (!o || !o.unit) throw 0;
+        M = clean(o); touch(); render(); toast("File dimuat.");
+      } catch (x) { alert("Format file tidak dikenali. Gunakan anggota.js yang dibuat oleh editor ini."); }
+    };
+    r.readAsText(f); e.target.value = "";
+  });
+  $("reset").onclick = function(){
+    if (!confirm("Kembalikan semua nama ke versi yang sedang tayang di situs? Perubahanmu akan hilang.")) return;
+    M = copy(SITE); downloaded = false; try { localStorage.removeItem(KEY); } catch (e) {} render(); toast("Dikembalikan ke versi situs.");
+  };
+  try {
+    var d = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (d && d.unit && JSON.stringify(clean(d)) !== SITESIG){
+      $("draft").hidden = false;
+      $("draft-ok").onclick = function(){ M = clean(d); $("draft").hidden = true; render(); };
+      $("draft-no").onclick = function(){ try { localStorage.removeItem(KEY); } catch (e) {} $("draft").hidden = true; };
+    }
+  } catch (e) {}
+  window.addEventListener("beforeunload", function(e){ if (dirty() && !downloaded){ e.preventDefault(); e.returnValue = ""; } });
+  render();
+})();
+</script>
+</body>
+</html>
