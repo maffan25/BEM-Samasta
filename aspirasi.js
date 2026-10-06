@@ -7,8 +7,7 @@
   "use strict";
 
   var CONFIG = {
-    // Tempel URL Web App Apps Script di sini (berakhiran /exec).
-    ENDPOINT: "",
+    // URL Web App Apps Script diisi di file aspirasi-config.js (bukan di sini).
     MIN: 10,            // minimal karakter pesan
     MAX: 1000,          // maksimal karakter pesan
     COOLDOWN_MS: 20000  // jeda antar pengiriman dari perangkat yang sama
@@ -145,13 +144,17 @@
     function success() { msg.value = ""; cnt.textContent = "0/" + CONFIG.MAX; markSent(); say(m.ok, "ok"); }
 
     if (hp.value) { success(); return; } /* jebakan bot: tampak berhasil, tidak dikirim */
-    if (!CONFIG.ENDPOINT) {
-      if (window.console) console.warn("[Aspirasi] ENDPOINT belum diisi di aspirasi.js. Lihat PANDUAN-ASPIRASI.txt.");
-      return say("Formulir belum tersambung ke Google Sheets. Mohon hubungi pengurus.", "err");
+    var EP = typeof window.ASPIRASI_ENDPOINT === "string" ? window.ASPIRASI_ENDPOINT.replace(/[\s"'\u201C\u201D\u2018\u2019]/g, "") : null;
+    if (EP === null) {
+      if (window.console) console.warn("[Aspirasi] aspirasi-config.js tidak terbaca. Pastikan file diunggah dan tanda kutipnya lurus.");
+      return say("Formulir belum tersambung ke Google Sheets (kode C0). Mohon hubungi pengurus.", "err");
     }
+    if (!EP) return say("Formulir belum tersambung ke Google Sheets (kode C1). Mohon hubungi pengurus.", "err");
+    if (!/^https:\/\/script\.google\.com\/macros\/s\/[^\/]+\/exec$/.test(EP))
+      return say("Alamat Google Sheets belum benar, harus berakhiran /exec (kode C2). Mohon hubungi pengurus.", "err");
     busy = true; send.disabled = true; send.textContent = "Mengirim..."; say("", "");
     var ctl = window.AbortController ? new AbortController() : null, to_ = ctl && setTimeout(function () { ctl.abort(); }, 20000);
-    fetch(CONFIG.ENDPOINT, {
+    fetch(EP, {
       method: "POST", mode: "no-cors", credentials: "omit", referrerPolicy: "no-referrer",
       headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload), signal: ctl ? ctl.signal : undefined
     }).then(function () { clearTimeout(to_); done(); success(); })
@@ -160,9 +163,4 @@
 
   render(); refreshTarget();
 
-  /* Muncul halus saat digulir, memakai sistem animasi scroll yang sudah ada */
-  if (window.__rv) {
-    window.__rv(document.querySelectorAll("#aspirasi .sec-head"));
-    window.__rv(document.querySelectorAll("#aspirasi .asp-wrap>*"), "rv-z");
-  }
 })();

@@ -437,6 +437,16 @@ html[data-dir=up]{--rvy:-30px}
 .asp-note{margin-top:6px;font-size:13px;line-height:1.55;color:var(--c-mute)}
 @media (max-width:900px){.asp-wrap{grid-template-columns:minmax(0,1fr)}.asp-card{position:static;scroll-margin-top:96px}}
 @media (max-width:560px){.asp-card{padding:22px}.asp-to b{font-size:23px}}
+
+/* Halaman pujian dan kritik */
+#asp-app:not([hidden]){animation:viewin .45s var(--ease) backwards}
+.asp-body{padding:36px 0 96px}
+.asp-duo{position:relative;flex:none;width:190px;aspect-ratio:3/4}
+.asp-duo span{position:absolute;display:flex;align-items:flex-end;padding:16px 18px;border-radius:18px;font:600 24px var(--serif);box-shadow:0 18px 30px -18px rgba(13,42,56,.5)}
+.asp-duo-p{align-items:flex-start!important;left:0;top:0;width:76%;height:66%;background:#fff0a8;color:#2b2710;border:1px solid #e3d170;transform:rotate(-4deg)}
+.asp-duo-k{right:0;bottom:0;width:76%;height:66%;background:#2d3135;color:#eef0f2;transform:rotate(3deg)}
+@media (max-width:560px){.asp-duo{width:180px}}
+@media print{#asp-app{display:none!important}}
 </style>
 </head>
 
@@ -640,13 +650,32 @@ html[data-dir=up]{--rvy:-30px}
   </div>
 </section>
 
-<!-- ========== PUJIAN & KRITIK ========== -->
-<section id="aspirasi">
+<!-- ========== PUJIAN & KRITIK (teaser) ========== -->
+<section id="aspirasi-info">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Pujian dan kritik untuk pengurus</h2>
-      <p>Pilih bagian dan orang yang dituju, lalu tulis pujian atau kritikmu. Pesan selalu dikirim secara anonim.</p>
+      <h2>Pujian dan kritik</h2>
+      <p>Suarakan apresiasi atau masukanmu untuk siapa pun di kepengurusan, tanpa perlu menyebut nama.</p>
     </div>
+    <div class="pd-teaser asp-teaser">
+      <div class="asp-duo" aria-hidden="true"><span class="asp-duo-p">Pujian</span><span class="asp-duo-k">Kritik</span></div>
+      <div>
+        <h3>Ruang Pujian dan Kritik</h3>
+        <p>Pilih bagian dan orang yang dituju, lalu tulis pujian atau kritikmu. Semua pesan dikirim secara anonim dan langsung diterima pengurus.</p>
+        <a href="#aspirasi" class="btn btn-gold">Buka Pujian dan Kritik</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<main id="asp-app" hidden>
+  <div class="sp-top"><div class="wrap">
+    <p class="sp-crumb"><a href="#beranda">Beranda</a> / Pujian dan Kritik</p>
+    <h1>Pujian dan Kritik untuk Pengurus</h1>
+    <p class="sp-lead">Pilih bagian dan orang yang dituju, lalu tulis pujian atau kritikmu. Pesan selalu dikirim secara anonim.</p>
+  </div></div>
+  <div class="asp-body"><div class="wrap">
     <div class="asp-wrap">
       <div class="asp-pick" id="asp-pick" aria-label="Pilih penerima"></div>
       <form class="asp-card" id="asp-form" data-mode="" novalidate autocomplete="off">
@@ -664,9 +693,7 @@ html[data-dir=up]{--rvy:-30px}
         <p class="asp-note">Formulir ini tidak meminta nama, email, atau akun apa pun, dan tidak menyimpan identitas pengirim.</p>
       </form>
     </div>
-  </div>
-</section>
-
+  </div></div>
 </main>
 <main id="pd-app" hidden>
   <div class="sp-top"><div class="wrap">
@@ -942,7 +969,8 @@ html[data-dir=up]{--rvy:-30px}
 })();
 </script>
 <script src="sop-data.js"></script>
-<script src="sop-app.js"></script>
-<script src="aspirasi.js"></script>
+<script src="sop-app.js?v=2"></script>
+<script src="aspirasi-config.js?v=2"></script>
+<script src="aspirasi.js?v=2"></script>
 </body>
 </html>
