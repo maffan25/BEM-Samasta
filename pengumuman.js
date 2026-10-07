@@ -1,8 +1,8 @@
 /* pengumuman.js: teks berjalan "Info terbaru" BEM STDIIS.
    Jangan diedit manual. Gunakan admin-pengumuman.html, lalu unduh file ini dan unggah ke GitHub.
-   Terakhir dibuat: 8/10/2026, 05.29.16 */
+   Terakhir dibuat: 8/10/2026, 05.31.01 */
 window.PENGUMUMAN = {
- "otomatis": false,
+ "otomatis": true,
  "besok": "BESOK",
  "hariini": "HARI INI",
  "ingat": "JANGAN LUPA",
