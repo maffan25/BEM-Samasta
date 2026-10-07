@@ -74,7 +74,7 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weigh
 </style>
 </head>
 <body>
-<header><div class="wrap"><span class="tag">Khusus pengelola</span><h1>Editor Acuan ASTA</h1><p>Tambah, ubah, atau hapus acuan jawaban ASTA, dan atur SOP atau buku panduan mana yang dipakai. Selesai, unduh <b>asta-data.js</b> lalu unggah ke GitHub.</p></div></header>
+<header><div class="wrap"><span class="tag">Khusus pengelola</span><h1>Editor Acuan ASTA</h1><p>Atur jawaban "kalau ditanya begini, jawab begini", pesan saat ASTA belum tahu, dan SOP atau buku panduan mana yang dipakai. Selesai, unduh <b>asta-data.js</b> lalu unggah ke GitHub.</p></div></header>
 <div class="status" id="status" role="status"><div class="wrap"><i class="dot"></i><span id="stxt"></span><span style="flex:1"></span><button class="btn gold sm" id="dl">Unduh asta-data.js</button></div></div>
 <main class="wrap">
   <div class="bar"><input class="grow" id="q" type="search" placeholder="Cari" aria-label="Cari"><button class="btn dark" id="add">+ Tambah acuan</button></div>
@@ -90,9 +90,9 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weigh
 <dialog id="dlg"><form method="dialog" id="form" novalidate>
   <div class="fh" id="ftitle">Tambah acuan</div>
   <div class="fb">
-    <label>Judul atau pertanyaan *<input id="f-judul" maxlength="160" placeholder="Contoh: Cara mencairkan dana kegiatan"></label>
+    <label>Kalau ada yang bertanya (judul atau pertanyaan) *<input id="f-judul" maxlength="160" placeholder="Contoh: Cara mencairkan dana kegiatan"></label>
     <label>Kata kunci <small class="help">pisahkan dengan koma; masukkan kata yang sering dipakai orang bertanya</small><input id="f-kunci" maxlength="300" placeholder="cair, duit, dana, rab"></label>
-    <label>Ringkasan jawaban *<textarea id="f-ringkas" maxlength="600" style="min-height:84px"></textarea></label>
+    <label>Maka ASTA menjawab *<textarea id="f-ringkas" maxlength="600" style="min-height:84px"></textarea></label>
     <label>Poin penting <small class="help">satu poin per baris</small><textarea id="f-poin" maxlength="2000"></textarea></label>
     <label>Langkah <small class="help">satu langkah per baris; boleh "Judul: penjelasan"</small><textarea id="f-langkah" maxlength="2500"></textarea></label>
     <div><div style="font-weight:600;font-size:14px;margin-bottom:8px">Rujukan</div><div id="srcs" style="display:grid;gap:12px"></div><button type="button" class="btn sm" id="addsrc" style="margin-top:10px">+ Tambah rujukan</button></div>
@@ -109,7 +109,7 @@ var $=function(i){return document.getElementById(i);};
 function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 var BOOKS=[["presiden","Presiden"],["wakil-presiden","Wakil Presiden"],["sekretaris-jenderal","Sekretaris Jenderal"],["psdm","Kementerian PSDM"],["akademik-karier","Kementerian Akademik dan Karier"],["harmonisasi-kampus","Kementerian Harmonisasi Kampus"],["kemenpora","Kementerian Pemuda dan Olahraga"],["hubeks","Kementerian Hubungan Eksternal"],["kesma","Kementerian Kesejahteraan Mahasiswa"],["pengembangan-bahasa","Kementerian Pengembangan Bahasa"],["biro-administrasi","Biro Administrasi"],["biro-keuangan","Biro Keuangan"],["biro-dkv","Biro DKV"],["inspektorat-jenderal","Inspektorat Jenderal"]];
 var SOPS=(window.SOP_DATA||[]).map(function(s){return [s.c,s.t];}).sort(function(a,b){return a[0]<b[0]?-1:1;});
-function load(o){o=o&&typeof o==="object"?o:{};return {acuan:Array.isArray(o.acuan)?o.acuan:[],mati:Array.isArray(o.mati)?o.mati:[]};}
+function load(o){o=o&&typeof o==="object"?o:{};return {acuan:Array.isArray(o.acuan)?o.acuan:[],mati:Array.isArray(o.mati)?o.mati:[],kosong:typeof o.kosong==="string"?o.kosong:""};}
 var D=load(JSON.parse(JSON.stringify(window.ASTA_KB||{}))),SITE=JSON.stringify(D),downloaded=false,tab="acuan",edit=-1,tT;
 function toast(m){$("ttxt").textContent=m;$("toast").classList.add("on");clearTimeout(tT);tT=setTimeout(function(){$("toast").classList.remove("on");},2800);}
 function status(){var d=JSON.stringify(D)!==SITE,st=$("status");st.className="status"+(d?(downloaded?" done":" dirty"):"");
@@ -126,7 +126,9 @@ function render(){var q=$("q").value.trim().toLowerCase(),h="";
     var bk=BOOKS.filter(function(b){return !q||b[1].toLowerCase().indexOf(q)>=0;}),sp=SOPS.filter(function(s){return !q||(s[0]+" "+s[1]).toLowerCase().indexOf(q)>=0;});
     h='<div class="gh">Buku panduan ('+bk.length+")</div>"+bk.map(function(b){return row(b[0],b[1],"panduan/"+b[0]+".pdf");}).join("")+'<div class="gh">SOP ('+sp.length+")</div>"+sp.map(function(s){return row(s[0],s[0]+" "+s[1],"sop/"+s[0]+".pdf");}).join("");
   }
-  $("list").innerHTML=h;status();}
+  function kosongCard(){return '<article class="kb"><h3>Kalau ASTA belum tahu jawabannya</h3><label>Pesan yang ditampilkan <small class="help">dipakai saat tidak ada SOP, buku panduan, atau acuan yang cocok. Kosongkan untuk memakai pesan bawaan.</small><textarea id="kosong" maxlength="300" style="min-height:76px" placeholder="Aduh, sorry nih, aku belum tahu soal itu. Coba tanya langsung ke BPH ya.">'+esc(D.kosong||"")+"</textarea></label></article>";}
+  $("list").innerHTML=(tab==="acuan"?kosongCard():"")+h;status();}
+$("list").addEventListener("input",function(e){if(e.target.id==="kosong"){D.kosong=e.target.value;downloaded=false;status();}});
 $("list").addEventListener("click",function(e){var b=e.target.closest("[data-a]");if(!b)return;var i=+b.getAttribute("data-i"),a=b.getAttribute("data-a"),k=D.acuan[i];
   if(a==="e")open(i);
   else if(a==="t"){k.aktif=k.aktif===false;touch();}

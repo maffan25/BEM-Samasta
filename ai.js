@@ -207,9 +207,10 @@
     if (TIME && /\d+\s*(hari|jam|menit|minggu|bulan)|paling lambat|selambat|maksimal|paling lama/i.test(s)) sc *= 1.5;
     return sc * (s.length < 60 ? .7 : s.length > 330 ? .75 : 1);
   }
+  function kosongMsg() { var k = window.ASTA_KB && String(window.ASTA_KB.kosong || "").trim(); return k || "Aduh, sorry nih, aku belum tahu soal itu. Coba tanya langsung ke BPH ya."; }
   function compose(q, ctx) {
     var I = build(), its = ctx.items, a = { jenis: "ok", catatan: [], sumber: [], lanjut: [] };
-    if (!its.length || ctx.top < 1.2) { a.jenis = "kosong"; a.ringkas = "Aku belum menemukan jawabannya. Coba tulis dengan kata kunci lain, misalnya nama kegiatan atau dokumen yang dimaksud."; return a; }
+    if (!its.length || ctx.top < 1.2) { a.jenis = "kosong"; a.ringkas = kosongMsg(); return a; }
     var qset = {}, lo = q.toLowerCase(), it = {};
     toks(expand(q)).forEach(function (w) { qset[w] = 1; });
     for (var k in INT) it[k] = INT[k].test(lo);
@@ -287,7 +288,7 @@
   function renderAnswer(a, ctx) {
     var re = arr(a.hl).length ? new RegExp("\\b(" + a.hl.map(function (x) { return x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")\\w*", "gi") : null;
     var h = "", cls = a.jenis === "lokal" ? " lokal" : a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? " warn" : "";
-    var label = a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? "Belum ditemukan" : "Jawaban";
+    var label = a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? "Belum tahu" : "Jawaban";
     h += '<div class="ai-top"><span class="asta-av" aria-hidden="true"><span class="asta-img"></span></span><span class="ai-badge' + cls + '">' + label + "</span></div>";
     if (a.ringkas) h += (a.jenis === "kosong" ? "" : '<section class="ai-sec ai-lead"><h4>Intinya</h4>') + '<p class="ai-sum">' + fmtH(a.ringkas, re) + "</p>" + (a.jenis === "kosong" ? "" : "</section>");
     var L = arr(a.langkah);
@@ -391,7 +392,7 @@
         u.scrollIntoView({ behavior: "smooth", block: "start" });
       }
       setTimeout(function () {
-        var a; try { a = compose(q, ctx); } catch (x) { a = { jenis: "kosong", ringkas: "Maaf, ada kendala saat memproses pertanyaan. Coba tulis ulang dengan kalimat lain." }; if (window.console) console.warn(x); }
+        var a; try { a = compose(q, ctx); } catch (x) { a = { jenis: "kosong", ringkas: kosongMsg() }; if (window.console) console.warn(x); }
         show(a, ctx);
       }, 600 + Math.round(Math.random() * 500));
     }, 30);

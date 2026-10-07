@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Editor Teks Berjalan | BEM STDIIS</title>
+<style>
+:root{--ink:#0d2a38;--gold:#f8d24a;--gold2:#fde9a0;--cream:#fffbef;--sand:#f6efd5;--line:#e6dbb4;--muted:#5d6b73;--green:#0f6b5a;--red:#b3261e;--r:16px;
+  --serif:Georgia,"Times New Roman",serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font:16px/1.55 var(--sans);background:var(--cream);color:var(--ink);padding:env(safe-area-inset-top) 0 calc(96px + env(safe-area-inset-bottom))}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+header{background:var(--ink);color:#f6f1de;padding:28px 0 26px}
+header h1{font:700 clamp(26px,5vw,36px)/1.15 var(--serif);color:#fff}
+header p{color:#cde0dc;margin-top:6px;max-width:560px}
+.tag{display:inline-block;background:var(--gold);color:var(--ink);font-weight:700;font-size:12.5px;border-radius:999px;padding:3px 12px;margin-bottom:12px}
+.status{position:sticky;top:0;z-index:20;background:var(--sand);border-bottom:1px solid var(--line);padding:10px 0;font-size:14.5px}
+.status .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.status b{font-weight:700}.dot{width:10px;height:10px;border-radius:50%;background:#9db3ad;flex:none}
+.status.dirty .dot{background:var(--gold);box-shadow:0 0 0 4px rgba(248,210,74,.35)}
+.status.done .dot{background:var(--green)}
+.btn{font:600 15px var(--sans);border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:9px 18px;cursor:pointer;transition:background .15s,transform .15s;display:inline-flex;gap:8px;align-items:center;justify-content:center}
+.btn:hover{background:var(--sand)}.btn:active{transform:scale(.97)}
+.btn.gold{background:var(--gold);border-color:var(--gold)}.btn.gold:hover{background:#f3c92f}
+.btn.dark{background:var(--ink);color:#fff}.btn.dark:hover{background:#17435a}
+.btn.sm{padding:6px 14px;font-size:13.5px}.btn.red{border-color:var(--red);color:var(--red)}.btn.red:hover{background:#fbe9e7}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 14px}
+.bar .grow{flex:1;min-width:200px}
+input,select,textarea{font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;width:100%}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 4px rgba(248,210,74,.45)}
+textarea{min-height:110px;resize:vertical}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;font:600 14px var(--sans);cursor:pointer;color:var(--muted)}
+.tab[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.list{display:grid;gap:12px}
+.ev{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r);padding:16px 18px;box-shadow:0 6px 18px -12px rgba(13,42,56,.35)}
+.dt{background:var(--sand);border-radius:12px;text-align:center;padding:8px 4px;align-self:start}
+.dt b{display:block;font:700 24px/1 var(--serif)}.dt span{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.ev h3{font:700 18px/1.3 var(--serif);margin-bottom:6px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.meta i{font-style:normal;font-size:12.5px;font-weight:600;background:var(--sand);border-radius:999px;padding:2px 10px;color:#2a5560}
+.ev p{font-size:14.5px;color:var(--muted);margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.act{display:flex;gap:8px;flex-wrap:wrap}
+.empty{background:#fff;border:1.5px dashed var(--line);border-radius:var(--r);padding:36px 20px;text-align:center;color:var(--muted)}
+.how{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:4px 20px;margin-top:26px}
+.how summary{cursor:pointer;font-weight:700;padding:14px 0}
+.how ol{padding:0 0 14px 20px;color:#2b4652}.how li{margin-bottom:6px}
+.banner{background:#fff7d6;border:1px solid #ecd67a;border-radius:var(--r);padding:14px 18px;margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.banner span{flex:1;min-width:200px}
+dialog{border:0;border-radius:22px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);box-shadow:0 30px 80px -20px rgba(13,42,56,.6);color:var(--ink)}
+dialog::backdrop{background:rgba(13,42,56,.55);backdrop-filter:blur(3px)}
+.fh{background:var(--ink);color:#fff;padding:18px 24px;font:700 20px var(--serif)}
+.fb{padding:20px 24px;display:grid;gap:14px;overflow:auto;max-height:calc(100dvh - 190px)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weight:400;color:var(--muted)}
+.ff{padding:14px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;background:var(--cream)}
+.err{color:var(--red);font-size:13.5px;min-height:1.2em}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;border-radius:999px;padding:10px 12px 10px 20px;display:flex;gap:14px;align-items:center;transition:.3s;z-index:60;max-width:calc(100vw - 24px)}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{background:var(--gold);border:0;border-radius:999px;padding:6px 14px;font:700 13.5px var(--sans);cursor:pointer;color:var(--ink)}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;box-shadow:0 14px 30px -10px rgba(13,42,56,.55)}
+@media (max-width:520px){.ev{grid-template-columns:52px minmax(0,1fr);gap:12px;padding:14px}.row2{grid-template-columns:1fr}.dt b{font-size:20px}}
+.kb{background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r);padding:16px 18px;box-shadow:0 6px 18px -12px rgba(13,42,56,.35)}
+.kb.off{opacity:.55;border-left-color:#b8c4c0}.kb h3{font:700 18px/1.3 var(--serif);margin-bottom:6px}
+.kb p{font-size:14.5px;color:var(--muted);margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sw{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:600}
+.sw input{width:20px;height:20px;accent-color:var(--green);flex:none;padding:0}.sw small{font-weight:400;color:var(--muted);display:block;word-break:break-all}.sw.off{background:#f4f1e6;color:var(--muted)}
+.gh{font:700 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.src{display:grid;grid-template-columns:minmax(0,1fr) 84px 40px;gap:8px;align-items:start}.src .cu{grid-column:1/-1;display:grid;gap:8px}
+.help{font-size:13px;color:var(--muted);font-weight:400}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="wrap"><span class="tag">Khusus pengelola</span><h1>Editor Teks Berjalan</h1><p>Atur pengumuman penting di bagian "Info terbaru". Agenda kalender yang tinggal besok atau hari ini otomatis tampil dengan penanda khusus. Selesai, unduh <b>pengumuman.js</b> lalu unggah ke GitHub.</p></div></header>
+<div class="status" id="status" role="status"><div class="wrap"><i class="dot"></i><span id="stxt"></span><span style="flex:1"></span><button class="btn gold sm" id="dl">Unduh pengumuman.js</button></div></div>
+<main class="wrap">
+  <article class="kb" style="margin-top:22px"><h3>Pemicu otomatis dari kalender</h3>
+    <label class="sw" style="margin-bottom:12px"><input type="checkbox" id="oto"><span>Tampilkan agenda kalender di teks berjalan<small>Agenda H-1 dan hari H tampil paling depan dengan penanda merah, dan kotak tanggalnya di kalender menyala api.</small></span></label>
+    <div class="row2" style="grid-template-columns:repeat(3,minmax(0,1fr))"><label>Besok (H-1)<input id="t-b" maxlength="20" placeholder="BESOK"></label><label>Hari ini (H)<input id="t-h" maxlength="20" placeholder="HARI INI"></label><label>Pengingat<input id="t-i" maxlength="30" placeholder="JANGAN LUPA"></label></div>
+    <p class="help" style="margin-top:10px">Pratinjau: <b id="pv"></b></p></article>
+  <div class="bar"><input class="grow" id="q" type="search" placeholder="Cari pengumuman" aria-label="Cari"><button class="btn dark" id="add">+ Tambah pengumuman</button></div>
+  <div class="list" id="list"></div>
+  <details class="how" open><summary>Cara menerbitkan perubahan ke situs</summary><ol>
+    <li>Pengumuman bertanda <b>Penting</b> tampil paling depan dengan penanda merah. Atur tanggal tampil agar tayang dan hilang sendiri.</li>
+    <li>Selesai, tekan <b>Unduh pengumuman.js</b>, lalu di GitHub: Add file, Upload files, seret file itu (nama harus sama), Commit changes.</li></ol>
+    <div class="act" style="padding-bottom:16px"><button class="btn sm" id="copy">Salin kode</button><button class="btn sm" id="imp">Muat file pengumuman.js</button><button class="btn sm red" id="reset">Kembali ke versi situs</button><input type="file" id="file" accept=".js,.json,text/javascript" hidden></div></details>
+</main>
+<button class="btn gold fab" id="fab" aria-label="Tambah pengumuman">+ Tambah</button>
+<dialog id="dlg"><form method="dialog" id="form" novalidate>
+  <div class="fh" id="ftitle">Tambah pengumuman</div>
+  <div class="fb">
+    <label>Teks pengumuman *<textarea id="f-teks" maxlength="220" style="min-height:90px" placeholder="Contoh: Rapat evaluasi pengurus Jumat ini pukul 19.30, wajib hadir."></textarea></label>
+    <div class="row2"><label>Tampil mulai <small class="help">opsional</small><input id="f-mulai" type="date"></label><label>Tampil sampai <small class="help">opsional</small><input id="f-sampai" type="date"></label></div>
+    <label class="sw"><input type="checkbox" id="f-penting"><span>Penting<small>Tampil lebih depan dengan penanda merah berkedip</small></span></label>
+    <label class="sw"><input type="checkbox" id="f-aktif" checked><span>Aktif</span></label>
+    <div class="err" id="err" role="alert"></div>
+  </div>
+  <div class="ff"><button class="btn" type="button" id="cancel">Batal</button><button class="btn gold" type="submit">Simpan</button></div>
+</form></dialog>
+<div class="toast" id="toast"><span id="ttxt"></span></div>
+<script>document.write('<script src="pengumuman.js?t='+Date.now()+'"><\/script>');</script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i);};
+function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function load(o){o=o&&typeof o==="object"?o:{};return {otomatis:o.otomatis!==false,besok:o.besok||"BESOK",hariini:o.hariini||"HARI INI",ingat:o.ingat||"JANGAN LUPA",pesan:Array.isArray(o.pesan)?o.pesan:[]};}
+var D=load(JSON.parse(JSON.stringify(window.PENGUMUMAN||{}))),SITE=JSON.stringify(D),downloaded=false,edit=-1,tT;
+function toast(m){$("ttxt").textContent=m;$("toast").classList.add("on");clearTimeout(tT);tT=setTimeout(function(){$("toast").classList.remove("on");},2800);}
+function fd(v){if(!v)return"";var p=v.split("-");return p[2]+"/"+p[1]+"/"+p[0];}
+function status(){var d=JSON.stringify(D)!==SITE,st=$("status");st.className="status"+(d?(downloaded?" done":" dirty"):"");
+  $("stxt").innerHTML=!d?"Sama dengan versi di situs. <b>"+D.pesan.length+" pengumuman</b>.":downloaded?"<b>File sudah diunduh.</b> Tinggal unggah <b>pengumuman.js</b> ke GitHub.":"<b>Ada perubahan belum diterbitkan.</b>";
+  $("pv").textContent=D.hariini+" · Rapat evaluasi · "+D.ingat+"!   |   "+D.besok+" · Rapat evaluasi · "+D.ingat+"!";}
+function touch(){downloaded=false;render();}
+function render(){var q=$("q").value.trim().toLowerCase();$("oto").checked=D.otomatis;
+  var L=D.pesan.map(function(m,i){return [m,i];}).filter(function(x){return !q||x[0].teks.toLowerCase().indexOf(q)>=0;});
+  $("list").innerHTML=L.length?L.map(function(x){var m=x[0],i=x[1];return '<article class="kb'+(m.aktif===false?" off":"")+'"><h3 style="font-size:16px">'+esc(m.teks)+'</h3><div class="meta">'+(m.penting?"<i>Penting</i>":"")+(m.aktif===false?"<i>Nonaktif</i>":"")+(m.mulai||m.sampai?"<i>"+(m.mulai?fd(m.mulai):"sekarang")+" sampai "+(m.sampai?fd(m.sampai):"seterusnya")+"</i>":"<i>Selalu tampil</i>")+'</div><div class="act"><button class="btn sm dark" data-a="e" data-i="'+i+'">Ubah</button><button class="btn sm" data-a="u" data-i="'+i+'" aria-label="Naikkan">&uarr;</button><button class="btn sm" data-a="n" data-i="'+i+'" aria-label="Turunkan">&darr;</button><button class="btn sm" data-a="t" data-i="'+i+'">'+(m.aktif===false?"Aktifkan":"Nonaktifkan")+'</button><button class="btn sm red" data-a="d" data-i="'+i+'">Hapus</button></div></article>';}).join(""):'<div class="empty">'+(D.pesan.length?"Tidak ada yang cocok.":"Belum ada pengumuman. Agenda kalender tetap tampil otomatis.")+"</div>";
+  status();}
+$("list").addEventListener("click",function(e){var b=e.target.closest("[data-a]");if(!b)return;var i=+b.getAttribute("data-i"),a=b.getAttribute("data-a"),m=D.pesan[i];
+  if(a==="e")open(i);else if(a==="t"){m.aktif=m.aktif===false;touch();}
+  else if(a==="u"&&i>0){D.pesan.splice(i-1,0,D.pesan.splice(i,1)[0]);touch();}
+  else if(a==="n"&&i<D.pesan.length-1){D.pesan.splice(i+1,0,D.pesan.splice(i,1)[0]);touch();}
+  else if(a==="d"&&confirm("Hapus pengumuman ini?")){D.pesan.splice(i,1);touch();toast("Pengumuman dihapus.");}});
+$("q").addEventListener("input",render);
+$("oto").onchange=function(){D.otomatis=$("oto").checked;downloaded=false;status();};
+[["t-b","besok"],["t-h","hariini"],["t-i","ingat"]].forEach(function(p){$(p[0]).value=D[p[1]];$(p[0]).addEventListener("input",function(){D[p[1]]=this.value.trim()||{besok:"BESOK",hariini:"HARI INI",ingat:"JANGAN LUPA"}[p[1]];downloaded=false;status();});});
+function open(i){edit=i;var m=i>=0?D.pesan[i]:{};$("ftitle").textContent=i>=0?"Ubah pengumuman":"Tambah pengumuman";$("f-teks").value=m.teks||"";$("f-mulai").value=m.mulai||"";$("f-sampai").value=m.sampai||"";$("f-penting").checked=!!m.penting;$("f-aktif").checked=m.aktif!==false;$("err").textContent="";$("dlg").showModal();setTimeout(function(){$("f-teks").focus();},60);}
+$("add").onclick=$("fab").onclick=function(){open(-1);};$("cancel").onclick=function(){$("dlg").close();};
+$("form").addEventListener("submit",function(e){e.preventDefault();var t=$("f-teks").value.trim(),a=$("f-mulai").value,b=$("f-sampai").value;
+  if(!t){$("err").textContent="Teks pengumuman wajib diisi.";return;}
+  if(a&&b&&b<a){$("err").textContent="Tanggal sampai tidak boleh sebelum tanggal mulai.";return;}
+  var o={id:edit>=0?D.pesan[edit].id:"p"+Date.now(),teks:t,mulai:a,sampai:b,penting:$("f-penting").checked,aktif:$("f-aktif").checked};
+  if(edit>=0)D.pesan[edit]=o;else D.pesan.unshift(o);$("dlg").close();touch();toast("Pengumuman disimpan.");});
+function output(){return "/* pengumuman.js: teks berjalan \"Info terbaru\" BEM STDIIS.\n   Jangan diedit manual. Gunakan admin-pengumuman.html, lalu unduh file ini dan unggah ke GitHub.\n   Terakhir dibuat: "+new Date().toLocaleString("id-ID")+" */\nwindow.PENGUMUMAN = "+JSON.stringify(D,null,1)+";\n";}
+$("dl").onclick=function(){var bl=new Blob([output()],{type:"text/javascript"}),a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="pengumuman.js";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},2000);downloaded=true;status();toast("pengumuman.js diunduh. Sekarang unggah ke GitHub.");};
+$("copy").onclick=function(){if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(output()).then(function(){toast("Kode disalin.");},function(){toast("Gagal menyalin. Gunakan tombol unduh.");});};
+$("imp").onclick=function(){$("file").click();};
+$("file").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var t=String(r.result);D=load(JSON.parse(t.slice(t.indexOf("{",t.indexOf("PENGUMUMAN")),t.lastIndexOf("}")+1)));[["t-b","besok"],["t-h","hariini"],["t-i","ingat"]].forEach(function(p){$(p[0]).value=D[p[1]];});touch();toast("File dimuat.");}catch(x){alert("Format file tidak dikenali. Gunakan pengumuman.js buatan editor ini.");}};r.readAsText(f);e.target.value="";});
+$("reset").onclick=function(){if(JSON.stringify(D)===SITE||confirm("Buang semua perubahan dan kembali ke versi situs?")){D=load(JSON.parse(SITE));[["t-b","besok"],["t-h","hariini"],["t-i","ingat"]].forEach(function(p){$(p[0]).value=D[p[1]];});touch();}};
+window.addEventListener("beforeunload",function(e){if(JSON.stringify(D)!==SITE&&!downloaded){e.preventDefault();e.returnValue="";}});
+render();
+})();
+</script>
+</body>
+</html>
