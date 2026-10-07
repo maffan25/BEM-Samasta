@@ -1,5 +1,6 @@
 /* =====================================================================
-   Tanya AI, BEM STDIIS
+   ASTA (asisten AI), BEM STDIIS
+   Tombol maskot melayang di kanan bawah -> jendela chat ASTA.
    1) Pengunjung memilih bagian  2) pertanyaan dicocokkan ke SOP + buku panduan
    (di peramban)  3) potongan yang cocok dikirim ke Apps Script -> AI  4) jawaban
    ditampilkan sebagai ringkasan, langkah, alur, tabel, grafik, dan sumber.
@@ -241,7 +242,7 @@
   function renderAnswer(a, ctx) {
     var h = "", cls = a.jenis === "lokal" ? " lokal" : a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? " warn" : "";
     var label = a.jenis === "lokal" ? "Hasil pencarian SOP" : a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? "Belum ditemukan" : "Jawaban";
-    h += '<span class="ai-badge' + cls + '">' + label + "</span>";
+    h += '<div class="ai-top"><span class="asta-av" aria-hidden="true"><span class="asta-img"></span></span><span class="ai-badge' + cls + '">' + label + "</span></div>";
     if (a.ringkas) h += '<p class="ai-sum">' + fmt(a.ringkas) + "</p>";
     var L = arr(a.langkah);
     if (L.length) h += '<div><h4>Langkah</h4><ol class="ai-steps">' + L.map(function (s) {
@@ -291,7 +292,7 @@
   function renderPick() {
     var groups = {}, order = [];
     BAGIAN.forEach(function (b) { if (!groups[b.g]) { groups[b.g] = []; order.push(b.g); } groups[b.g].push(b); });
-    pick.innerHTML = "<h2>Kamu dari bagian mana?</h2><p>Pilih dulu supaya AI mengutamakan SOP dan buku panduan yang paling berkaitan dengan tugasmu.</p>" +
+    pick.innerHTML = '<div class="asta-hello"><div class="asta-hero" aria-hidden="true"><span class="asta-img" data-wave></span></div><div class="asta-say"><h2>Halo, aku ASTA!</h2><p>Kamu dari bagian mana? Pilih dulu supaya aku mengutamakan SOP dan buku panduan yang paling berkaitan dengan tugasmu.</p></div></div>' +
       order.map(function (g) {
         return '<div class="ai-grp"><h3>' + esc(g) + '</h3><div class="ai-tiles">' + groups[g].map(function (b) {
           var n = DATA.filter(function (s) { return b.r.some(function (r) { return s.own && (s.own.has(r) || s.inv.has(r)); }); }).length;
@@ -312,9 +313,9 @@
   function choose(k) {
     st.bag = BK[k]; st.hist = []; st.answers = [];
     pick.hidden = true; chat.hidden = false; setMode();
-    feed.innerHTML = '<div class="ai-hello"><h3>Halo, ' + esc(st.bag.umum ? "silakan bertanya" : "pengurus " + st.bag.n) + '.</h3><p>Ceritakan masalah atau pertanyaanmu. Aku jawab berdasarkan SOP dan buku panduan, lengkap dengan langkah, tabel, dan alur bila perlu.</p></div>';
+    feed.innerHTML = '<div class="ai-hello"><span class="asta-av" aria-hidden="true"><span class="asta-img"></span></span><div><h3>Halo, ' + esc(st.bag.umum ? "silakan bertanya" : "pengurus " + st.bag.n) + '! Aku ASTA.</h3><p>Ceritakan masalah atau pertanyaanmu. Aku jawab berdasarkan SOP dan buku panduan, lengkap dengan langkah, tabel, dan alur bila perlu.</p></div></div>';
     sugg.innerHTML = suggestions(st.bag).map(function (s) { return '<button type="button" data-ask="' + esc(s) + '">' + esc(s) + "</button>"; }).join("");
-    window.scrollTo(0, 0);
+    feed.scrollTop = 0;
     setTimeout(build, 60);
     setTimeout(function () { ta.focus({ preventScroll: true }); }, 200);
   }
@@ -328,7 +329,8 @@
     if (wait > 0) { ta.setCustomValidity(""); toast("Tunggu " + Math.ceil(wait / 1000) + " detik sebelum bertanya lagi."); return; }
     st.busy = true; st.last = Date.now(); send.disabled = true; ta.value = ""; grow(); sugg.hidden = true;
     var u = addMsg(esc(q), "ai-u");
-    var w = addMsg('<div class="ai-wait" role="status"><p>Mencari di SOP dan buku panduan...</p><i></i><i></i><i></i><i></i></div>', "ai-a");
+    var w = addMsg('<div class="ai-wait" role="status"><div class="ai-think"><span class="asta-av" aria-hidden="true"><span class="asta-img"></span></span><span>ASTA sedang mencari di SOP dan buku panduan<em><i></i><i></i><i></i></em></span></div><i></i><i></i><i></i></div>', "ai-a");
+    avBusy(true);
     u.scrollIntoView({ behavior: "smooth", block: "start" });
     setTimeout(function () {
       var ctx = pickContext(q, st.bag), hist = st.hist.slice(-CFG.HIST);
@@ -336,7 +338,7 @@
         w.innerHTML = renderAnswer(a, c);
         st.answers.push(a); w.setAttribute("data-i", st.answers.length - 1);
         st.hist.push({ r: "u", t: q }); st.hist.push({ r: "a", t: (a.ringkas || "").slice(0, 400) });
-        st.busy = false; send.disabled = false; setMode();
+        st.busy = false; send.disabled = false; avBusy(false); setMode();
         u.scrollIntoView({ behavior: "smooth", block: "start" });
       }
       askAI(q, st.bag, ctx, hist).then(function (a) {
@@ -357,10 +359,16 @@
     if (!t) { t = document.createElement("p"); t.id = "ai-toast"; t.className = "ai-foot"; t.setAttribute("role", "status"); chat.insertBefore(t, form.nextSibling); }
     t.textContent = m; clearTimeout(tT); tT = setTimeout(function () { t.textContent = ""; }, 3000);
   }
+  function avBusy(on) { var av = $("asta-av"); if (av) av.classList.toggle("busy", on); }
   function grow() { ta.style.height = "auto"; ta.style.height = Math.min(140, ta.scrollHeight) + "px"; }
 
   pick.addEventListener("click", function (e) { var b = e.target.closest("[data-bag]"); if (b) choose(b.getAttribute("data-bag")); });
-  $("ai-change").addEventListener("click", function () { chat.hidden = true; pick.hidden = false; window.scrollTo(0, 0); });
+  $("ai-change").addEventListener("click", function () { chat.hidden = true; pick.hidden = false; pick.scrollTop = 0; });
+  pick.addEventListener("click", function (e) {
+    var w = e.target.closest("[data-wave]"); if (!w) return;
+    w.style.animation = "none"; void w.offsetWidth; w.style.animation = "astaWave .9s ease-in-out";
+    setTimeout(function () { w.style.animation = ""; }, 950);
+  });
   form.addEventListener("submit", function (e) { e.preventDefault(); ask(ta.value); });
   ta.addEventListener("input", grow);
   ta.addEventListener("keydown", function (e) {
@@ -379,28 +387,125 @@
   feed.addEventListener("transitionend", function () {}, false);
   $("ai-q").addEventListener("focus", function () { sugg.hidden = false; });
 
-  /* ---------- Navigasi halaman (mandiri, seperti aspirasi.js) ---------- */
-  var home = $("home"), others = [$("pd-app"), $("sop-app"), $("asp-app")], title0 = document.title;
-  function syncPage() {
-    var on = location.hash === "#tanya-ai";
-    if (on) {
-      var fresh = page.hidden;
-      home.hidden = true; others.forEach(function (n) { if (n) n.hidden = true; }); page.hidden = false;
-      document.title = "Tanya AI | BEM STDIIS";
-      if (fresh) { window.scrollTo(0, 0); if (!st.bag) { pick.hidden = false; chat.hidden = true; } }
-    } else if (!page.hidden) { page.hidden = true; document.title = title0; }
-    [].forEach.call(document.querySelectorAll(".nav a"), function (a) {
-      if (on) a.classList.toggle("active", a.getAttribute("href") === "#tanya-ai");
-      else if (a.getAttribute("href") === "#tanya-ai") a.classList.remove("active");
-    });
+  /* ---------- Tombol melayang ASTA (kanan bawah) ---------- */
+  var reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var MSGS = ["Tanya aku", "Masih bingung?", "Ngobrol yuk"];   /* berganti tiap 5 detik */
+  var SWAP_MS = 5000;
+
+  var fab = (function () {
+    var el = document.createElement("div");
+    el.className = "asta-fab"; el.id = "asta-fab";
+    var longest = MSGS.reduce(function (a, b) { return b.length > a.length ? b : a; }, "");
+    el.innerHTML =
+      '<div class="asta-bubble" aria-hidden="true"><span class="asta-sizer">' + esc(longest) + '</span><span class="asta-txt"></span><span class="asta-dots"><i></i><i></i><i></i></span></div>' +
+      '<a class="asta-btn" href="#tanya-ai" aria-label="Buka ASTA, asisten AI untuk bertanya soal SOP dan buku panduan">' +
+        '<span class="asta-shadow"></span><span class="asta-float"><span class="asta-tilt"><span class="asta-img"></span></span></span><span class="asta-dot"></span></a>';
+    var bub = el.querySelector(".asta-bubble"), txt = el.querySelector(".asta-txt"),
+        btn = el.querySelector(".asta-btn"), tilt = el.querySelector(".asta-tilt");
+    var timers = [], off = false, idx = -1;
+    function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+    function wave() {
+      btn.classList.remove("hi"); void btn.offsetWidth; btn.classList.add("hi");
+      later(function () { btn.classList.remove("hi"); }, 1000);
+    }
+    function typeIn(s) {
+      if (reduce) { txt.textContent = s; return; }
+      var n = 0; bub.classList.add("typing");
+      (function step() {
+        txt.textContent = s.slice(0, ++n);
+        if (n < s.length) later(step, 40); else bub.classList.remove("typing");
+      })();
+    }
+    function next() {
+      if (off || document.hidden) { later(next, 1000); return; }          /* jeda saat jendela terbuka / tab disembunyikan */
+      idx = (idx + 1) % MSGS.length;
+      var s = MSGS[idx];
+      bub.classList.remove("show");
+      later(function () { txt.textContent = ""; bub.classList.add("show", "wait"); }, reduce ? 0 : 280);   /* titik-titik "mengetik" */
+      later(function () { bub.classList.remove("wait"); typeIn(s); wave(); }, reduce ? 0 : 280 + 700);
+      later(next, SWAP_MS);
+    }
+    bub.addEventListener("click", function () { btn.click(); });
+
+    /* ASTA menoleh mengikuti kursor (hanya perangkat dengan mouse) */
+    if (!reduce && window.matchMedia && matchMedia("(pointer:fine)").matches) {
+      var raf = 0, mx = 0, my = 0;
+      var look = function () {
+        raf = 0; if (off) return;
+        var r = btn.getBoundingClientRect(), dx = mx - (r.left + r.width / 2), dy = my - (r.top + r.height / 2),
+            d = Math.min(1, Math.hypot(dx, dy) / 520), a = Math.atan2(dy, dx);
+        tilt.style.setProperty("--px", (Math.cos(a) * 5 * d).toFixed(1) + "px");
+        tilt.style.setProperty("--py", (Math.sin(a) * 4 * d).toFixed(1) + "px");
+        tilt.style.setProperty("--pr", (Math.cos(a) * 6 * d).toFixed(1) + "deg");
+      };
+      document.addEventListener("pointermove", function (e) { mx = e.clientX; my = e.clientY; if (!raf) raf = requestAnimationFrame(look); }, { passive: true });
+    }
+
+    setTimeout(function () {
+      el.classList.add("enter"); document.body.appendChild(el);
+      later(next, reduce ? 300 : 1300);
+    }, reduce ? 0 : 700);
+    return { setOff: function (v) { off = v; el.classList.toggle("off", v); } };
+  })();
+
+  /* ---------- Jendela ASTA (buka/tutup lewat #tanya-ai) ---------- */
+  var title0 = document.title, root = document.documentElement, pushed = false, lastFocus = null, closeT = 0;
+  function lock(on) {
+    if (on) { var sw = window.innerWidth - root.clientWidth; root.classList.add("asta-lock"); if (sw > 0) document.body.style.paddingRight = sw + "px"; }
+    else { root.classList.remove("asta-lock"); document.body.style.paddingRight = ""; }
   }
+  function openUI() {
+    if (!page.hidden && !page.classList.contains("closing")) return;
+    clearTimeout(closeT); page.classList.remove("closing");
+    lastFocus = document.activeElement;
+    page.hidden = false; lock(true); fab.setOff(true); fitViewport();
+    document.title = "ASTA | BEM STDIIS";
+    if (!st.bag) { pick.hidden = false; chat.hidden = true; pick.scrollTop = 0; }
+    setTimeout(function () { try { (st.bag ? ta : $("asta-close")).focus({ preventScroll: true }); } catch (x) {} }, 380);
+  }
+  function closeUI() {
+    pushed = false;
+    if (page.hidden || page.classList.contains("closing")) return;
+    page.classList.add("closing");
+    closeT = setTimeout(function () {
+      page.hidden = true; page.classList.remove("closing"); lock(false); fab.setOff(false); document.title = title0;
+      if (lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (x) {} }
+    }, reduce ? 0 : 280);
+  }
+  function syncPage() { if (location.hash === "#tanya-ai") openUI(); else closeUI(); }
+  function requestClose() {
+    if (pushed) { pushed = false; history.back(); }
+    else { try { history.replaceState(null, "", "#beranda"); } catch (x) {} syncPage(); }
+  }
+  /* di ponsel, jendela mengikuti tinggi layar yang terlihat (saat papan ketik muncul) */
+  function fitViewport() {
+    var vv = window.visualViewport;
+    if (vv && window.innerWidth <= 640 && !page.hidden) { page.style.top = vv.offsetTop + "px"; page.style.bottom = "auto"; page.style.height = vv.height + "px"; }
+    else { page.style.top = page.style.bottom = page.style.height = ""; }
+  }
+  if (window.visualViewport) { visualViewport.addEventListener("resize", fitViewport); visualViewport.addEventListener("scroll", fitViewport); }
+  window.addEventListener("resize", fitViewport);
+
+  page.addEventListener("click", function (e) { if (e.target.closest("[data-asta-close]")) requestClose(); });
+  document.addEventListener("keydown", function (e) {
+    if (page.hidden) return;
+    if (e.key === "Escape") { e.preventDefault(); requestClose(); return; }
+    if (e.key !== "Tab") return;
+    var f = [].filter.call(page.querySelectorAll('button,textarea,a[href],[tabindex]:not([tabindex="-1"])'), function (n) { return !n.disabled && n.offsetParent !== null; });
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (!page.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
   document.addEventListener("click", function (e) {
     if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
     var a = e.target.closest('a[href="#tanya-ai"]'); if (!a) return;
     e.preventDefault();
-    if (location.hash !== "#tanya-ai") { try { history.pushState(null, "", "#tanya-ai"); } catch (x) { location.hash = "#tanya-ai"; } }
+    if (location.hash !== "#tanya-ai") { try { history.pushState(null, "", "#tanya-ai"); pushed = true; } catch (x) { location.hash = "#tanya-ai"; } }
     syncPage();
   }, true);
+  /* tautan sumber (#sop/...) di dalam jawaban: tutup jendela, lalu biarkan halaman SOP terbuka */
   document.addEventListener("click", function (e) { if (e.target.closest('a[href^="#"]')) setTimeout(syncPage, 0); });
   window.addEventListener("hashchange", syncPage);
   window.addEventListener("popstate", syncPage);

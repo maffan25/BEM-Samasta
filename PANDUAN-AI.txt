@@ -1,3 +1,15 @@
+PEMBARUAN: AI KINI BERNAMA "ASTA" (TOMBOL MELAYANG DI KANAN BAWAH)
+===================================================================
+- Tidak ada lagi menu "Tanya AI" di navigasi dan tidak ada bagian AI di beranda.
+  ASTA muncul sebagai ikon maskot melayang di kanan bawah semua halaman.
+- Di atas ikon ada gelembung chat yang berganti tiap 5 detik: "Tanya aku" > "Masih bingung?" > "Ngobrol yuk".
+  Ubah tulisan/waktunya di ai.js: cari  MSGS  dan  SWAP_MS.
+- Klik ikon (atau gelembungnya) untuk membuka jendela ASTA. Tutup dengan tombol X, klik area gelap, atau tombol Esc.
+  Di ponsel jendela tampil layar penuh.
+- Maskot tertanam di ai.css (tidak perlu file gambar terpisah). Ingin ganti gambar? Ganti nilai  --asta  di bagian atas blok ASTA pada ai.css.
+- Bila di kanan bawah sudah ada tombol lain dan saling menumpuk, naikkan ASTA: di ai.css ubah  --asta-bottom:18px  (mis. 96px).
+- File yang berubah: index.html, ai.js, ai.css (versi ?v=2). Pengaturan AI di bawah ini tetap sama.
+
 FITUR BARU: TANYA AI + EDITOR ANGGOTA
 =====================================
 
