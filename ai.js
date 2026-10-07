@@ -244,7 +244,7 @@
       .then(function (t) {
         clearTimeout(to);
         var j; try { j = JSON.parse(t); } catch (x) { throw { code: "N2" }; }
-        if (!j.ok) throw { code: j.error === "limit" ? "L1" : j.error === "kunci" ? "K1" : "E1" };
+        if (!j.ok) throw { code: j.error === "limit" ? "L1" : j.error === "kunci" ? "K1" : j.error === "kuota" ? "Q1" : j.error === "model" ? "M1" : "E1", detail: j.detail ? String(j.detail).slice(0, 160) : "" };
         return j.jawaban;
       }, function () { clearTimeout(to); throw { code: "N1" }; });
   }
@@ -359,7 +359,9 @@
         show(a, ctx);
       }).catch(function (e) {
         var code = e && e.code, note = null;
-        if (code && code !== "A0") note = "AI sedang tidak bisa dihubungi (kode " + code + "), jadi yang tampil adalah hasil pencarian SOP.";
+        if (code && code !== "A0") note = "AI sedang tidak bisa dihubungi (kode " + code + (e.detail ? ": " + e.detail : "") + "), jadi yang tampil adalah hasil pencarian SOP.";
+        if (code === "K1") note = "Kunci API belum diisi atau tidak valid (K1), jadi yang tampil adalah hasil pencarian SOP." + (e.detail ? " Rincian: " + e.detail : "");
+        if (code === "Q1") note = "Kuota gratis penyedia AI sedang habis (Q1). Coba lagi beberapa menit lagi; sementara ini yang tampil adalah hasil pencarian SOP.";
         if (code === "L1") note = "Batas penggunaan AI hari ini sudah tercapai, jadi yang tampil adalah hasil pencarian SOP. Coba lagi besok.";
         show(localAnswer(q, ctx, note), ctx);
         if (window.console && code && code !== "A0") console.warn("[Tanya AI] gagal:", code);

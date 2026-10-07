@@ -1207,9 +1207,12 @@ html.focus-on .is-dim::after{opacity:var(--dim)}
 <script src="sop-app.js?v=3"></script>
 <script src="aspirasi-config.js?v=4"></script>
 <script src="aspirasi.js?v=4"></script>
-<script src="ai-config.js?v=1"></script>
-<script src="panduan-data.js?v=1"></script>
-<script src="ai.js?v=3"></script>
+<script>
+/* ai-config.js & panduan-data.js diisi/diganti pengelola lewat GitHub. Parameter waktu (per 5 menit)
+   mencegah browser/CDN memakai salinan lama yang masih kosong. */
+(function(){var t=Math.floor(Date.now()/300000);["ai-config.js","panduan-data.js"].forEach(function(f){document.write('<script src="'+f+'?t='+t+'"><\/script>');});})();
+</script>
+<script src="ai.js?v=5"></script>
 <script src="stars.js?v=1"></script>
 </body>
 </html>
