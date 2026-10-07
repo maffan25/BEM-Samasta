@@ -395,18 +395,25 @@
   var fab = (function () {
     var el = document.createElement("div");
     el.className = "asta-fab"; el.id = "asta-fab";
-    var longest = MSGS.reduce(function (a, b) { return b.length > a.length ? b : a; }, "");
     el.innerHTML =
-      '<div class="asta-bubble" aria-hidden="true"><span class="asta-sizer">' + esc(longest) + '</span><span class="asta-txt"></span><span class="asta-dots"><i></i><i></i><i></i></span></div>' +
+      '<div class="asta-bubble" aria-hidden="true"><span class="asta-sizer"></span><span class="asta-txt"></span><span class="asta-dots"><i></i><i></i><i></i></span></div>' +
       '<a class="asta-btn" href="#tanya-ai" aria-label="Buka ASTA, asisten AI untuk bertanya soal SOP dan buku panduan">' +
         '<span class="asta-shadow"></span><span class="asta-float"><span class="asta-tilt"><span class="asta-img"></span></span></span><span class="asta-dot"></span></a>';
-    var bub = el.querySelector(".asta-bubble"), txt = el.querySelector(".asta-txt"),
+    var bub = el.querySelector(".asta-bubble"), sizer = el.querySelector(".asta-sizer"), txt = el.querySelector(".asta-txt"),
         btn = el.querySelector(".asta-btn"), tilt = el.querySelector(".asta-tilt");
     var timers = [], off = false, idx = -1;
     function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
     function wave() {
       btn.classList.remove("hi"); void btn.offsetWidth; btn.classList.add("hi");
       later(function () { btn.classList.remove("hi"); }, 1000);
+    }
+    /* lebar gelembung mengikuti panjang tulisan, berubah halus */
+    function fit(s) {
+      var prev = bub.offsetWidth;
+      sizer.textContent = s; bub.style.width = "auto";
+      var target = bub.offsetWidth;
+      if (prev && prev !== target) { bub.style.width = prev + "px"; void bub.offsetWidth; }
+      bub.style.width = target + "px";
     }
     function typeIn(s) {
       if (reduce) { txt.textContent = s; return; }
@@ -421,7 +428,7 @@
       idx = (idx + 1) % MSGS.length;
       var s = MSGS[idx];
       bub.classList.remove("show");
-      later(function () { txt.textContent = ""; bub.classList.add("show", "wait"); }, reduce ? 0 : 280);   /* titik-titik "mengetik" */
+      later(function () { txt.textContent = ""; fit(s); bub.classList.add("show", "wait"); }, reduce ? 0 : 280);   /* titik-titik "mengetik" */
       later(function () { bub.classList.remove("wait"); typeIn(s); wave(); }, reduce ? 0 : 280 + 700);
       later(next, SWAP_MS);
     }
