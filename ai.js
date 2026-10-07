@@ -458,19 +458,19 @@
     if (!page.hidden && !page.classList.contains("closing")) return;
     clearTimeout(closeT); page.classList.remove("closing");
     lastFocus = document.activeElement;
-    page.hidden = false; lock(true); fab.setOff(true); fitViewport();
+    page.hidden = false; fab.setOff(true); fitViewport();
     document.title = "ASTA | BEM STDIIS";
     if (!st.bag) { pick.hidden = false; chat.hidden = true; pick.scrollTop = 0; }
-    setTimeout(function () { try { (st.bag ? ta : $("asta-close")).focus({ preventScroll: true }); } catch (x) {} }, 380);
+    setTimeout(function () { try { (st.bag ? ta : $("asta-close")).focus({ preventScroll: true }); } catch (x) {} }, 420);
   }
   function closeUI() {
     pushed = false;
     if (page.hidden || page.classList.contains("closing")) return;
     page.classList.add("closing");
     closeT = setTimeout(function () {
-      page.hidden = true; page.classList.remove("closing"); lock(false); fab.setOff(false); document.title = title0;
+      page.hidden = true; page.classList.remove("closing"); fab.setOff(false); document.title = title0;
       if (lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (x) {} }
-    }, reduce ? 0 : 280);
+    }, reduce ? 0 : 210);
   }
   function syncPage() { if (location.hash === "#tanya-ai") openUI(); else closeUI(); }
   function requestClose() {
@@ -487,6 +487,7 @@
   window.addEventListener("resize", fitViewport);
 
   page.addEventListener("click", function (e) { if (e.target.closest("[data-asta-close]")) requestClose(); });
+  page.addEventListener("wheel", function (e) { if (e.target.classList.contains("asta-backdrop")) e.preventDefault(); }, { passive: false });
   document.addEventListener("keydown", function (e) {
     if (page.hidden) return;
     if (e.key === "Escape") { e.preventDefault(); requestClose(); return; }
@@ -510,6 +511,7 @@
   window.addEventListener("hashchange", syncPage);
   window.addEventListener("popstate", syncPage);
 
+  (window.requestIdleCallback || function (f) { setTimeout(f, 2500); })(function () { try { build(); } catch (x) {} }, { timeout: 6000 });
   renderPick();
   syncPage();
   window.__aiDebug = { search: search, pickContext: pickContext, localAnswer: localAnswer, renderAnswer: renderAnswer };

@@ -96,7 +96,8 @@
 /* ---------- tombol melayang ---------- */
 .asta-fab{position:fixed;z-index:60;right:calc(var(--asta-right) + env(safe-area-inset-right,0px));bottom:calc(var(--asta-bottom) + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:flex-end;gap:20px;pointer-events:none;transition:opacity .25s,transform .35s var(--ease)}
 .asta-fab>*{pointer-events:auto}
-.asta-fab.off{opacity:0;transform:translateY(20px) scale(.6);pointer-events:none}
+.asta-fab.off{opacity:0;visibility:hidden;transform:translateY(20px) scale(.6);pointer-events:none;transition:opacity .2s,transform .25s var(--ease),visibility 0s .25s}
+.asta-fab.off *,.asta-fab.off *::after{animation-play-state:paused!important}
 .asta-fab.off>*{pointer-events:none}
 .asta-fab.enter .asta-btn{animation:astaEnter .9s cubic-bezier(.34,1.56,.64,1) backwards}
 
@@ -137,14 +138,15 @@
 @keyframes astaCaret{50%{opacity:0}}
 
 /* ---------- jendela ASTA ---------- */
-.asta{position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;justify-content:flex-end;padding:calc(var(--asta-right) + 4px);padding-bottom:calc(var(--asta-bottom) + 4px)}
+.asta{position:fixed;inset:0;z-index:100;overscroll-behavior:contain;display:flex;align-items:flex-end;justify-content:flex-end;padding:calc(var(--asta-right) + 4px);padding-bottom:calc(var(--asta-bottom) + 4px)}
 .asta[hidden]{display:none}
-.asta-backdrop{position:absolute;inset:0;background:rgba(13,42,56,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:astaFade .3s ease backwards}
-.asta.closing .asta-backdrop{animation:astaFade .25s ease reverse forwards}
-.asta-win{position:relative;padding:0;display:flex;flex-direction:column;width:min(780px,100%);height:min(840px,100%);background:var(--paper);border-radius:28px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(13,42,56,.7),0 0 0 1.5px rgba(13,42,56,.9);transform-origin:100% 100%;animation:astaOpen .55s cubic-bezier(.2,.9,.25,1.1) backwards}
-.asta.closing .asta-win{animation:astaClose .28s ease-in forwards}
-@keyframes astaOpen{0%{opacity:0;transform:translate(14px,24px) scale(.2);border-radius:50%}60%{opacity:1}100%{transform:none}}
-@keyframes astaClose{to{opacity:0;transform:translate(14px,24px) scale(.2);border-radius:50%}}
+.asta-backdrop{position:absolute;inset:0;background:rgba(13,42,56,.55);touch-action:none;animation:astaFade .22s ease-out backwards}
+.asta.closing .asta-backdrop{animation:astaFadeOut .2s ease-in forwards}
+.asta-win{position:relative;padding:0;display:flex;flex-direction:column;width:min(780px,100%);height:min(840px,100%);background:var(--paper);border-radius:28px;overflow:hidden;box-shadow:0 24px 48px -20px rgba(13,42,56,.55),0 0 0 1.5px rgba(13,42,56,.9);transform-origin:100% 100%;contain:layout paint;will-change:transform,opacity;animation:astaOpen .32s cubic-bezier(.2,.8,.2,1) backwards}
+.asta.closing .asta-win{animation:astaClose .2s ease-in forwards}
+@keyframes astaOpen{from{opacity:0;transform:translate3d(0,28px,0) scale(.86)}to{opacity:1;transform:none}}
+@keyframes astaClose{to{opacity:0;transform:translate3d(0,28px,0) scale(.9)}}
+@keyframes astaFadeOut{to{opacity:0}}
 @keyframes astaFade{from{opacity:0}}
 
 .asta-head{position:relative;flex:none;display:flex;align-items:center;gap:14px;padding:14px 16px 14px 18px;background:var(--ink);color:#fff;overflow:hidden}
@@ -222,7 +224,7 @@
 /* ponsel: layar penuh */
 @media (max-width:640px){
   .asta{padding:0}
-  .asta-win{width:100%;height:100%;border-radius:0;transform-origin:92% 96%}
+  .asta-win{width:100%;height:100%;border-radius:0;transform-origin:50% 100%}
   .asta-head{padding-top:calc(14px + env(safe-area-inset-top,0px))}
   .ai-step{padding:16px 14px 24px}
   .ai-feed{padding:16px 14px 8px}
@@ -235,6 +237,6 @@
 @media (prefers-reduced-motion:reduce){
   .asta-float,.asta-btn::after,.asta-dot,.asta-shadow,.asta-av .asta-img,.asta-hero .asta-img,.ai-think .asta-av .asta-img,.ai-bar i{animation:none!important}
   .asta-btn.hi .asta-tilt .asta-img,.asta-btn:hover .asta-tilt .asta-img{animation:none}
-  .asta-win,.asta-backdrop,.asta-fab.enter .asta-btn{animation:none}
+  .asta-win,.asta-backdrop,.asta-fab.enter .asta-btn{animation:none!important}
 }
 @media print{#ai-app,.asta-fab{display:none!important}}
