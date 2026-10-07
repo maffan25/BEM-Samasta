@@ -58,23 +58,32 @@ function doPost(e) {
     var user = 'BAGIAN: ' + clean_(d.bagian, 80) + '\n\nRIWAYAT SINGKAT:\n' + (hist || '(kosong)') +
       '\n\nKONTEKS:\n' + (ctx || '(tidak ada potongan yang cocok)') + '\n\nPERTANYAAN: ' + q;
 
-    var provider = (P.getProperty('PROVIDER') || 'gemini').toLowerCase();
-    var text = provider === 'claude' ? callClaude_(key, P.getProperty('MODEL'), user) : callGemini_(key, P.getProperty('MODEL'), user);
+    var text = ask_(P, user);
     var j = parse_(text);
     if (!j) j = { jenis: 'jawaban', ringkas: String(text).slice(0, 1200) };
     if (!j.ringkas && !j.langkah && !j.tabel) j.ringkas = 'Maaf, jawaban belum bisa disusun. Coba tulis ulang pertanyaannya.';
     return out_({ ok: true, jawaban: j });
   } catch (err) {
-    console.error(err);
-    return out_({ ok: false, error: 'server' });
+    console.error(safe_(err));
+    return out_({ ok: false, error: kind_(err), detail: safe_(err) });
   }
 }
 
-function doGet() {
+function doGet(e) {
   var P = PropertiesService.getScriptProperties();
-  return out_({ ok: true, info: 'Endpoint Tanya AI BEM STDIIS aktif',
+  var info = { ok: true, info: 'Endpoint Tanya AI BEM STDIIS aktif', versi: 2,
     kunci: P.getProperty('API_KEY') ? 'terpasang' : 'BELUM diisi',
-    penyedia: P.getProperty('PROVIDER') || 'gemini' });
+    penyedia: P.getProperty('PROVIDER') || 'gemini', model: P.getProperty('MODEL') || '(bawaan)' };
+  /* Tambahkan ?tes=1 di ujung URL /exec untuk menguji panggilan AI sungguhan dan melihat alasan galatnya. */
+  if (e && e.parameter && e.parameter.tes) {
+    try {
+      if (!P.getProperty('API_KEY')) throw mk_('kunci', 'API_KEY belum diisi');
+      if (!allow_(P)) throw mk_('limit', 'batas harian tercapai');
+      info.balasan = ask_(P, 'Balas hanya JSON {"ok":true}').slice(0, 200);
+      info.tes = 'BERHASIL';
+    } catch (err) { info.ok = false; info.tes = 'GAGAL'; info.error = kind_(err); info.detail = safe_(err); }
+  }
+  return out_(info);
 }
 
 /* Jalankan SEKALI untuk memberi izin akses (pilih "setup" lalu Jalankan). */
@@ -82,28 +91,62 @@ function setup() { UrlFetchApp.fetch('https://www.google.com', { muteHttpExcepti
 
 /* Tes cepat dari editor: pilih "tes" lalu Jalankan, lihat Log eksekusi. */
 function tes() {
-  var P = PropertiesService.getScriptProperties(), key = P.getProperty('API_KEY');
+  var P = PropertiesService.getScriptProperties();
+  if (!P.getProperty('API_KEY')) throw new Error('API_KEY belum diisi di Properti skrip');
+  console.log(ask_(P, 'Balas hanya JSON {"ok":true}'));
+}
+
+/* ---------- Penyedia AI ---------- */
+function mk_(kind, msg) { var e = new Error(msg); e.kind = kind; return e; }
+function kind_(err) { return err && err.kind ? err.kind : 'server'; }
+function safe_(err) {
+  return String(err && err.message ? err.message : err).replace(/AIza[\w-]{20,}/g, '[kunci]').replace(/sk-[\w-]{20,}/g, '[kunci]').replace(/\s+/g, ' ').slice(0, 220);
+}
+
+function ask_(P, user) {
+  var key = P.getProperty('API_KEY'), model = P.getProperty('MODEL');
   var provider = (P.getProperty('PROVIDER') || 'gemini').toLowerCase();
-  var t = provider === 'claude' ? callClaude_(key, P.getProperty('MODEL'), 'Balas JSON {"ok":true}') : callGemini_(key, P.getProperty('MODEL'), 'Balas JSON {"ok":true}');
-  console.log(t);
+  return provider === 'claude' ? callClaude_(key, model, user) : callGemini_(key, model, user);
+}
+
+/* Klasifikasi respons non-200 supaya penyebabnya jelas. */
+function httpErr_(name, code, text) {
+  var low = String(text).toLowerCase(), msg = name + ' ' + code + ': ' + String(text).replace(/\s+/g, ' ').slice(0, 200);
+  if (code === 401 || code === 403 || (code === 400 && (low.indexOf('api key') > -1 || low.indexOf('api_key') > -1))) return mk_('kunci', msg);
+  if (code === 429) return mk_('kuota', msg);
+  if (code === 404 || (code === 400 && low.indexOf('model') > -1)) return mk_('model', msg);
+  return mk_('server', msg);
 }
 
 function callGemini_(key, model, user) {
-  model = model || 'gemini-2.5-flash';
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent';
-  var r = UrlFetchApp.fetch(url, {
-    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-    headers: { 'x-goog-api-key': key },
-    payload: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYSTEM }] },
-      contents: [{ role: 'user', parts: [{ text: user }] }],
-      generationConfig: { temperature: 0.2, maxOutputTokens: 2500, responseMimeType: 'application/json' }
-    })
-  });
-  var code = r.getResponseCode(), body = JSON.parse(r.getContentText() || '{}');
-  if (code !== 200) throw new Error('Gemini ' + code + ': ' + r.getContentText().slice(0, 300));
-  var c = body.candidates && body.candidates[0];
-  return c && c.content && c.content.parts ? c.content.parts.map(function (p) { return p.text || ''; }).join('') : '';
+  /* Bila MODEL tidak diisi, coba beberapa nama model secara berurutan (nama bisa dipensiunkan Google). */
+  var models = model ? [model] : ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash'], last = null;
+  for (var i = 0; i < models.length; i++) {
+    for (var t = 0; t < 2; t++) {
+      var r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(models[i]) + ':generateContent', {
+        method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+        headers: { 'x-goog-api-key': key },
+        payload: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM }] },
+          contents: [{ role: 'user', parts: [{ text: user }] }],
+          generationConfig: { temperature: 0.2, maxOutputTokens: 4096, responseMimeType: 'application/json' }
+        })
+      });
+      var code = r.getResponseCode(), txt = r.getContentText() || '';
+      if (code === 200) {
+        var body; try { body = JSON.parse(txt); } catch (x) { throw mk_('server', 'Gemini membalas bukan JSON'); }
+        if (body.promptFeedback && body.promptFeedback.blockReason) throw mk_('server', 'Gemini memblokir: ' + body.promptFeedback.blockReason);
+        var c = body.candidates && body.candidates[0];
+        return c && c.content && c.content.parts ? c.content.parts.map(function (p) { return p.text || ''; }).join('') : '';
+      }
+      last = httpErr_('Gemini', code, txt);
+      if (code === 500 || code === 503) { Utilities.sleep(1500); continue; }  /* sibuk: coba sekali lagi */
+      break;
+    }
+    if (last.kind === 'kunci') throw last;       /* kunci salah: model lain tidak membantu */
+    if (last.kind !== 'model' && last.kind !== 'server') throw last;
+  }
+  throw last;
 }
 
 function callClaude_(key, model, user) {
@@ -114,8 +157,9 @@ function callClaude_(key, model, user) {
     payload: JSON.stringify({ model: model, max_tokens: 2500, temperature: 0.2, system: SYSTEM,
       messages: [{ role: 'user', content: user }] })
   });
-  var code = r.getResponseCode(), body = JSON.parse(r.getContentText() || '{}');
-  if (code !== 200) throw new Error('Claude ' + code + ': ' + r.getContentText().slice(0, 300));
+  var code = r.getResponseCode(), txt = r.getContentText() || '';
+  if (code !== 200) throw httpErr_('Claude', code, txt);
+  var body; try { body = JSON.parse(txt); } catch (x) { throw mk_('server', 'Claude membalas bukan JSON'); }
   return (body.content || []).map(function (b) { return b.text || ''; }).join('');
 }
 
