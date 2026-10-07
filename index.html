@@ -447,6 +447,32 @@ html[data-dir=up]{--rvy:-30px}
 .asp-duo-k{right:0;bottom:0;width:76%;height:66%;background:#2d3135;color:#eef0f2;transform:rotate(3deg)}
 @media (max-width:560px){.asp-duo{width:180px}}
 @media print{#asp-app{display:none!important}}
+
+/* ===== Rapot anggota ===== */
+@property --v{syntax:"<number>";inherits:false;initial-value:0}
+.g-A{--c:#14705a}.g-B{--c:#3f8a7a}.g-C{--c:#c9962c}.g-D{--c:#b3261e}
+.rp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-top:14px}
+.rp-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--c,var(--gold));border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);cursor:pointer;font:inherit;color:var(--ink);transition:transform .2s,border-color .2s}
+.rp-card:hover{transform:translateY(-3px);border-color:var(--ink)}.rp-card:focus-visible{outline:3px solid rgba(var(--glow),.8);outline-offset:2px}
+.rp-card>span:nth-child(2){flex:1;min-width:0}.rp-card b{display:block;line-height:1.3}.rp-card small{color:var(--muted);font-size:13px}
+.rp-av{width:46px;height:46px;border-radius:50%;background:var(--ink);color:var(--gold);display:grid;place-items:center;font:700 16px var(--serif);flex:none}
+.rp-pred{display:grid;justify-items:center;gap:2px;flex:none}.rp-pred strong{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--c);color:#fff;font:700 20px var(--serif)}.rp-pred span{font-size:12px;color:var(--muted)}
+#rp-dlg{border:0;padding:0;border-radius:26px;width:min(540px,calc(100vw - 20px));max-height:calc(100dvh - 20px);overflow:auto;background:var(--paper);color:var(--ink);box-shadow:0 30px 80px -20px rgba(13,42,56,.65)}
+#rp-dlg::backdrop{background:rgba(13,42,56,.6);backdrop-filter:blur(3px)}
+.rp-hd{position:relative;display:flex;gap:20px;align-items:center;padding:28px 26px 24px;background:linear-gradient(160deg,#14404f,var(--ink) 72%);color:#cde0dc}
+.rp-hd h2{font:600 24px/1.2 var(--serif);color:#fff;margin-bottom:6px}.rp-hd p{font-size:13.5px}
+.rp-badge{display:inline-block;margin-top:10px;background:var(--gold);color:var(--ink);font:700 13px var(--sans);border-radius:999px;padding:4px 12px}
+.rp-ring{--v:0;transition:--v 1s var(--ease);width:104px;height:104px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--gold) calc(var(--v)*1%),rgba(255,255,255,.16) 0)}
+.rp-ring i{width:82px;height:82px;border-radius:50%;background:var(--ink);display:grid;place-items:center;font:700 30px var(--serif);font-style:normal;color:#fff}
+.rp-x{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:24px;line-height:1;cursor:pointer}.rp-x:hover{background:rgba(255,255,255,.25)}
+.rp-body{display:grid;gap:16px;padding:22px 26px 26px}
+.rp-row .t{display:flex;justify-content:space-between;font-weight:600;font-size:14.5px;margin-bottom:6px}
+.rp-bar{height:10px;border-radius:99px;background:var(--sand);overflow:hidden}.rp-bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--c);transition:width .9s var(--ease)}
+.rp-note{background:var(--sand);border-radius:14px;padding:14px 16px;font-size:14.5px}.rp-note b{display:block;margin-bottom:4px}.rp-note p{white-space:pre-line}
+.rp-act .btn{color:var(--ink);border-color:var(--ink)}.rp-act .btn:hover{background:var(--sand);color:var(--ink);box-shadow:none}
+@media (max-width:480px){.rp-hd{flex-direction:column;align-items:flex-start;padding-top:56px}.rp-ring{width:88px;height:88px}.rp-ring i{width:68px;height:68px;font-size:26px}}
+@media (prefers-reduced-motion:reduce){.rp-ring,.rp-bar i{transition:none}}
+@media print{#rapot-app .sp-top,#rapot-app .sp-res>*,.rp-x,.rp-act{display:none!important}#rp-dlg{position:static;width:100%;max-height:none;box-shadow:none}.rp-hd{-webkit-print-color-adjust:exact;print-color-adjust:exact}.rp-bar i,.rp-ring{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 <link rel="stylesheet" href="ai.css?v=3">
 </head>
@@ -468,6 +494,7 @@ html[data-dir=up]{--rvy:-30px}
       <a href="#program">Program</a>
       <a href="#sop">SOP</a>
       <a href="#panduan">Panduan</a>
+      <a href="#rapot">Rapot</a>
       <a href="#kalender">Kalender</a>
       <a href="#aspirasi">Aspirasi</a>
     </nav>
@@ -652,7 +679,21 @@ html[data-dir=up]{--rvy:-30px}
 </section>
 
 <!-- ========== PUJIAN & KRITIK (teaser) ========== -->
-<section id="aspirasi-info">
+<section id="rapot-info">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Rapot anggota</h2>
+      <p>Penilaian kinerja pengurus pada setiap periode, dari kehadiran sampai kerja sama.</p>
+    </div>
+    <div class="soon sp-teaser">
+      <i aria-hidden="true"></i>
+      <div><h3>Pusat Rapot</h3><p>Pilih periode, cari namamu, lalu lihat nilai tiap aspek, predikat, dan catatan dari pengurus.</p></div>
+      <a href="#rapot" class="btn btn-gold">Lihat Rapot</a>
+    </div>
+  </div>
+</section>
+
+<section id="aspirasi-info" class="alt">
   <div class="wrap">
     <div class="sec-head">
       <h2>Pujian dan kritik</h2>
@@ -752,6 +793,18 @@ html[data-dir=up]{--rvy:-30px}
     <div class="sp-res"><div class="wrap" id="sp-out" aria-live="polite"></div></div>
   </div>
   <div id="sp-docview" hidden><div class="wrap sp-doc" id="sp-doc"></div></div>
+</main>
+
+<main id="rapot-app" hidden>
+  <div class="sp-top"><div class="wrap">
+    <p class="sp-crumb"><a href="#beranda">Beranda</a> / Rapot</p>
+    <h1>Rapot Anggota Kabinet Samasta</h1>
+    <p class="sp-lead">Pilih periode, cari namamu, lalu ketuk kartu untuk melihat rapot lengkap.</p>
+    <label class="sp-search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="rp-q" type="search" placeholder="Cari nama anggota" autocomplete="off" aria-label="Cari nama anggota"></label>
+    <div class="sp-chips" id="rp-chips" role="group" aria-label="Pilih periode"></div>
+  </div></div>
+  <div class="sp-res"><div class="wrap" id="rp-out" aria-live="polite"></div></div>
+  <dialog id="rp-dlg" aria-labelledby="rp-name"><div id="rp-sheet"></div></dialog>
 </main>
 
 <footer id="kontak">
@@ -1021,6 +1074,8 @@ html[data-dir=up]{--rvy:-30px}
   rv(document.querySelectorAll("#home .leader,#home .stats li,#home .pd-card"), "rv-z");
 })();
 </script>
+<script src="rapot.js?v=1"></script>
+<script src="rapot-app.js?v=1"></script>
 <script src="sop-data.js"></script>
 <script src="sop-app.js?v=3"></script>
 <script src="aspirasi-config.js?v=4"></script>
