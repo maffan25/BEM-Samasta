@@ -108,10 +108,12 @@ h1{font-family:var(--serif);font-weight:600;font-size:clamp(38px,5.6vw,66px);lin
 /* Statistik */
 .stats{background:var(--ink-2);color:#f6f1de;border-top:1px solid #21505a}
 .stats ul{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
-.stats li{padding:26px 24px;border-left:1px solid #21505a;display:flex;flex-direction:column;gap:2px}
-.stats li:first-child{border-left:0;padding-left:0}
-.stats b{font-family:var(--serif);font-size:34px;line-height:1.1;color:var(--gold);font-weight:600}
-.stats span{font-size:13.5px;color:#a9cbc4}
+.stats li{padding:30px 16px;border-left:1px solid #21505a;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
+.stats li:first-child{border-left:0}
+.stats b{font-family:var(--serif);font-size:clamp(36px,4.2vw,46px);line-height:1.05;color:var(--gold);font-weight:600;font-variant-numeric:tabular-nums;display:inline-block;text-shadow:0 0 28px rgba(var(--glow),.28)}
+.stats b.done{animation:statpop .45s var(--ease)}
+@keyframes statpop{40%{transform:scale(1.1)}}
+.stats span{font-size:13.5px;color:#a9cbc4;letter-spacing:.01em}
 
 /* ---------- Sections ---------- */
 section{padding:104px 0}
@@ -133,6 +135,10 @@ h3.label{font-size:15px;font-weight:700;color:var(--indigo);margin-bottom:18px}
 /* Coming soon */
 .soon{display:flex;gap:28px;align-items:center;border:1.5px dashed #d3c68f;border-radius:24px;padding:40px}
 .soon i{width:60px;height:74px;background:var(--gold);border-radius:var(--arch);flex-shrink:0;box-shadow:inset 0 0 0 5px rgba(255,255,255,.35)}
+.soon i.ic{display:grid;place-items:center;width:68px;height:84px;color:var(--ink);background:linear-gradient(180deg,#ffe98f,var(--gold));box-shadow:inset 0 0 0 5px rgba(255,255,255,.35),0 14px 24px -14px rgba(var(--glow),.95)}
+.soon i.ic svg{width:34px;height:34px;margin-top:12px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s var(--ease)}
+.soon:hover i.ic svg{transform:translateY(-3px) rotate(-7deg) scale(1.06)}
+@media (prefers-reduced-motion:reduce){.soon i.ic svg{transition:none}}
 .soon h3{font-family:var(--serif);font-size:26px;line-height:1.2;margin-bottom:6px}
 .soon p{color:var(--muted);max-width:560px}
 
@@ -301,7 +307,7 @@ abbr{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}.sp-
   .cal-wrap{grid-template-columns:1fr}
   .panel{position:static}
   .stats ul{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .stats li:nth-child(odd){border-left:0;padding-left:0}
+  .stats li:nth-child(odd){border-left:0}
   .stats li:nth-child(n+3){border-top:1px solid #21505a}
 }
 @media (max-width:760px){
@@ -612,7 +618,7 @@ html[data-dir=up]{--rvy:-30px}
       <p>Rencana aksi setiap kementerian dan biro selama masa kepengurusan.</p>
     </div>
     <div class="soon">
-      <i aria-hidden="true"></i>
+      <i class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 21V3.5"/><path d="M6 4.5c3-1.6 5.2 1.6 8.2 0 1.6-.8 2.9-.8 3.8-.4V13c-.9-.4-2.2-.4-3.8.4-3 1.600-5.200-1.600-8.200 0"/><path d="M4 21h5"/></svg></i>
       <div><h3>Segera hadir</h3><p>Program kerja Kabinet Samasta akan dipublikasikan di halaman ini setelah pembahasan selesai.</p></div>
     </div>
   </div>
@@ -626,7 +632,7 @@ html[data-dir=up]{--rvy:-30px}
       <p>Pedoman resmi agar setiap kegiatan berjalan tertib dan dapat dipertanggungjawabkan.</p>
     </div>
     <div class="soon sp-teaser">
-      <i aria-hidden="true"></i>
+      <i class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="17" rx="2.5"/><rect x="9" y="2.5" width="6" height="4" rx="1.2"/><path d="m8.4 11.2 1.5 1.5 2.7-3"/><path d="M14.4 11.6h2M8.5 17h8"/></svg></i>
       <div><h3>Pusat SOP</h3><p>Cari prosedur langsung, atau pilih bagian (Presiden, Wakil Presiden, Sekjen, Irjen, kementerian, biro) untuk melihat seluruh SOP yang berkaitan.</p></div>
       <a href="#sop" class="btn btn-gold">Buka Pusat SOP</a>
     </div>
@@ -686,7 +692,7 @@ html[data-dir=up]{--rvy:-30px}
       <p>Penilaian kinerja pengurus pada setiap periode, dari kehadiran sampai kerja sama.</p>
     </div>
     <div class="soon sp-teaser">
-      <i aria-hidden="true"></i>
+      <i class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5.8"/><path d="m12 6.2.9 1.9 2.1.3-1.5 1.4.4 2.1-1.9-1-1.9 1 .4-2.1L9 8.4l2.1-.3z"/><path d="m8.6 13.6-1.700 7.400L12 18.600l5.100 2.400-1.700-7.400"/></svg></i>
       <div><h3>Pusat Rapot</h3><p>Pilih periode, cari namamu, lalu lihat nilai tiap aspek, predikat, dan catatan dari pengurus.</p></div>
       <a href="#rapot" class="btn btn-gold">Lihat Rapot</a>
     </div>
@@ -924,7 +930,28 @@ html[data-dir=up]{--rvy:-30px}
   // Statistik
   (function(){
     var c = { leaders: document.querySelectorAll(".leader").length, units: document.querySelectorAll(".unit").length, members: document.querySelectorAll(".unit li").length, events: upcoming().length };
-    for (var k in c){ var el = document.querySelector('[data-stat="' + k + '"]'); if (el) el.textContent = c[k]; }
+    var els = [];
+    for (var k in c){ var el = document.querySelector('[data-stat="' + k + '"]'); if (el){ el.setAttribute("data-to", c[k]); el.textContent = c[k]; els.push(el); } }
+    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches, box = document.querySelector(".stats");
+    if (still || !els.length || !box || !("IntersectionObserver" in window)) return;
+    function run(el, delay){
+      var to = +el.getAttribute("data-to"), D = 1000;
+      setTimeout(function(){
+        var t0 = null;
+        (function f(t){
+          if (t0 === null) t0 = t;
+          var p = Math.min(1, (t - t0) / D);
+          el.textContent = Math.round(to * (1 - Math.pow(1 - p, 4)));
+          if (p < 1) requestAnimationFrame(f); else { el.classList.remove("done"); void el.offsetWidth; el.classList.add("done"); }
+        })(performance.now());
+      }, delay);
+    }
+    els.forEach(function(el){ el.textContent = "0"; });
+    var sio = new IntersectionObserver(function(es){
+      if (!es.some(function(e){ return e.isIntersecting; })) return;
+      sio.disconnect(); els.forEach(function(el, i){ run(el, i * 110); });
+    }, { threshold: 0.5 });
+    sio.observe(box);
   })();
 
   // Efek bounce saat diklik
