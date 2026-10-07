@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Diagnosa ASTA & Buku Panduan | BEM STDIIS</title>
+<style>
+:root{--ink:#0d2a38;--paper:#fffbef;--sand:#f6efd3;--gold:#f8d24a;--line:#e6dcb0;--muted:#5b5a48;--ok:#14705a;--bad:#b3261e;--warn:#9a6b00}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;padding:24px 16px 64px}
+.w{max-width:760px;margin:0 auto}
+h1{font-size:24px;line-height:1.25;margin-bottom:6px}
+.sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+.btn{font:inherit;font-weight:700;font-size:14.5px;background:var(--gold);color:var(--ink);border:0;border-radius:999px;padding:11px 22px;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:wait}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-top:14px}
+.row{display:flex;gap:12px;align-items:flex-start}
+.ic{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff;background:#999;margin-top:2px}
+.ok .ic{background:var(--ok)}.bad .ic{background:var(--bad)}.warn .ic{background:var(--warn)}
+.card h2{font-size:16px;line-height:1.35}
+.card p,.card li{font-size:14px;color:var(--muted)}
+.card p b,.card li b{color:var(--ink)}
+.fix{margin-top:8px;background:var(--sand);border-radius:10px;padding:10px 12px;font-size:13.5px;color:var(--ink)}
+code{background:var(--sand);padding:1px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.t-ok{color:var(--ok);font-weight:700}.t-bad{color:var(--bad);font-weight:700}.t-warn{color:var(--warn);font-weight:700}
+.scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>Diagnosa ASTA & Buku Panduan</h1>
+  <p class="sub">Halaman ini memeriksa satu per satu apa yang belum tersambung, lalu memberi tahu langkah perbaikannya. Buka dari situs yang sudah online (bukan dari file di komputer).</p>
+  <button class="btn" id="go">Jalankan pemeriksaan</button>
+  <div id="out"></div>
+</div>
+
+<script>
+document.write('<script src="ai-config.js?t=' + Date.now() + '"><\/script>');
+document.write('<script src="panduan-data.js?t=' + Date.now() + '"><\/script>');
+</script>
+<script>
+(function(){
+  var KODE = [
+    ["presiden","Presiden"],["wakil-presiden","Wakil Presiden"],["sekretaris-jenderal","Sekretaris Jenderal"],
+    ["psdm","Kementerian PSDM"],["akademik-karier","Kementerian Akademik dan Karier"],["harmonisasi-kampus","Kementerian Harmonisasi Kampus"],
+    ["kemenpora","Kemenpora"],["hubeks","Kementerian Hubungan Eksternal"],["kesma","Kementerian Kesejahteraan Mahasiswa"],
+    ["pengembangan-bahasa","Kementerian Pengembangan Bahasa"],["biro-administrasi","Biro Administrasi"],["biro-keuangan","Biro Keuangan"],
+    ["biro-dkv","Biro DKV"],["inspektorat-jenderal","Inspektorat Jenderal"]
+  ];
+  var out = document.getElementById("out"), go = document.getElementById("go");
+  function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function card(cls, title, body, fix){
+    var d = document.createElement("div"); d.className = "card " + cls;
+    d.innerHTML = '<div class="row"><span class="ic">' + (cls === "ok" ? "&#10003;" : cls === "bad" ? "!" : "?") + '</span><div style="min-width:0;flex:1"><h2>' + title + '</h2>' + (body ? '<div>' + body + '</div>' : '') + (fix ? '<div class="fix"><b>Perbaikan:</b> ' + fix + '</div>' : '') + '</div></div>';
+    out.appendChild(d); return d;
+  }
+  function endpointOK(raw){
+    var e = typeof raw === "string" ? raw.replace(/[\s"'\u201C\u201D\u2018\u2019\u200B\uFEFF]/g, "") : "";
+    return /^https:\/\/script\.google\.com\/(a\/(macros\/)?[^\/]+\/)?macros\/s\/[^\/?#]+\/exec(\?[^#]*)?$/.test(e) ? e : "";
+  }
+
+  function cekEndpoint(){
+    var raw = window.AI_ENDPOINT;
+    if (typeof raw === "undefined") return Promise.resolve(card("bad", "1. File ai-config.js tidak terbaca", "<p>Variabel <code>AI_ENDPOINT</code> tidak ditemukan.</p>", "Pastikan file <code>ai-config.js</code> ada di folder yang sama dengan <code>index.html</code> di GitHub, dan namanya persis begitu (huruf kecil)."));
+    if (!String(raw).trim()) return Promise.resolve(card("bad", "1. URL AI belum diisi", "<p><code>AI_ENDPOINT</code> masih kosong, jadi ASTA hanya berjalan dalam &ldquo;Mode cari&rdquo; (tanpa AI).</p>", "Tempel URL Web App Apps Script berakhiran <code>/exec</code> ke <code>ai-config.js</code>, lalu unggah ke GitHub."));
+    var e = endpointOK(raw);
+    if (!e) {
+      var hint = /\/dev(\?|$)/.test(raw) ? "URL kamu berakhiran <code>/dev</code> (itu URL uji). Pakai URL <b>Deployment</b> yang berakhiran <code>/exec</code>." :
+                 /^https:\/\/script\.google\.com\/home/.test(raw) ? "Itu alamat editor skrip, bukan URL Web App." :
+                 "Formatnya tidak dikenali. Contoh benar: <code>https://script.google.com/macros/s/AKfy.../exec</code>";
+      return Promise.resolve(card("bad", "1. Format URL AI salah", "<p>" + hint + "</p><p>Nilai terbaca: <code>" + esc(String(raw).slice(0, 120)) + "</code></p>", "Perbaiki di <code>ai-config.js</code>. Gunakan tanda kutip lurus (&quot;), bukan kutip melengkung, dan sunting dengan editor teks biasa atau editor GitHub, bukan Word/WPS."));
+    }
+    var c = card("warn", "1. URL AI terisi, menguji koneksi...", "", "");
+    return fetch(e, {method:"GET", mode:"cors", credentials:"omit", redirect:"follow"}).then(function(r){ return r.text(); }).then(function(t){
+      var j; try { j = JSON.parse(t); } catch(x){ j = null; }
+      c.remove();
+      if (!j) return card("bad", "1. URL AI tidak membalas dengan benar", "<p>Skrip tidak mengembalikan JSON. Biasanya akses deployment bukan &ldquo;Siapa saja&rdquo; sehingga yang muncul halaman login Google.</p>", "Di Apps Script: <b>Terapkan &gt; Kelola deployment &gt; ikon pensil</b>. Atur <b>Yang memiliki akses = Siapa saja</b>, versi = Versi baru, lalu <b>Terapkan</b>.");
+      if (j.ok && j.kunci === "terpasang") return card("ok", "1. Penghubung AI aktif", "<p>Skrip menjawab dan kunci API terpasang.</p>");
+      if (j.ok) return card("bad", "1. Skrip hidup, tetapi kunci API belum terpasang", "", "Di Apps Script buka <b>Setelan project &gt; Properti skrip</b>, tambahkan <code>API_KEY</code> berisi kunci dari aistudio.google.com.");
+      return card("bad", "1. Skrip membalas galat", "<p><code>" + esc(t.slice(0, 160)) + "</code></p>", "Buka Apps Script &gt; Eksekusi untuk melihat penyebabnya.");
+    }).catch(function(){
+      c.remove();
+      card("bad", "1. Tidak bisa menghubungi skrip (kode N1)", "<p>Browser gagal mengakses URL. Penyebab umum: akses deployment bukan &ldquo;Siapa saja&rdquo;, URL salah salin, atau deployment lama sudah tidak berlaku.</p>", "Buat <b>Deployment baru</b> (Aplikasi web, Jalankan sebagai: Saya, Akses: Siapa saja), salin URL <code>/exec</code> yang baru ke <code>ai-config.js</code>.");
+    });
+  }
+
+  function cekData(){
+    var P = window.PANDUAN;
+    if (typeof P === "undefined") { card("bad", "2. File panduan-data.js tidak terbaca", "<p>Variabel <code>PANDUAN</code> tidak ada.</p>", "Pastikan <code>panduan-data.js</code> sudah diunggah ke GitHub, satu folder dengan <code>index.html</code>."); return null; }
+    var keys = Object.keys(P || {});
+    if (!keys.length) { card("bad", "2. panduan-data.js masih kosong", "<p>Tidak ada satu pun buku yang terbaca AI. Ini penyebab paling sering: file yang diunggah masih versi kosong, atau unggahan belum berhasil di-commit.</p>", "Buka <code>admin-panduan.html</code>, pilih PDF, tunggu tanda hijau, tekan <b>Unduh panduan-data.js</b>, lalu unggah dan <b>Commit changes</b> di GitHub. Tunggu 1 sampai 2 menit, lalu jalankan pemeriksaan ini lagi."); return null; }
+    var known = {}; KODE.forEach(function(k){ known[k[0]] = k[1]; });
+    var rows = "", good = 0, thin = [], unknown = [];
+    KODE.forEach(function(k){
+      var e = P[k[0]], pages = e && e.p ? e.p.length : 0, chars = pages ? e.p.reduce(function(a, p){ return a + String(p[1] || "").length; }, 0) : 0;
+      var st = !e ? '<span class="t-bad">Belum ada</span>' : chars < 500 ? '<span class="t-warn">Teks sangat sedikit</span>' : '<span class="t-ok">Terbaca</span>';
+      if (e && chars >= 500) good++; else if (e) thin.push(k[1]);
+      rows += "<tr><td>" + esc(k[1]) + "<br><code>" + k[0] + "</code></td><td>" + st + "</td><td>" + pages + " hlm.</td><td>" + Math.round(chars / 1000) + " rb karakter</td></tr>";
+    });
+    keys.forEach(function(k){ if (!known[k]) unknown.push(k); });
+    var body = '<p><b>' + good + ' dari ' + KODE.length + '</b> buku terbaca AI.</p><div class="scroll"><table><thead><tr><th>Bagian</th><th>Status</th><th>Halaman</th><th>Isi</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+    if (unknown.length) body += '<p style="margin-top:8px"><b>Kunci tidak dikenali</b> (tidak akan dipakai ASTA): ' + unknown.map(function(u){ return "<code>" + esc(u) + "</code>"; }).join(", ") + "</p>";
+    var cls = good === KODE.length && !unknown.length ? "ok" : good ? "warn" : "bad";
+    var fix = "";
+    if (good < KODE.length) fix = "Buku yang &ldquo;Belum ada&rdquo; belum diekstrak. Buka <code>admin-panduan.html</code>, tambahkan PDF-nya (nama file harus sama dengan kode di tabel), unduh ulang <code>panduan-data.js</code>, unggah ke GitHub.";
+    if (thin.length) fix += (fix ? " " : "") + "PDF yang teksnya sangat sedikit (" + esc(thin.join(", ")) + ") kemungkinan hasil <b>scan/foto</b>. ASTA tidak bisa membaca gambar; gunakan PDF yang teksnya bisa diblok/disalin, atau jalankan OCR dulu.";
+    if (unknown.length) fix += (fix ? " " : "") + "Ganti nama file PDF agar sama persis dengan kode di tabel (huruf kecil, tanpa spasi), lalu ekstrak ulang.";
+    card(cls, "2. Isi buku panduan di panduan-data.js", body, fix);
+    return P;
+  }
+
+  function cekPDF(P){
+    var c = card("warn", "3. Memeriksa file PDF di folder panduan/ ...", "", "");
+    return Promise.all(KODE.map(function(k){
+      return fetch("panduan/" + k[0] + ".pdf", {method:"HEAD", cache:"no-store"}).then(function(r){ return [k, r.ok]; }, function(){ return [k, false]; });
+    })).then(function(res){
+      c.remove();
+      var miss = res.filter(function(x){ return !x[1]; });
+      if (!miss.length) return card("ok", "3. Semua 14 PDF ada di folder panduan/", "<p>Tautan &ldquo;Panduan ... hlm. N&rdquo; di jawaban ASTA akan terbuka.</p>");
+      var withText = miss.filter(function(x){ return P && P[x[0][0]]; });
+      card(miss.length === KODE.length ? "bad" : "warn", "3. " + miss.length + " PDF tidak ditemukan di folder panduan/",
+        "<p>" + miss.map(function(x){ return "<code>panduan/" + x[0][0] + ".pdf</code>"; }).join("<br>") + "</p>" + (withText.length ? "<p>Sebagian di antaranya teksnya sudah terbaca AI, tetapi tautan ke PDF-nya akan mati.</p>" : ""),
+        "Unggah PDF ke folder <code>panduan</code> di GitHub dengan nama <b>persis</b> seperti di atas (huruf kecil, tanpa spasi, ekstensi <code>.pdf</code>). Folder <code>panduan</code> harus berada di sebelah <code>index.html</code>, bukan di dalam folder lain.");
+    });
+  }
+
+  function cekBukti(P){
+    if (!P || !Object.keys(P).length) return;
+    var kata = ["anggaran","surat","rapat","laporan","program","tugas"], hit = 0, total = 0, contoh = "";
+    Object.keys(P).forEach(function(k){
+      var e = P[k]; if (!e || !e.p) return;
+      e.p.forEach(function(pg){ var t = String(pg[1]).toLowerCase(); total++; if (kata.some(function(w){ return t.indexOf(w) > -1; })) { hit++; if (!contoh) contoh = String(pg[1]).replace(/\s+/g, " ").slice(0, 160); } });
+    });
+    if (!total) return;
+    card(hit ? "ok" : "warn", "4. Contoh teks hasil ekstraksi", hit ? "<p>Teks terbaca normal dan bisa dicari. Contoh:</p><p><code>" + esc(contoh) + "...</code></p>" : "<p>Teks ada tetapi tidak memuat kata umum seperti &ldquo;rapat/laporan/program&rdquo;. Bisa jadi huruf terekstrak rusak (font PDF khusus).</p>", hit ? "" : "Coba ekspor ulang PDF dari Word/Google Docs (Save as PDF), jangan dari hasil cetak ke PDF atau scan, lalu ekstrak ulang.");
+  }
+
+  go.addEventListener("click", function(){
+    go.disabled = true; go.textContent = "Memeriksa..."; out.innerHTML = "";
+    if (location.protocol === "file:") card("warn", "Halaman dibuka dari komputer (file://)", "<p>Beberapa pemeriksaan (koneksi AI dan PDF) tidak bisa berjalan dari file lokal.</p>", "Buka halaman ini lewat alamat situs yang sudah online, misalnya <code>https://alamatkamu/diagnosa-ai.html</code>.");
+    cekEndpoint().then(function(){
+      var P = cekData();
+      return cekPDF(P).then(function(){ cekBukti(P); });
+    }).then(function(){ go.disabled = false; go.textContent = "Periksa lagi"; });
+  });
+})();
+</script>
+</body>
+</html>

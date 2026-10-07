@@ -157,22 +157,24 @@
     return res;
   }
   function pickContext(q, bag) {
-    var r = search(q, bag), out = [], perSop = {}, pdN = 0, size = 0, LIM = 15000;
-    for (var i = 0; i < r.length && out.length < 9; i++) {
+    var r = search(q, bag), sopOut = [], pdOut = [], perSop = {}, size = 0, LIM = 15000, MAXSOP = 6, MAXPD = 3;
+    for (var i = 0; i < r.length && (sopOut.length < MAXSOP || pdOut.length < MAXPD); i++) {
       var ch = r[i].ch, t;
       if (ch.kind === "sop") {
+        if (sopOut.length >= MAXSOP) continue;
         perSop[ch.sop.c] = (perSop[ch.sop.c] || 0) + 1;
         if (perSop[ch.sop.c] > 3) continue;
         t = ch.text.slice(0, ch.sec.t === "Prosedur pelaksanaan" ? 3200 : 1700);
         if (size + t.length > LIM) continue;
-        out.push({ ch: ch, sc: r[i].sc, t: t, ref: ch.sop.c + " | " + ch.sop.t + " | bagian: " + ch.sec.t + " | pemilik: " + ch.sop.o + " | status: " + (ch.sop.st || "") });
+        sopOut.push({ ch: ch, sc: r[i].sc, t: t, ref: ch.sop.c + " | " + ch.sop.t + " | bagian: " + ch.sec.t + " | pemilik: " + ch.sop.o + " | status: " + (ch.sop.st || "") });
       } else {
-        if (pdN >= 3) continue; pdN++;
+        if (pdOut.length >= MAXPD) continue;
         t = ch.text; if (size + t.length > LIM) continue;
-        out.push({ ch: ch, sc: r[i].sc, t: t, ref: "Buku Panduan " + ch.name + " | hlm. " + ch.page });
+        pdOut.push({ ch: ch, sc: r[i].sc, t: t, ref: "Buku Panduan " + ch.name + " | hlm. " + ch.page });
       }
       size += t.length;
     }
+    var out = sopOut.concat(pdOut).sort(function (x, y) { return y.sc - x.sc; });
     return { items: out, top: r.length ? r[0].sc : 0 };
   }
 
@@ -182,6 +184,16 @@
     var sops = [], seen = {}, tot = {};
     its.forEach(function (x) { if (x.ch.kind === "sop") { tot[x.ch.sop.c] = (tot[x.ch.sop.c] || 0) + x.sc; if (!seen[x.ch.sop.c]) { seen[x.ch.sop.c] = 1; sops.push(x.ch.sop); } } });
     sops.sort(function (a, b) { return tot[b.c] - tot[a.c]; });
+    var pds = its.filter(function (x) { return x.ch.kind === "pd"; });
+    if ((!sops.length || ctx.top < 1.2) && pds.length && ctx.top >= 1.2) {
+      a.jenis = "lokal";
+      var f0 = pds[0].ch;
+      a.ringkas = "Bagian yang paling cocok ada di **Buku Panduan " + f0.name + "**, halaman " + f0.page + ". Cuplikannya ada di bawah; buka PDF-nya untuk membaca lengkap.";
+      a.tabel = [{ judul: "Cuplikan buku panduan", kolom: ["Buku", "Hlm.", "Isi"], baris: pds.slice(0, 3).map(function (x) {
+        return [x.ch.name, String(x.ch.page), x.ch.text.replace(/\s+/g, " ").slice(0, 320) + (x.ch.text.length > 320 ? "..." : "")]; }) }];
+      pds.forEach(function (x) { a.sumber.push({ file: x.ch.file, hlm: x.ch.page, label: "Panduan " + x.ch.name + " hlm. " + x.ch.page }); });
+      return a;
+    }
     if (!sops.length || ctx.top < 1.2) {
       a.jenis = "kosong";
       a.ringkas = "Aku belum menemukan bagian SOP atau buku panduan yang cocok dengan pertanyaan itu. Coba tulis dengan kata kunci lain, misalnya nama kegiatan atau dokumennya.";
@@ -214,8 +226,8 @@
 
   /* ---------- Panggilan ke AI ---------- */
   function endpoint() {
-    var e = typeof window.AI_ENDPOINT === "string" ? window.AI_ENDPOINT.replace(/[\s"'\u201C\u201D\u2018\u2019]/g, "") : "";
-    return /^https:\/\/script\.google\.com\/macros\/s\/[^\/]+\/exec$/.test(e) ? e : "";
+    var e = typeof window.AI_ENDPOINT === "string" ? window.AI_ENDPOINT.replace(/[\s"'\u201C\u201D\u2018\u2019\u200B\uFEFF]/g, "") : "";
+    return /^https:\/\/script\.google\.com\/(a\/(macros\/)?[^\/]+\/)?macros\/s\/[^\/?#]+\/exec(\?[^#]*)?$/.test(e) ? e : "";
   }
   function askAI(q, bag, ctx, hist) {
     var EP = endpoint();
@@ -306,9 +318,10 @@
     if (list.length < 3) list = list.concat(["Bagaimana cara mencairkan dana kegiatan?", "Apa saja syarat proposal kegiatan?", "Bagaimana cara izin tidak hadir rapat?"]);
     return list.slice(0, 5);
   }
+  function nBuku() { var P = window.PANDUAN || {}; return Object.keys(P).filter(function (k) { return P[k] && P[k].p && P[k].p.length; }).length; }
   function setMode() {
     var on = !!endpoint();
-    $("ai-who-name").innerHTML = esc(st.bag.n) + '<span class="ai-mode' + (on ? " on" : "") + '">' + (on ? "AI aktif" : "Mode cari SOP") + "</span>";
+    $("ai-who-name").innerHTML = esc(st.bag.n) + '<span class="ai-mode' + (on ? " on" : "") + '">' + (on ? "AI aktif" : "Mode cari SOP") + (nBuku() ? " \u00b7 " + nBuku() + " buku" : "") + "</span>";
   }
   function choose(k) {
     st.bag = BK[k]; st.hist = []; st.answers = [];
