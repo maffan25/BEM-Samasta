@@ -240,3 +240,10 @@
   .asta-win,.asta-backdrop,.asta-fab.enter .asta-btn{animation:none!important}
 }
 @media print{#ai-app,.asta-fab{display:none!important}}
+
+/* ---- poin jawaban + rujukan sumber (v4) ---- */
+.ai-pts{display:flex;flex-direction:column;gap:8px;margin:2px 0}
+.ai-pts li{position:relative;padding-left:20px;font-size:15px;line-height:1.55}
+.ai-pts li::before{content:"";position:absolute;left:3px;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.ai-ref{display:inline-block;margin-left:4px;padding:1px 9px;border-radius:999px;border:1px solid var(--line);background:var(--sand);color:var(--bronze);font:700 11.5px var(--sans);white-space:nowrap;vertical-align:baseline}
+.ai-ref:hover{border-color:var(--emerald);color:var(--emerald)}

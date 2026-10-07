@@ -523,7 +523,7 @@ html.focus-on .is-dim::after{opacity:var(--dim)}
 @media (max-width:560px){.art{width:180px}}
 @media (prefers-reduced-motion:reduce){.art>span{transition:none}}
 </style>
-<link rel="stylesheet" href="ai.css?v=3">
+<link rel="stylesheet" href="ai.css?v=4">
 </head>
 
 <body>
@@ -822,7 +822,7 @@ html.focus-on .is-dim::after{opacity:var(--dim)}
           <textarea id="ai-q" rows="1" maxlength="500" placeholder="Tanya ASTA di sini" aria-label="Pertanyaan"></textarea>
           <button type="submit" class="btn btn-gold" id="ai-send" aria-label="Kirim pertanyaan"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
         </form>
-        <p class="ai-foot">ASTA bisa keliru. Untuk keputusan penting, cek SOP atau buku panduan yang disebut di jawaban.</p>
+        <p class="ai-foot">Jawaban disusun dari SOP dan buku panduan. Untuk keputusan penting, buka PDF sumber yang tertera di bawah jawaban.</p>
       </section>
     </div>
   </section>
@@ -1208,11 +1208,11 @@ html.focus-on .is-dim::after{opacity:var(--dim)}
 <script src="aspirasi-config.js?v=4"></script>
 <script src="aspirasi.js?v=4"></script>
 <script>
-/* ai-config.js & panduan-data.js diisi/diganti pengelola lewat GitHub. Parameter waktu (per 5 menit)
+/* panduan-data.js diisi/diganti pengelola lewat GitHub. Parameter waktu (per 5 menit)
    mencegah browser/CDN memakai salinan lama yang masih kosong. */
-(function(){var t=Math.floor(Date.now()/300000);["ai-config.js","panduan-data.js"].forEach(function(f){document.write('<script src="'+f+'?t='+t+'"><\/script>');});})();
+(function(){var t=Math.floor(Date.now()/300000);["panduan-data.js"].forEach(function(f){document.write('<script src="'+f+'?t='+t+'"><\/script>');});})();
 </script>
-<script src="ai.js?v=5"></script>
+<script src="ai.js?v=7"></script>
 <script src="stars.js?v=1"></script>
 </body>
 </html>

@@ -2,9 +2,9 @@
    ASTA (asisten AI), BEM STDIIS
    Tombol maskot melayang di kanan bawah -> jendela chat ASTA.
    1) Pengunjung memilih bagian  2) pertanyaan dicocokkan ke SOP + buku panduan
-   (di peramban)  3) potongan yang cocok dikirim ke Apps Script -> AI  4) jawaban
-   ditampilkan sebagai ringkasan, langkah, alur, tabel, grafik, dan sumber.
-   Tanpa AI_ENDPOINT, halaman tetap jalan dalam "mode cari SOP".
+   (di peramban)  3) bagian yang cocok langsung disimpulkan (gabungan SOP dan/atau
+   buku panduan, tanpa layanan AI luar)  4) jawaban tampil sebagai ringkasan, poin, langkah,
+   alur, tabel, dan sumber PDF (SOP tepat / halaman buku panduan).
    ===================================================================== */
 (function () {
   "use strict";
@@ -14,7 +14,7 @@
   var DATA = window.SOP_DATA, BY = {};
   DATA.forEach(function (s) { BY[s.c] = s; });
   var $ = function (id) { return document.getElementById(id); };
-  var CFG = { MAX_Q: 500, COOLDOWN: 4000, TIMEOUT: 45000, HIST: 6 };
+  var CFG = { MAX_Q: 500, COOLDOWN: 4000, TIMEOUT: 75000, HIST: 6 };
 
   /* ---------- Daftar bagian (kunci peran sama dengan sop-app.js) ---------- */
   var BAGIAN = [
@@ -178,82 +178,85 @@
     return { items: out, top: r.length ? r[0].sc : 0 };
   }
 
-  /* ---------- Jawaban lokal (tanpa AI) ---------- */
-  function localAnswer(q, ctx, note) {
-    var its = ctx.items, a = { jenis: "lokal", catatan: note ? [note] : [], sumber: [], lanjut: [] };
-    var sops = [], seen = {}, tot = {};
-    its.forEach(function (x) { if (x.ch.kind === "sop") { tot[x.ch.sop.c] = (tot[x.ch.sop.c] || 0) + x.sc; if (!seen[x.ch.sop.c]) { seen[x.ch.sop.c] = 1; sops.push(x.ch.sop); } } });
-    sops.sort(function (a, b) { return tot[b.c] - tot[a.c]; });
-    var pds = its.filter(function (x) { return x.ch.kind === "pd"; });
-    if ((!sops.length || ctx.top < 1.2) && pds.length && ctx.top >= 1.2) {
-      a.jenis = "lokal";
-      var f0 = pds[0].ch;
-      a.ringkas = "Bagian yang paling cocok ada di **Buku Panduan " + f0.name + "**, halaman " + f0.page + ". Cuplikannya ada di bawah; buka PDF-nya untuk membaca lengkap.";
-      a.tabel = [{ judul: "Cuplikan buku panduan", kolom: ["Buku", "Hlm.", "Isi"], baris: pds.slice(0, 3).map(function (x) {
-        return [x.ch.name, String(x.ch.page), x.ch.text.replace(/\s+/g, " ").slice(0, 320) + (x.ch.text.length > 320 ? "..." : "")]; }) }];
-      pds.forEach(function (x) { a.sumber.push({ file: x.ch.file, hlm: x.ch.page, label: "Panduan " + x.ch.name + " hlm. " + x.ch.page }); });
-      return a;
-    }
-    if (!sops.length || ctx.top < 1.2) {
-      a.jenis = "kosong";
-      a.ringkas = "Aku belum menemukan bagian SOP atau buku panduan yang cocok dengan pertanyaan itu. Coba tulis dengan kata kunci lain, misalnya nama kegiatan atau dokumennya.";
-      return a;
-    }
-    var s = sops[0], tj = s.s.filter(function (c) { return c.t === "Tujuan"; })[0];
-    var tjt = tj ? secText(tj).replace(/\n/g, " ") : "";
-    a.ringkas = "Yang paling cocok adalah **" + s.c + " (" + s.t + ")**. " + (tjt ? tjt.slice(0, 280) + (tjt.length > 280 ? "..." : "") : "");
-    var pr = s.s.filter(function (c) { return c.t === "Prosedur pelaksanaan"; })[0];
-    if (pr) pr.c.forEach(function (b) {
-      if (b.tb && b.tb.h.length >= 3) {
-        var h = b.tb.h, iT = 1, iP = h.indexOf("Pelaksana"), iW = h.indexOf("Batas waktu");
-        var cols = ["No."], ix = [0];
-        cols.push("Tahapan dan tindakan"); ix.push(iT);
-        if (iP > -1) { cols.push("Pelaksana"); ix.push(iP); }
-        if (iW > -1) { cols.push("Batas waktu"); ix.push(iW); }
-        a.tabel = [{ judul: "Prosedur " + s.c, kolom: cols, baris: b.tb.r.map(function (r) { return ix.map(function (i) { return r[i] || ""; }); }) }];
-        if (iP > -1) a.alur = b.tb.r.map(function (r) { return { label: String(r[1] || "").split(":")[0].slice(0, 70), pic: r[iP] }; });
-      }
+  /* ---------- Mesin jawaban: menyimpulkan langsung dari SOP + buku panduan (tanpa AI luar) ---------- */
+  var INT = { how: /bagaimana|cara|prosedur|langkah|alur|tahap|proses|mekanisme/, who: /siapa|pelaksana|penanggung|bertanggung/, when: /kapan|batas waktu|berapa lama|tenggat|deadline/, need: /syarat|dokumen|berkas|formulir|templat|lampiran|dibutuhkan/, prob: /jika|kalau|bila|terlambat|masalah|gagal|sanksi|eskalasi|melanggar/ };
+  var SKIP = { "Definisi istilah": 1, "Daftar distribusi": 1, "Riwayat perubahan": 1, "Dasar hukum dan dokumen acuan": 1, "Diagram alir ringkas": 1 };
+  function sents(t) {
+    var L = String(t).split("\n");
+    t = L.map(function (l, i) { l = l.trim(); return l.length < 60 && l && !/[.!?;:,]$/.test(l) && /^[A-Z0-9]/.test((L[i + 1] || "").trim()) ? l + "." : l; }).join("\n");
+    return String(t).replace(/\s*\n\s*/g, " ").replace(/^[\s\-\u2022\u00b7]+/, "").replace(/([.!?;:])\s+(?=[A-Z0-9(\u2022])/g, "$1\u0001").split("\u0001")
+      .map(function (x) { return x.replace(/^[\s\-\u2022\u00b7]+/, "").trim(); }).filter(function (x) { return x.length > 28 && /[a-z]{3}/i.test(x); });
+  }
+  function proseOf(sec) { var o = []; sec.c.forEach(function (b) { if (b.p) o.push(b.p); if (b.note) o.push(b.note); if (b.ul) b.ul.forEach(function (x) { o.push(x); }); }); return o; }
+  var TIME = false;
+  function sScore(s, qset, I) {
+    var seen = {}, sc = 0;
+    toks(s).forEach(function (w) { if (qset[w] && !seen[w]) { seen[w] = 1; sc += Math.log(1 + I.N / ((I.df[w] || 0) + 1)); } });
+    if (TIME && /\d+\s*(hari|jam|menit|minggu|bulan)|paling lambat|selambat|maksimal|paling lama/i.test(s)) sc *= 1.5;
+    return sc * (s.length < 60 ? .7 : s.length > 330 ? .75 : 1);
+  }
+  function compose(q, ctx) {
+    var I = build(), its = ctx.items, a = { jenis: "ok", catatan: [], sumber: [], lanjut: [] };
+    if (!its.length || ctx.top < 1.2) { a.jenis = "kosong"; a.ringkas = "Aku belum menemukan jawabannya. Coba tulis dengan kata kunci lain, misalnya nama kegiatan atau dokumen yang dimaksud."; return a; }
+    var qset = {}, lo = q.toLowerCase(), it = {};
+    toks(expand(q)).forEach(function (w) { qset[w] = 1; });
+    for (var k in INT) it[k] = INT[k].test(lo);
+    TIME = it.when;
+    var tS = 0, tP = 0, tot = {}, sops = [];
+    its.forEach(function (x) { if (x.ch.kind === "sop") { tS = Math.max(tS, x.sc); if (!tot[x.ch.sop.c]) { tot[x.ch.sop.c] = 0; sops.push(x.ch.sop); } tot[x.ch.sop.c] += x.sc; } else tP = Math.max(tP, x.sc); });
+    sops.sort(function (x, y) { return tot[y.c] - tot[x.c]; });
+    var useS = tS > 0 && tS >= .45 * tP, useP = tP > 0 && tP >= .45 * tS, main = useS ? sops[0] : null, cand = [];
+    if (main) main.s.forEach(function (c) {
+      if (SKIP[c.t]) return;
+      var w = c.t === "Tujuan" ? .6 : (SECW[c.t] || 1);
+      proseOf(c).forEach(function (t) { sents(t).forEach(function (x) { cand.push({ t: x, sc: sScore(x, qset, I) * w, src: "sop", ref: main.c, href: "sop/" + main.c + ".pdf" }); }); });
     });
-    var fl = s.s.filter(function (c) { return c.t === "Diagram alir ringkas"; })[0];
-    if (fl && !a.alur) fl.c.forEach(function (b) { if (b.flow) a.alur = b.flow.split(/\s*→\s*/).map(function (x) { return { label: x }; }); });
-    var es = s.s.filter(function (c) { return c.t === "Pengecualian dan eskalasi masalah"; })[0];
-    if (es) es.c.forEach(function (b) { if (b.ul) b.ul.slice(0, 3).forEach(function (x) { a.catatan.push(x); }); });
-    sops.slice(0, 4).forEach(function (x) { a.sumber.push({ kode: x.c, label: x.c + " " + x.t }); });
-    its.forEach(function (x) { if (x.ch.kind === "pd") a.sumber.push({ file: x.ch.file, hlm: x.ch.page, label: "Panduan " + x.ch.name + " hlm. " + x.ch.page }); });
+    its.forEach(function (x) {
+      if (x.ch.kind === "pd" && useP) sents(x.ch.text).forEach(function (t) { cand.push({ t: t, sc: sScore(t, qset, I), src: "pd", ref: "hlm. " + x.ch.page, href: "panduan/" + encodeURIComponent(x.ch.file) + ".pdf#page=" + x.ch.page, pg: x.ch }); });
+      else if (x.ch.kind === "sop" && useS && x.ch.sop !== main && sops.indexOf(x.ch.sop) < 2) proseOf(x.ch.sec).forEach(function (t) { sents(t).forEach(function (y) { cand.push({ t: y, sc: sScore(y, qset, I) * .8, src: "sop", ref: x.ch.sop.c, href: "sop/" + x.ch.sop.c + ".pdf" }); }); });
+    });
+    var best = cand.reduce(function (m, c) { return Math.max(m, c.sc); }, 0);
+    cand = cand.filter(function (c) { return c.sc > 0 && c.sc >= .38 * best; }).sort(function (x, y) { return y.sc - x.sc; });
+    var pick = [], used = {}, cnt = { sop: 0, pd: 0 };
+    function take(c) { var key = c.t.slice(0, 40).toLowerCase(); if (used[key]) return false; used[key] = 1; cnt[c.src]++; pick.push(c); return true; }
+    if (useS && useP) { ["sop", "pd"].forEach(function (sr) { for (var i = 0; i < cand.length; i++) if (cand[i].src === sr && take(cand[i])) break; }); }
+    for (var i = 0; i < cand.length && pick.length < 5; i++) if (cnt[cand[i].src] < 3) take(cand[i]);
+    pick.sort(function (x, y) { return y.sc - x.sc; });
+    var nR = pick.length > 1 && pick[1].sc >= .85 * pick[0].sc ? 2 : 1;
+    if (pick.length) { a.ringkas = pick.slice(0, nR).map(function (c) { return (c.t.length > 280 ? c.t.slice(0, 277).replace(/\s\S*$/, "") + "..." : c.t).replace(/[;:,]$/, ""); }).join(" "); if (!/[.!?]$/.test(a.ringkas)) a.ringkas += "."; }
+    a.poin = pick.slice(nR).map(function (c) { return { t: c.t, ref: c.ref, href: c.href }; });
+    /* langkah / tabel prosedur dari SOP utama */
+    var pr = main && main.s.filter(function (c) { return c.t === "Prosedur pelaksanaan"; })[0];
+    var proc = pr && (it.how || it.who || it.when || (sops[0] === main && its[0].ch.kind === "sop" && its[0].ch.sec.t === "Prosedur pelaksanaan"));
+    if (proc) pr.c.forEach(function (b) {
+      if (!b.tb || b.tb.h.length < 3) return;
+      var h = b.tb.h, iP = h.indexOf("Pelaksana"), iW = h.indexOf("Batas waktu"), cols = ["No.", "Tahapan dan tindakan"], ix = [0, 1];
+      if (iP > -1 && !(it.when && !it.who && !it.how)) { cols.push("Pelaksana"); ix.push(iP); }
+      if (iW > -1 && !(it.who && !it.when && !it.how)) { cols.push("Batas waktu"); ix.push(iW); }
+      a.tabel = [{ judul: "Tahapan " + main.t.toLowerCase(), kolom: cols, baris: b.tb.r.map(function (r) { return ix.map(function (i) { return r[i] || ""; }); }) }];
+      if (iP > -1 && it.how) a.alur = b.tb.r.map(function (r) { return { label: String(r[1] || "").split(":")[0].slice(0, 70), pic: r[iP] }; });
+    });
+    if (main && (it.prob || it.how)) {
+      var es = main.s.filter(function (c) { return c.t === "Pengecualian dan eskalasi masalah"; })[0];
+      if (es) es.c.forEach(function (b) { if (b.ul) b.ul.slice(0, it.prob ? 3 : 1).forEach(function (x) { a.catatan.push(x); }); });
+    }
+    /* sumber: PDF SOP yang tepat + halaman buku panduan */
+    if (main) a.sumber.push({ pdf: "sop/" + main.c + ".pdf", label: main.c + " " + main.t });
+    pick.forEach(function (c) { if (c.src === "sop" && c.ref !== (main && main.c)) a.sumber.push({ pdf: c.href, label: c.ref + " " + BY[c.ref].t }); });
+    var pgs = {};
+    pick.concat(cand.filter(function (c) { return c.src === "pd"; }).slice(0, 2)).forEach(function (c) {
+      if (c.src !== "pd") return; var key = c.pg.file + c.pg.page; if (pgs[key]) return; pgs[key] = 1;
+      a.sumber.push({ file: c.pg.file, hlm: c.pg.page, label: "Buku Panduan " + c.pg.name + ", hlm. " + c.pg.page });
+    });
     sops.slice(1, 4).forEach(function (x) { a.lanjut.push("Jelaskan " + x.t.toLowerCase()); });
     return a;
-  }
-
-  /* ---------- Panggilan ke AI ---------- */
-  function endpoint() {
-    var e = typeof window.AI_ENDPOINT === "string" ? window.AI_ENDPOINT.replace(/[\s"'\u201C\u201D\u2018\u2019\u200B\uFEFF]/g, "") : "";
-    return /^https:\/\/script\.google\.com\/(a\/(macros\/)?[^\/]+\/)?macros\/s\/[^\/?#]+\/exec(\?[^#]*)?$/.test(e) ? e : "";
-  }
-  function askAI(q, bag, ctx, hist) {
-    var EP = endpoint();
-    if (!EP) return Promise.reject({ code: "A0" });
-    var payload = {
-      v: 1, q: q, bagian: bag.n, hp: "",
-      riwayat: hist,
-      konteks: ctx.items.map(function (x, i) { return { id: "K" + (i + 1), ref: x.ref, t: x.t }; })
-    };
-    var ctl = window.AbortController ? new AbortController() : null, to = ctl && setTimeout(function () { ctl.abort(); }, CFG.TIMEOUT);
-    return fetch(EP, { method: "POST", mode: "cors", credentials: "omit", referrerPolicy: "no-referrer", redirect: "follow",
-      headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload), signal: ctl ? ctl.signal : undefined })
-      .then(function (r) { return r.text(); })
-      .then(function (t) {
-        clearTimeout(to);
-        var j; try { j = JSON.parse(t); } catch (x) { throw { code: "N2" }; }
-        if (!j.ok) throw { code: j.error === "limit" ? "L1" : j.error === "kunci" ? "K1" : j.error === "kuota" ? "Q1" : j.error === "model" ? "M1" : "E1", detail: j.detail ? String(j.detail).slice(0, 160) : "" };
-        return j.jawaban;
-      }, function () { clearTimeout(to); throw { code: "N1" }; });
   }
 
   /* ---------- Tampilan jawaban ---------- */
   function arr(x) { return Array.isArray(x) ? x : []; }
   function renderAnswer(a, ctx) {
     var h = "", cls = a.jenis === "lokal" ? " lokal" : a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? " warn" : "";
-    var label = a.jenis === "lokal" ? "Hasil pencarian SOP" : a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? "Belum ditemukan" : "Jawaban";
+    var label = a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? "Belum ditemukan" : "Jawaban";
     h += '<div class="ai-top"><span class="asta-av" aria-hidden="true"><span class="asta-img"></span></span><span class="ai-badge' + cls + '">' + label + "</span></div>";
     if (a.ringkas) h += '<p class="ai-sum">' + fmt(a.ringkas) + "</p>";
     var L = arr(a.langkah);
@@ -274,12 +277,15 @@
         var v = +d.nilai || 0;
         return '<div class="ai-bar"><span>' + esc(d.label) + '</span><i style="--w:' + Math.max(4, Math.round(v / mx * 100)) + '%"></i><span>' + v + " " + esc(G.satuan || "") + "</span></div>"; }).join("") + "</div></div>";
     }
+    var PT = arr(a.poin);
+    if (PT.length) h += '<ul class="ai-pts">' + PT.map(function (p) { return "<li>" + fmt(p.t) + ' <a class="ai-ref" href="' + esc(p.href) + '" target="_blank" rel="noopener">' + esc(p.ref) + "</a></li>"; }).join("") + "</ul>";
     var N = arr(a.catatan).filter(Boolean);
     if (N.length) h += '<div class="ai-note"><ul>' + N.map(function (n) { return "<li>" + fmt(n) + "</li>"; }).join("") + "</ul></div>";
     var S = [];
     arr(a.sumber).forEach(function (s) {
       if (s.id && ctx) { var m = /^K(\d+)$/.exec(s.id), it = m && ctx.items[+m[1] - 1]; if (it) s = it.ch.kind === "sop" ? { kode: it.ch.sop.c, label: it.ch.sop.c + " " + it.ch.sec.t } : { file: it.ch.file, hlm: it.ch.page, label: "Panduan " + it.ch.name + " hlm. " + it.ch.page }; else return; }
-      if (s.kode && BY[s.kode]) S.push('<a href="#sop/' + s.kode + '">' + esc(s.label || s.kode) + "</a>");
+      if (s.pdf) S.push('<a href="' + esc(s.pdf) + '" target="_blank" rel="noopener">' + esc(s.label) + " (PDF)</a>");
+      else if (s.kode && BY[s.kode]) S.push('<a href="#sop/' + s.kode + '">' + esc(s.label || s.kode) + "</a>");
       else if (s.file) S.push('<a href="panduan/' + encodeURIComponent(s.file) + ".pdf#page=" + (+s.hlm || 1) + '" target="_blank" rel="noopener">' + esc(s.label || s.file) + "</a>");
     });
     S = S.filter(function (x, i) { return S.indexOf(x) === i; });
@@ -320,8 +326,7 @@
   }
   function nBuku() { var P = window.PANDUAN || {}; return Object.keys(P).filter(function (k) { return P[k] && P[k].p && P[k].p.length; }).length; }
   function setMode() {
-    var on = !!endpoint();
-    $("ai-who-name").innerHTML = esc(st.bag.n) + '<span class="ai-mode' + (on ? " on" : "") + '">' + (on ? "AI aktif" : "Mode cari SOP") + (nBuku() ? " \u00b7 " + nBuku() + " buku" : "") + "</span>";
+    $("ai-who-name").innerHTML = esc(st.bag.n) + '<span class="ai-mode on">Siap menjawab</span>';
   }
   function choose(k) {
     st.bag = BK[k]; st.hist = []; st.answers = [];
@@ -354,18 +359,10 @@
         st.busy = false; send.disabled = false; avBusy(false); setMode();
         u.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-      askAI(q, st.bag, ctx, hist).then(function (a) {
-        if (!a || typeof a !== "object") throw { code: "E1" };
+      setTimeout(function () {
+        var a; try { a = compose(q, ctx); } catch (x) { a = { jenis: "kosong", ringkas: "Maaf, ada kendala saat memproses pertanyaan. Coba tulis ulang dengan kalimat lain." }; if (window.console) console.warn(x); }
         show(a, ctx);
-      }).catch(function (e) {
-        var code = e && e.code, note = null;
-        if (code && code !== "A0") note = "AI sedang tidak bisa dihubungi (kode " + code + (e.detail ? ": " + e.detail : "") + "), jadi yang tampil adalah hasil pencarian SOP.";
-        if (code === "K1") note = "Kunci API belum diisi atau tidak valid (K1), jadi yang tampil adalah hasil pencarian SOP." + (e.detail ? " Rincian: " + e.detail : "");
-        if (code === "Q1") note = "Kuota gratis penyedia AI sedang habis (Q1). Coba lagi beberapa menit lagi; sementara ini yang tampil adalah hasil pencarian SOP.";
-        if (code === "L1") note = "Batas penggunaan AI hari ini sudah tercapai, jadi yang tampil adalah hasil pencarian SOP. Coba lagi besok.";
-        show(localAnswer(q, ctx, note), ctx);
-        if (window.console && code && code !== "A0") console.warn("[Tanya AI] gagal:", code);
-      });
+      }, 600 + Math.round(Math.random() * 500));
     }, 30);
   }
   var tT;
@@ -536,5 +533,5 @@
   (window.requestIdleCallback || function (f) { setTimeout(f, 2500); })(function () { try { build(); } catch (x) {} }, { timeout: 6000 });
   renderPick();
   syncPage();
-  window.__aiDebug = { search: search, pickContext: pickContext, localAnswer: localAnswer, renderAnswer: renderAnswer };
+  window.__aiDebug = { search: search, pickContext: pickContext, compose: compose, renderAnswer: renderAnswer };
 })();
