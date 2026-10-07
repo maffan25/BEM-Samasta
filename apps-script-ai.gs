@@ -71,17 +71,29 @@ function doPost(e) {
 
 function doGet(e) {
   var P = PropertiesService.getScriptProperties();
-  var info = { ok: true, info: 'Endpoint Tanya AI BEM STDIIS aktif', versi: 2,
+  var info = { ok: true, info: 'Endpoint Tanya AI BEM STDIIS aktif', versi: 3,
     kunci: P.getProperty('API_KEY') ? 'terpasang' : 'BELUM diisi',
     penyedia: P.getProperty('PROVIDER') || 'gemini', model: P.getProperty('MODEL') || '(bawaan)' };
-  /* Tambahkan ?tes=1 di ujung URL /exec untuk menguji panggilan AI sungguhan dan melihat alasan galatnya. */
-  if (e && e.parameter && e.parameter.tes) {
+  var prm = (e && e.parameter) || {}, t0 = Date.now();
+  /* ?models=1 : CEPAT. Menanyakan ke Google model apa saja yang boleh dipakai kunci ini. Tidak membuat jawaban AI. */
+  if (prm.models) {
+    try {
+      if (!P.getProperty('API_KEY')) throw mk_('kunci', 'API_KEY belum diisi');
+      info.model_tersedia = modelList_(P.getProperty('API_KEY'));
+      info.tes = 'KUNCI VALID';
+    } catch (err) { info.ok = false; info.tes = 'GAGAL'; info.error = kind_(err); info.detail = safe_(err); }
+    info.ms = Date.now() - t0;
+    return out_(info);
+  }
+  /* ?tes=1 : uji panggilan AI sungguhan dan tampilkan lama prosesnya. */
+  if (prm.tes) {
     try {
       if (!P.getProperty('API_KEY')) throw mk_('kunci', 'API_KEY belum diisi');
       if (!allow_(P)) throw mk_('limit', 'batas harian tercapai');
       info.balasan = ask_(P, 'Balas hanya JSON {"ok":true}').slice(0, 200);
       info.tes = 'BERHASIL';
     } catch (err) { info.ok = false; info.tes = 'GAGAL'; info.error = kind_(err); info.detail = safe_(err); }
+    info.ms = Date.now() - t0;
   }
   return out_(info);
 }
@@ -91,9 +103,10 @@ function setup() { UrlFetchApp.fetch('https://www.google.com', { muteHttpExcepti
 
 /* Tes cepat dari editor: pilih "tes" lalu Jalankan, lihat Log eksekusi. */
 function tes() {
-  var P = PropertiesService.getScriptProperties();
+  var P = PropertiesService.getScriptProperties(), t0 = Date.now();
   if (!P.getProperty('API_KEY')) throw new Error('API_KEY belum diisi di Properti skrip');
-  console.log(ask_(P, 'Balas hanya JSON {"ok":true}'));
+  console.log('Model tersedia: ' + modelList_(P.getProperty('API_KEY')).join(', ') + ' (' + (Date.now() - t0) + ' ms)');
+  console.log('Balasan AI: ' + ask_(P, 'Balas hanya JSON {"ok":true}') + ' (total ' + (Date.now() - t0) + ' ms)');
 }
 
 /* ---------- Penyedia AI ---------- */
@@ -118,35 +131,58 @@ function httpErr_(name, code, text) {
   return mk_('server', msg);
 }
 
+/* Daftar model yang boleh dipakai kunci ini untuk generateContent (urut: flash dulu). */
+function modelList_(key) {
+  var r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { muteHttpExceptions: true, headers: { 'x-goog-api-key': key } });
+  var code = r.getResponseCode(), txt = r.getContentText() || '';
+  if (code !== 200) throw httpErr_('Gemini', code, txt);
+  var b; try { b = JSON.parse(txt); } catch (x) { throw mk_('server', 'Daftar model bukan JSON'); }
+  var names = (b.models || []).filter(function (m) { return (m.supportedGenerationMethods || []).indexOf('generateContent') > -1; })
+    .map(function (m) { return String(m.name).replace(/^models\//, ''); })
+    .filter(function (n) { return /^gemini-/.test(n) && !/(image|tts|embedding|live|audio|robotics|computer|thinking-exp|-exp)/.test(n); });
+  names.sort(function (x, y) { return (/flash/.test(y) ? 1 : 0) - (/flash/.test(x) ? 1 : 0) || (/lite/.test(x) ? 1 : 0) - (/lite/.test(y) ? 1 : 0); });
+  return names;
+}
+
+function geminiOnce_(key, model, user) {
+  var cfg = { temperature: 0.2, maxOutputTokens: 4096, responseMimeType: 'application/json' };
+  if (/gemini-2\.5-flash/.test(model)) cfg.thinkingConfig = { thinkingBudget: 0 };   /* tanpa "berpikir" panjang: jauh lebih cepat */
+  var r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { 'x-goog-api-key': key },
+    payload: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM }] }, contents: [{ role: 'user', parts: [{ text: user }] }], generationConfig: cfg })
+  });
+  var code = r.getResponseCode(), txt = r.getContentText() || '';
+  if (code !== 200) throw httpErr_('Gemini ' + model, code, txt);
+  var body; try { body = JSON.parse(txt); } catch (x) { throw mk_('server', 'Gemini membalas bukan JSON'); }
+  if (body.promptFeedback && body.promptFeedback.blockReason) throw mk_('server', 'Gemini memblokir: ' + body.promptFeedback.blockReason);
+  var c = body.candidates && body.candidates[0];
+  return c && c.content && c.content.parts ? c.content.parts.map(function (p) { return p.text || ''; }).join('') : '';
+}
+
 function callGemini_(key, model, user) {
-  /* Bila MODEL tidak diisi, coba beberapa nama model secara berurutan (nama bisa dipensiunkan Google). */
-  var models = model ? [model] : ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash'], last = null;
-  for (var i = 0; i < models.length; i++) {
-    for (var t = 0; t < 2; t++) {
-      var r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(models[i]) + ':generateContent', {
-        method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-        headers: { 'x-goog-api-key': key },
-        payload: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM }] },
-          contents: [{ role: 'user', parts: [{ text: user }] }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 4096, responseMimeType: 'application/json' }
-        })
-      });
-      var code = r.getResponseCode(), txt = r.getContentText() || '';
-      if (code === 200) {
-        var body; try { body = JSON.parse(txt); } catch (x) { throw mk_('server', 'Gemini membalas bukan JSON'); }
-        if (body.promptFeedback && body.promptFeedback.blockReason) throw mk_('server', 'Gemini memblokir: ' + body.promptFeedback.blockReason);
-        var c = body.candidates && body.candidates[0];
-        return c && c.content && c.content.parts ? c.content.parts.map(function (p) { return p.text || ''; }).join('') : '';
-      }
-      last = httpErr_('Gemini', code, txt);
-      if (code === 500 || code === 503) { Utilities.sleep(1500); continue; }  /* sibuk: coba sekali lagi */
-      break;
+  var t0 = Date.now(), last = null, tried = {};
+  function coba(m) {
+    tried[m] = 1;
+    try { return { v: geminiOnce_(key, m, user) }; }
+    catch (err) {
+      last = err;
+      if (err.kind === 'kunci' || err.kind === 'kuota') throw err;          /* model lain tidak akan membantu */
+      if (err.kind === 'server' && Date.now() - t0 < 25000) { Utilities.sleep(1200); try { return { v: geminiOnce_(key, m, user) }; } catch (e2) { last = e2; } }
+      return null;
     }
-    if (last.kind === 'kunci') throw last;       /* kunci salah: model lain tidak membantu */
-    if (last.kind !== 'model' && last.kind !== 'server') throw last;
   }
-  throw last;
+  var first = model ? [model] : ['gemini-2.5-flash', 'gemini-flash-latest'];
+  for (var i = 0; i < first.length; i++) { var r1 = coba(first[i]); if (r1) return r1.v; if (Date.now() - t0 > 30000) throw last; }
+  /* Nama model bawaan gagal: tanya Google model apa yang tersedia, lalu coba beberapa teratas. */
+  var list = []; try { list = modelList_(key); } catch (e3) { throw last; }
+  var n = 0;
+  for (var k = 0; k < list.length && n < 3; k++) {
+    if (tried[list[k]]) continue;
+    n++; var r2 = coba(list[k]); if (r2) return r2.v;
+    if (Date.now() - t0 > 40000) break;
+  }
+  throw last || mk_('model', 'Tidak ada model Gemini yang bisa dipakai oleh kunci ini');
 }
 
 function callClaude_(key, model, user) {
