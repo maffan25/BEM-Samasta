@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Editor ASTA | BEM STDIIS</title>
+<style>
+:root{--ink:#0d2a38;--gold:#f8d24a;--gold2:#fde9a0;--cream:#fffbef;--sand:#f6efd5;--line:#e6dbb4;--muted:#5d6b73;--green:#0f6b5a;--red:#b3261e;--r:16px;
+  --serif:Georgia,"Times New Roman",serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font:16px/1.55 var(--sans);background:var(--cream);color:var(--ink);padding:env(safe-area-inset-top) 0 calc(96px + env(safe-area-inset-bottom))}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+header{background:var(--ink);color:#f6f1de;padding:28px 0 26px}
+header h1{font:700 clamp(26px,5vw,36px)/1.15 var(--serif);color:#fff}
+header p{color:#cde0dc;margin-top:6px;max-width:560px}
+.tag{display:inline-block;background:var(--gold);color:var(--ink);font-weight:700;font-size:12.5px;border-radius:999px;padding:3px 12px;margin-bottom:12px}
+.status{position:sticky;top:0;z-index:20;background:var(--sand);border-bottom:1px solid var(--line);padding:10px 0;font-size:14.5px}
+.status .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.status b{font-weight:700}.dot{width:10px;height:10px;border-radius:50%;background:#9db3ad;flex:none}
+.status.dirty .dot{background:var(--gold);box-shadow:0 0 0 4px rgba(248,210,74,.35)}
+.status.done .dot{background:var(--green)}
+.btn{font:600 15px var(--sans);border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:9px 18px;cursor:pointer;transition:background .15s,transform .15s;display:inline-flex;gap:8px;align-items:center;justify-content:center}
+.btn:hover{background:var(--sand)}.btn:active{transform:scale(.97)}
+.btn.gold{background:var(--gold);border-color:var(--gold)}.btn.gold:hover{background:#f3c92f}
+.btn.dark{background:var(--ink);color:#fff}.btn.dark:hover{background:#17435a}
+.btn.sm{padding:6px 14px;font-size:13.5px}.btn.red{border-color:var(--red);color:var(--red)}.btn.red:hover{background:#fbe9e7}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 14px}
+.bar .grow{flex:1;min-width:200px}
+input,select,textarea{font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;width:100%}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 4px rgba(248,210,74,.45)}
+textarea{min-height:110px;resize:vertical}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;font:600 14px var(--sans);cursor:pointer;color:var(--muted)}
+.tab[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.list{display:grid;gap:12px}
+.ev{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r);padding:16px 18px;box-shadow:0 6px 18px -12px rgba(13,42,56,.35)}
+.dt{background:var(--sand);border-radius:12px;text-align:center;padding:8px 4px;align-self:start}
+.dt b{display:block;font:700 24px/1 var(--serif)}.dt span{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.ev h3{font:700 18px/1.3 var(--serif);margin-bottom:6px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.meta i{font-style:normal;font-size:12.5px;font-weight:600;background:var(--sand);border-radius:999px;padding:2px 10px;color:#2a5560}
+.ev p{font-size:14.5px;color:var(--muted);margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.act{display:flex;gap:8px;flex-wrap:wrap}
+.empty{background:#fff;border:1.5px dashed var(--line);border-radius:var(--r);padding:36px 20px;text-align:center;color:var(--muted)}
+.how{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:4px 20px;margin-top:26px}
+.how summary{cursor:pointer;font-weight:700;padding:14px 0}
+.how ol{padding:0 0 14px 20px;color:#2b4652}.how li{margin-bottom:6px}
+.banner{background:#fff7d6;border:1px solid #ecd67a;border-radius:var(--r);padding:14px 18px;margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.banner span{flex:1;min-width:200px}
+dialog{border:0;border-radius:22px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);box-shadow:0 30px 80px -20px rgba(13,42,56,.6);color:var(--ink)}
+dialog::backdrop{background:rgba(13,42,56,.55);backdrop-filter:blur(3px)}
+.fh{background:var(--ink);color:#fff;padding:18px 24px;font:700 20px var(--serif)}
+.fb{padding:20px 24px;display:grid;gap:14px;overflow:auto;max-height:calc(100dvh - 190px)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weight:400;color:var(--muted)}
+.ff{padding:14px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;background:var(--cream)}
+.err{color:var(--red);font-size:13.5px;min-height:1.2em}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;border-radius:999px;padding:10px 12px 10px 20px;display:flex;gap:14px;align-items:center;transition:.3s;z-index:60;max-width:calc(100vw - 24px)}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{background:var(--gold);border:0;border-radius:999px;padding:6px 14px;font:700 13.5px var(--sans);cursor:pointer;color:var(--ink)}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;box-shadow:0 14px 30px -10px rgba(13,42,56,.55)}
+@media (max-width:520px){.ev{grid-template-columns:52px minmax(0,1fr);gap:12px;padding:14px}.row2{grid-template-columns:1fr}.dt b{font-size:20px}}
+.kb{background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--r);padding:16px 18px;box-shadow:0 6px 18px -12px rgba(13,42,56,.35)}
+.kb.off{opacity:.55;border-left-color:#b8c4c0}.kb h3{font:700 18px/1.3 var(--serif);margin-bottom:6px}
+.kb p{font-size:14.5px;color:var(--muted);margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sw{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:600}
+.sw input{width:20px;height:20px;accent-color:var(--green);flex:none;padding:0}.sw small{font-weight:400;color:var(--muted);display:block;word-break:break-all}.sw.off{background:#f4f1e6;color:var(--muted)}
+.gh{font:700 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.src{display:grid;grid-template-columns:minmax(0,1fr) 84px 40px;gap:8px;align-items:start}.src .cu{grid-column:1/-1;display:grid;gap:8px}
+.help{font-size:13px;color:var(--muted);font-weight:400}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="wrap"><span class="tag">Khusus pengelola</span><h1>Editor Acuan ASTA</h1><p>Tambah, ubah, atau hapus acuan jawaban ASTA, dan atur SOP atau buku panduan mana yang dipakai. Selesai, unduh <b>asta-data.js</b> lalu unggah ke GitHub.</p></div></header>
+<div class="status" id="status" role="status"><div class="wrap"><i class="dot"></i><span id="stxt"></span><span style="flex:1"></span><button class="btn gold sm" id="dl">Unduh asta-data.js</button></div></div>
+<main class="wrap">
+  <div class="bar"><input class="grow" id="q" type="search" placeholder="Cari" aria-label="Cari"><button class="btn dark" id="add">+ Tambah acuan</button></div>
+  <div class="tabs"><button class="tab" data-t="acuan" aria-pressed="true">Acuan tambahan</button><button class="tab" data-t="sumber" aria-pressed="false">SOP dan buku panduan</button></div>
+  <div class="list" id="list"></div>
+  <details class="how" open><summary>Cara kerja dan cara menerbitkan</summary><ol>
+    <li><b>Acuan tambahan</b>: jawaban buatan sendiri (ringkasan, poin, langkah, rujukan) untuk topik yang ingin dijawab persis sesuai maumu. ASTA memakainya bila pertanyaan cocok dengan judul atau kata kuncinya, lalu menggabungkannya dengan SOP dan buku panduan.</li>
+    <li><b>SOP dan buku panduan</b>: matikan sumber yang belum final atau tidak ingin dipakai ASTA. Yang dimatikan tidak ikut dicari dan tidak muncul di rujukan.</li>
+    <li>Selesai, tekan <b>Unduh asta-data.js</b>, lalu di GitHub: Add file, Upload files, seret file itu (nama harus sama), Commit changes.</li></ol>
+    <div class="act" style="padding-bottom:16px"><button class="btn sm" id="copy">Salin kode</button><button class="btn sm" id="imp">Muat file asta-data.js</button><button class="btn sm red" id="reset">Kembali ke versi situs</button><input type="file" id="file" accept=".js,.json,text/javascript" hidden></div></details>
+</main>
+<button class="btn gold fab" id="fab" aria-label="Tambah acuan">+ Tambah</button>
+<dialog id="dlg"><form method="dialog" id="form" novalidate>
+  <div class="fh" id="ftitle">Tambah acuan</div>
+  <div class="fb">
+    <label>Judul atau pertanyaan *<input id="f-judul" maxlength="160" placeholder="Contoh: Cara mencairkan dana kegiatan"></label>
+    <label>Kata kunci <small class="help">pisahkan dengan koma; masukkan kata yang sering dipakai orang bertanya</small><input id="f-kunci" maxlength="300" placeholder="cair, duit, dana, rab"></label>
+    <label>Ringkasan jawaban *<textarea id="f-ringkas" maxlength="600" style="min-height:84px"></textarea></label>
+    <label>Poin penting <small class="help">satu poin per baris</small><textarea id="f-poin" maxlength="2000"></textarea></label>
+    <label>Langkah <small class="help">satu langkah per baris; boleh "Judul: penjelasan"</small><textarea id="f-langkah" maxlength="2500"></textarea></label>
+    <div><div style="font-weight:600;font-size:14px;margin-bottom:8px">Rujukan</div><div id="srcs" style="display:grid;gap:12px"></div><button type="button" class="btn sm" id="addsrc" style="margin-top:10px">+ Tambah rujukan</button></div>
+    <label class="sw" style="font-weight:600"><input type="checkbox" id="f-aktif" checked><span>Aktif dipakai ASTA</span></label>
+    <div class="err" id="err" role="alert"></div>
+  </div>
+  <div class="ff"><button class="btn" type="button" id="cancel">Batal</button><button class="btn gold" type="submit">Simpan</button></div>
+</form></dialog>
+<div class="toast" id="toast"><span id="ttxt"></span></div>
+<script>document.write('<script src="sop-data.js"><\/script><script src="asta-data.js?t='+Date.now()+'"><\/script>');</script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i);};
+function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+var BOOKS=[["presiden","Presiden"],["wakil-presiden","Wakil Presiden"],["sekretaris-jenderal","Sekretaris Jenderal"],["psdm","Kementerian PSDM"],["akademik-karier","Kementerian Akademik dan Karier"],["harmonisasi-kampus","Kementerian Harmonisasi Kampus"],["kemenpora","Kementerian Pemuda dan Olahraga"],["hubeks","Kementerian Hubungan Eksternal"],["kesma","Kementerian Kesejahteraan Mahasiswa"],["pengembangan-bahasa","Kementerian Pengembangan Bahasa"],["biro-administrasi","Biro Administrasi"],["biro-keuangan","Biro Keuangan"],["biro-dkv","Biro DKV"],["inspektorat-jenderal","Inspektorat Jenderal"]];
+var SOPS=(window.SOP_DATA||[]).map(function(s){return [s.c,s.t];}).sort(function(a,b){return a[0]<b[0]?-1:1;});
+function load(o){o=o&&typeof o==="object"?o:{};return {acuan:Array.isArray(o.acuan)?o.acuan:[],mati:Array.isArray(o.mati)?o.mati:[]};}
+var D=load(JSON.parse(JSON.stringify(window.ASTA_KB||{}))),SITE=JSON.stringify(D),downloaded=false,tab="acuan",edit=-1,tT;
+function toast(m){$("ttxt").textContent=m;$("toast").classList.add("on");clearTimeout(tT);tT=setTimeout(function(){$("toast").classList.remove("on");},2800);}
+function status(){var d=JSON.stringify(D)!==SITE,st=$("status");st.className="status"+(d?(downloaded?" done":" dirty"):"");
+  $("stxt").innerHTML=!d?"Sama dengan versi di situs. <b>"+D.acuan.length+" acuan</b>, <b>"+D.mati.length+" sumber dimatikan</b>.":downloaded?"<b>File sudah diunduh.</b> Tinggal unggah <b>asta-data.js</b> ke GitHub.":"<b>Ada perubahan belum diterbitkan.</b>";}
+function touch(){downloaded=false;render();}
+function render(){var q=$("q").value.trim().toLowerCase(),h="";
+  $("add").hidden=tab!=="acuan";$("fab").hidden=tab!=="acuan";
+  [].forEach.call(document.querySelectorAll(".tab"),function(b){b.setAttribute("aria-pressed",b.getAttribute("data-t")===tab);});
+  if(tab==="acuan"){
+    var L=D.acuan.map(function(k,i){return [k,i];}).filter(function(x){return !q||(x[0].judul+" "+x[0].kunci+" "+x[0].ringkas).toLowerCase().indexOf(q)>=0;});
+    h=L.length?L.map(function(x){var k=x[0],i=x[1];return '<article class="kb'+(k.aktif===false?" off":"")+'"><h3>'+esc(k.judul)+'</h3><div class="meta">'+(k.aktif===false?"<i>Nonaktif</i>":"")+(k.kunci?String(k.kunci).split(",").slice(0,5).map(function(w){return w.trim()?"<i>"+esc(w.trim())+"</i>":"";}).join(""):"")+"<i>"+(k.poin||[]).length+" poin</i><i>"+(k.langkah||[]).length+" langkah</i><i>"+(k.sumber||[]).length+" rujukan</i></div><p>"+esc(k.ringkas||"")+'</p><div class="act"><button class="btn sm dark" data-a="e" data-i="'+i+'">Ubah</button><button class="btn sm" data-a="t" data-i="'+i+'">'+(k.aktif===false?"Aktifkan":"Nonaktifkan")+'</button><button class="btn sm" data-a="c" data-i="'+i+'">Gandakan</button><button class="btn sm red" data-a="d" data-i="'+i+'">Hapus</button></div></article>';}).join(""):'<div class="empty">'+(D.acuan.length?"Tidak ada yang cocok.":"Belum ada acuan tambahan. Tekan <b>+ Tambah acuan</b> untuk membuat jawaban sendiri.")+"</div>";
+  }else{
+    function row(id,t,sub){var off=D.mati.indexOf(id)>=0;return '<label class="sw'+(off?" off":"")+'"><input type="checkbox" data-s="'+esc(id)+'"'+(off?"":" checked")+'><span>'+esc(t)+"<small>"+esc(sub)+"</small></span></label>";}
+    var bk=BOOKS.filter(function(b){return !q||b[1].toLowerCase().indexOf(q)>=0;}),sp=SOPS.filter(function(s){return !q||(s[0]+" "+s[1]).toLowerCase().indexOf(q)>=0;});
+    h='<div class="gh">Buku panduan ('+bk.length+")</div>"+bk.map(function(b){return row(b[0],b[1],"panduan/"+b[0]+".pdf");}).join("")+'<div class="gh">SOP ('+sp.length+")</div>"+sp.map(function(s){return row(s[0],s[0]+" "+s[1],"sop/"+s[0]+".pdf");}).join("");
+  }
+  $("list").innerHTML=h;status();}
+$("list").addEventListener("click",function(e){var b=e.target.closest("[data-a]");if(!b)return;var i=+b.getAttribute("data-i"),a=b.getAttribute("data-a"),k=D.acuan[i];
+  if(a==="e")open(i);
+  else if(a==="t"){k.aktif=k.aktif===false;touch();}
+  else if(a==="c"){var c=JSON.parse(JSON.stringify(k));c.id="k"+Date.now();c.judul+=" (salinan)";D.acuan.splice(i+1,0,c);touch();toast("Acuan digandakan.");}
+  else if(a==="d"&&confirm("Hapus acuan \""+k.judul+"\"?")){D.acuan.splice(i,1);touch();toast("Acuan dihapus.");}});
+$("list").addEventListener("change",function(e){var c=e.target.closest("[data-s]");if(!c)return;var id=c.getAttribute("data-s"),i=D.mati.indexOf(id);if(c.checked&&i>=0)D.mati.splice(i,1);else if(!c.checked&&i<0)D.mati.push(id);touch();});
+[].forEach.call(document.querySelectorAll(".tab"),function(b){b.onclick=function(){tab=b.getAttribute("data-t");$("q").value="";render();};});
+$("q").addEventListener("input",render);
+function opts(sel){var h='<option value="">Pilih rujukan</option><optgroup label="Buku panduan">'+BOOKS.map(function(b){return '<option value="b:'+b[0]+'">Buku Panduan '+esc(b[1])+"</option>";}).join("")+'</optgroup><optgroup label="SOP">'+SOPS.map(function(s){return '<option value="s:'+s[0]+'">'+esc(s[0]+" "+s[1])+"</option>";}).join("")+'</optgroup><option value="u">Tautan atau dokumen lain</option>';return h;}
+function addSrc(x){var d=document.createElement("div"),v="",u=x&&x.url||"";
+  if(x){var m=/^panduan\/(.+)\.pdf$/.exec(u),n=/^sop\/(.+)\.pdf$/.exec(u);v=m?"b:"+m[1]:n?"s:"+n[1]:"u";}
+  d.className="src";d.innerHTML='<select class="s-ref" aria-label="Rujukan">'+opts()+'</select><input class="s-hlm" type="number" min="1" placeholder="Hal." aria-label="Halaman" value="'+esc(x&&x.hlm||"")+'"><button type="button" class="btn sm red s-del" aria-label="Hapus rujukan">&times;</button><div class="cu" hidden><input class="s-lbl" placeholder="Nama rujukan" value="'+esc(x&&v==="u"?x.label:"")+'"><input class="s-url" placeholder="Alamat file atau tautan (https://...)" value="'+esc(v==="u"?u:"")+'"></div>';
+  d.querySelector(".s-ref").value=v;d.querySelector(".cu").hidden=v!=="u";$("srcs").appendChild(d);}
+$("srcs").addEventListener("change",function(e){if(e.target.classList.contains("s-ref"))e.target.closest(".src").querySelector(".cu").hidden=e.target.value!=="u";});
+$("srcs").addEventListener("click",function(e){if(e.target.closest(".s-del"))e.target.closest(".src").remove();});
+$("addsrc").onclick=function(){addSrc();};
+function open(i){edit=i;var k=i>=0?D.acuan[i]:{};$("ftitle").textContent=i>=0?"Ubah acuan":"Tambah acuan";
+  $("f-judul").value=k.judul||"";$("f-kunci").value=k.kunci||"";$("f-ringkas").value=k.ringkas||"";$("f-poin").value=(k.poin||[]).join("\n");$("f-langkah").value=(k.langkah||[]).join("\n");$("f-aktif").checked=k.aktif!==false;
+  $("srcs").innerHTML="";(k.sumber||[]).forEach(addSrc);$("err").textContent="";$("dlg").showModal();setTimeout(function(){$("f-judul").focus();},60);}
+$("add").onclick=$("fab").onclick=function(){open(-1);};$("cancel").onclick=function(){$("dlg").close();};
+function lines(v){return v.split("\n").map(function(x){return x.trim();}).filter(Boolean);}
+$("form").addEventListener("submit",function(e){e.preventDefault();
+  var j=$("f-judul").value.trim(),r=$("f-ringkas").value.trim(),po=lines($("f-poin").value),la=lines($("f-langkah").value),src=[],bad="";
+  [].forEach.call($("srcs").children,function(d){var v=d.querySelector(".s-ref").value,h=d.querySelector(".s-hlm").value.trim(),o=null;
+    if(v.slice(0,2)==="b:"){var b=BOOKS.filter(function(x){return x[0]===v.slice(2);})[0];o={label:"Buku Panduan "+b[1],url:"panduan/"+b[0]+".pdf"};}
+    else if(v.slice(0,2)==="s:"){var s=SOPS.filter(function(x){return x[0]===v.slice(2);})[0];o={label:s[0]+" "+s[1],url:"sop/"+s[0]+".pdf"};}
+    else if(v==="u"){var u=d.querySelector(".s-url").value.trim(),l=d.querySelector(".s-lbl").value.trim();if(!u||!l)bad="Rujukan lain perlu nama dan alamat.";else o={label:l,url:u};}
+    if(o){if(h)o.hlm=+h;src.push(o);}});
+  if(!j){$("err").textContent="Judul wajib diisi.";return;}
+  if(!r&&!po.length&&!la.length){$("err").textContent="Isi ringkasan, poin, atau langkah.";return;}
+  if(bad){$("err").textContent=bad;return;}
+  var o={id:edit>=0?D.acuan[edit].id:"k"+Date.now(),judul:j,kunci:$("f-kunci").value.trim(),ringkas:r,poin:po,langkah:la,sumber:src,aktif:$("f-aktif").checked};
+  if(edit>=0)D.acuan[edit]=o;else D.acuan.unshift(o);
+  $("dlg").close();touch();toast("Acuan disimpan.");});
+function output(){return "/* asta-data.js: acuan tambahan dan pengaturan sumber untuk ASTA.\n   Jangan diedit manual. Gunakan admin-asta.html, lalu unduh file ini dan unggah ke GitHub.\n   Terakhir dibuat: "+new Date().toLocaleString("id-ID")+" */\nwindow.ASTA_KB = "+JSON.stringify(D,null,1)+";\n";}
+$("dl").onclick=function(){var bl=new Blob([output()],{type:"text/javascript"}),a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="asta-data.js";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},2000);downloaded=true;status();toast("asta-data.js diunduh. Sekarang unggah ke GitHub.");};
+$("copy").onclick=function(){if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(output()).then(function(){toast("Kode disalin.");},function(){toast("Gagal menyalin. Gunakan tombol unduh.");});};
+$("imp").onclick=function(){$("file").click();};
+$("file").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var t=String(r.result);D=load(JSON.parse(t.slice(t.indexOf("{",t.indexOf("ASTA_KB")),t.lastIndexOf("}")+1)));touch();toast("File dimuat.");}catch(x){alert("Format file tidak dikenali. Gunakan asta-data.js buatan editor ini.");}};r.readAsText(f);e.target.value="";});
+$("reset").onclick=function(){if(JSON.stringify(D)===SITE||confirm("Buang semua perubahan dan kembali ke versi situs?")){D=load(JSON.parse(SITE));touch();}};
+window.addEventListener("beforeunload",function(e){if(JSON.stringify(D)!==SITE&&!downloaded){e.preventDefault();e.returnValue="";}});
+render();
+})();
+</script>
+</body>
+</html>

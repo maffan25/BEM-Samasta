@@ -103,6 +103,8 @@
   var IDX = null;
   function build() {
     if (IDX) return IDX;
+    var KB = window.ASTA_KB || {}, OFF = {};
+    (KB.mati || []).forEach(function (x) { OFF[x] = 1; });
     var chunks = [], df = {}, tot = 0;
     function add(ch, head, body) {
       var t = toks(head).concat(toks(head), toks(body)), tf = {};
@@ -112,6 +114,7 @@
       chunks.push(ch);
     }
     DATA.forEach(function (s) {
+      if (OFF[s.c]) return;
       s.s.forEach(function (c) {
         var body = secText(c);
         add({ kind: "sop", sop: s, sec: c, text: body }, s.c + " " + s.t + " " + c.t, body);
@@ -119,12 +122,17 @@
     });
     var P = window.PANDUAN || {};
     Object.keys(P).forEach(function (f) {
-      var bk = P[f]; if (!bk || !bk.p) return;
+      var bk = P[f]; if (!bk || !bk.p || OFF[f]) return;
       bk.p.forEach(function (pg) {
         var txt = String(pg[1] || ""); if (txt.length < 40) return;
         for (var i = 0; i < txt.length; i += 1800)
           add({ kind: "pd", file: f, name: bk.n || f, page: pg[0], text: txt.slice(i, i + 1800) }, bk.n || f, txt.slice(i, i + 1800));
       });
+    });
+    (KB.acuan || []).forEach(function (k) {
+      if (!k || k.aktif === false || !k.judul) return;
+      var body = [k.ringkas || ""].concat(k.poin || [], k.langkah || []).join("\n");
+      add({ kind: "kb", kb: k, text: body }, k.judul + " " + (k.kunci || "") + " " + (k.kunci || ""), body);
     });
     IDX = { chunks: chunks, df: df, N: chunks.length, avg: tot / Math.max(1, chunks.length) };
     return IDX;
@@ -144,6 +152,7 @@
       });
       if (sc <= 0) return;
       if (ch.kind === "sop") sc *= SECW[ch.sec.t] || 1;
+      if (ch.kind === "kb") sc *= 1.6;
       if (bag && !bag.umum) {
         if (ch.kind === "sop") {
           var own = bag.r.some(function (r) { return ch.sop.own && ch.sop.own.has(r); });
@@ -157,8 +166,8 @@
     return res;
   }
   function pickContext(q, bag) {
-    var r = search(q, bag), sopOut = [], pdOut = [], perSop = {}, size = 0, LIM = 15000, MAXSOP = 6, MAXPD = 3;
-    for (var i = 0; i < r.length && (sopOut.length < MAXSOP || pdOut.length < MAXPD); i++) {
+    var r = search(q, bag), sopOut = [], pdOut = [], perSop = {}, size = 0, LIM = 15000, MAXSOP = 6, MAXPD = 3, kbOut = [];
+    for (var i = 0; i < r.length && (sopOut.length < MAXSOP || pdOut.length < MAXPD || kbOut.length < 2); i++) {
       var ch = r[i].ch, t;
       if (ch.kind === "sop") {
         if (sopOut.length >= MAXSOP) continue;
@@ -167,6 +176,9 @@
         t = ch.text.slice(0, ch.sec.t === "Prosedur pelaksanaan" ? 3200 : 1700);
         if (size + t.length > LIM) continue;
         sopOut.push({ ch: ch, sc: r[i].sc, t: t, ref: ch.sop.c + " | " + ch.sop.t + " | bagian: " + ch.sec.t + " | pemilik: " + ch.sop.o + " | status: " + (ch.sop.st || "") });
+      } else if (ch.kind === "kb") {
+        if (kbOut.length >= 2) continue;
+        t = ch.text; kbOut.push({ ch: ch, sc: r[i].sc, t: t, ref: "Acuan " + ch.kb.judul });
       } else {
         if (pdOut.length >= MAXPD) continue;
         t = ch.text; if (size + t.length > LIM) continue;
@@ -174,7 +186,7 @@
       }
       size += t.length;
     }
-    var out = sopOut.concat(pdOut).sort(function (x, y) { return y.sc - x.sc; });
+    var out = sopOut.concat(pdOut, kbOut).sort(function (x, y) { return y.sc - x.sc; });
     return { items: out, top: r.length ? r[0].sc : 0 };
   }
 
@@ -203,7 +215,7 @@
     for (var k in INT) it[k] = INT[k].test(lo);
     TIME = it.when;
     var tS = 0, tP = 0, tot = {}, sops = [];
-    its.forEach(function (x) { if (x.ch.kind === "sop") { tS = Math.max(tS, x.sc); if (!tot[x.ch.sop.c]) { tot[x.ch.sop.c] = 0; sops.push(x.ch.sop); } tot[x.ch.sop.c] += x.sc; } else tP = Math.max(tP, x.sc); });
+    its.forEach(function (x) { if (x.ch.kind === "sop") { tS = Math.max(tS, x.sc); if (!tot[x.ch.sop.c]) { tot[x.ch.sop.c] = 0; sops.push(x.ch.sop); } tot[x.ch.sop.c] += x.sc; } else if (x.ch.kind === "pd") tP = Math.max(tP, x.sc); });
     sops.sort(function (x, y) { return tot[y.c] - tot[x.c]; });
     var useS = tS > 0 && tS >= .45 * tP, useP = tP > 0 && tP >= .45 * tS, main = useS ? sops[0] : null, cand = [];
     if (main) main.s.forEach(function (c) {
@@ -241,33 +253,52 @@
       if (es) es.c.forEach(function (b) { if (b.ul) b.ul.slice(0, it.prob ? 3 : 1).forEach(function (x) { a.catatan.push(x); }); });
     }
     /* sumber: PDF SOP yang tepat + halaman buku panduan */
-    if (main) a.sumber.push({ pdf: "sop/" + main.c + ".pdf", label: main.c + " " + main.t });
-    pick.forEach(function (c) { if (c.src === "sop" && c.ref !== (main && main.c)) a.sumber.push({ pdf: c.href, label: c.ref + " " + BY[c.ref].t }); });
+    if (main) a.sumber.push({ pdf: "sop/" + main.c + ".pdf", label: main.c + " " + main.t, sub: "SOP \u00b7 buka PDF lengkap" });
+    pick.forEach(function (c) { if (c.src === "sop" && c.ref !== (main && main.c)) a.sumber.push({ pdf: c.href, label: c.ref + " " + BY[c.ref].t, sub: "SOP \u00b7 buka PDF lengkap" }); });
     var pgs = {};
     pick.concat(cand.filter(function (c) { return c.src === "pd"; }).slice(0, 2)).forEach(function (c) {
       if (c.src !== "pd") return; var key = c.pg.file + c.pg.page; if (pgs[key]) return; pgs[key] = 1;
-      a.sumber.push({ file: c.pg.file, hlm: c.pg.page, label: "Buku Panduan " + c.pg.name + ", hlm. " + c.pg.page });
+      a.sumber.push({ file: c.pg.file, hlm: c.pg.page, label: "Buku Panduan " + c.pg.name, sub: "Buku panduan \u00b7 halaman " + c.pg.page });
     });
     sops.slice(1, 4).forEach(function (x) { a.lanjut.push("Jelaskan " + x.t.toLowerCase()); });
+    a.hl = lo.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(function (w) { return w.length > 3 && !STOP[w]; });
+    var kx = its.filter(function (x) { return x.ch.kind === "kb"; })[0];
+    if (kx && kx.sc >= .6 * Math.max(tS, tP, .01)) {
+      var k = kx.ch.kb;
+      if (k.ringkas) a.ringkas = k.ringkas;
+      a.poin = (k.poin || []).map(function (t) { return { t: t }; }).concat(a.poin || []).slice(0, 7);
+      if ((k.langkah || []).length) { a.alur = null; a.tabel = null; a.langkah = k.langkah.map(function (l) { var i = l.indexOf(":"); return i > 0 && i < 80 ? { judul: l.slice(0, i), detail: l.slice(i + 1).trim() } : { judul: l }; }); }
+      var ks = (k.sumber || []).filter(function (x) { return x && x.url; }).map(function (x) { return { pdf: x.url + (x.hlm ? "#page=" + x.hlm : ""), label: x.label || x.url, sub: x.hlm ? "Halaman " + x.hlm : "Rujukan resmi" }; });
+      a.sumber = ks.concat(a.sumber); a.jenis = "ok";
+    }
     return a;
   }
 
   /* ---------- Tampilan jawaban ---------- */
   function arr(x) { return Array.isArray(x) ? x : []; }
+  function kindOf(t) {
+    return /\d+\s*(hari|jam|menit|minggu|bulan)|paling lambat|selambat|maksimal|paling lama|batas waktu/i.test(t) ? ["w", "Waktu"] : /formulir|dokumen|lampir|berkas|proposal|surat|laporan|nota|templat|bukti/i.test(t) ? ["d", "Dokumen"] : /wajib|harus|dilarang|tidak boleh|sanksi|tidak dapat/i.test(t) ? ["a", "Aturan"] : /ketua|bendahara|sekretaris|presiden|menteri|kabiro|koordinator|pelaksana|inspektur/i.test(t) ? ["p", "Pihak"] : ["i", "Info"];
+  }
+  function trimTxt(t, n) { t = String(t); return t.length > n ? t.slice(0, n - 3).replace(/\s\S*$/, "") + "..." : t; }
+  function fmtH(t, re) {
+    var h = esc(t); if (re) h = h.replace(re, "<mark>$&</mark>");
+    return h.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/SOP-[A-Z]+-\d{3}/g, function (c) { return BY[c] ? '<a class="sp-x" href="#sop/' + c + '">' + c + "</a>" : c; });
+  }
   function renderAnswer(a, ctx) {
+    var re = arr(a.hl).length ? new RegExp("\\b(" + a.hl.map(function (x) { return x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")\\w*", "gi") : null;
     var h = "", cls = a.jenis === "lokal" ? " lokal" : a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? " warn" : "";
     var label = a.jenis === "kosong" || a.jenis === "tidak_ditemukan" ? "Belum ditemukan" : "Jawaban";
     h += '<div class="ai-top"><span class="asta-av" aria-hidden="true"><span class="asta-img"></span></span><span class="ai-badge' + cls + '">' + label + "</span></div>";
-    if (a.ringkas) h += '<p class="ai-sum">' + fmt(a.ringkas) + "</p>";
+    if (a.ringkas) h += (a.jenis === "kosong" ? "" : '<section class="ai-sec ai-lead"><h4>Intinya</h4>') + '<p class="ai-sum">' + fmtH(a.ringkas, re) + "</p>" + (a.jenis === "kosong" ? "" : "</section>");
     var L = arr(a.langkah);
-    if (L.length) h += '<div><h4>Langkah</h4><ol class="ai-steps">' + L.map(function (s) {
+    if (L.length) h += '<div class="ai-sec"><h4>Langkah</h4><ol class="ai-steps">' + L.map(function (s) {
       return "<li><b>" + fmt(s.judul || "") + "</b>" + (s.detail ? "<span>" + fmt(s.detail) + "</span>" : "") + (s.pic ? '<br><em class="pic">' + esc(s.pic) + "</em>" : "") + "</li>"; }).join("") + "</ol></div>";
     var F = arr(a.alur);
-    if (F.length > 1) h += '<div><h4>Alur proses</h4><div class="ai-flow" role="img" aria-label="Diagram alur proses">' + F.map(function (n, i) {
+    if (F.length > 1) h += '<div class="ai-sec"><h4>Alur proses</h4><div class="ai-flow" role="img" aria-label="Diagram alur proses">' + F.map(function (n, i) {
       return '<div class="fn' + (i === F.length - 1 && /selesai|arsip|tuntas/i.test(n.label) ? " end" : "") + '"><i>' + (i + 1) + "</i><div><b>" + esc(n.label) + "</b>" + (n.pic ? "<small>" + esc(n.pic) + "</small>" : "") + "</div></div>"; }).join("") + "</div></div>";
     arr(a.tabel).forEach(function (t) {
       if (!arr(t.kolom).length || !arr(t.baris).length) return;
-      h += '<div class="ai-tbl">' + (t.judul ? "<h4>" + esc(t.judul) + "</h4>" : "") + '<div class="scroll"><table><thead><tr>' + t.kolom.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      h += '<div class="ai-tbl ai-sec">' + (t.judul ? "<h4>" + esc(t.judul) + "</h4>" : "") + '<div class="scroll"><table><thead><tr>' + t.kolom.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("") + "</tr></thead><tbody>" +
         t.baris.map(function (r) { return "<tr>" + arr(r).map(function (c) { return "<td>" + fmt(c) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div></div>";
     });
     var G = a.grafik;
@@ -278,18 +309,18 @@
         return '<div class="ai-bar"><span>' + esc(d.label) + '</span><i style="--w:' + Math.max(4, Math.round(v / mx * 100)) + '%"></i><span>' + v + " " + esc(G.satuan || "") + "</span></div>"; }).join("") + "</div></div>";
     }
     var PT = arr(a.poin);
-    if (PT.length) h += '<ul class="ai-pts">' + PT.map(function (p) { return "<li>" + fmt(p.t) + ' <a class="ai-ref" href="' + esc(p.href) + '" target="_blank" rel="noopener">' + esc(p.ref) + "</a></li>"; }).join("") + "</ul>";
+    if (PT.length) h += '<section class="ai-sec"><h4>Yang perlu diperhatikan</h4><ul class="ai-pts">' + PT.map(function (p) { var k = kindOf(p.t);
+      return '<li><span class="ai-k k-' + k[0] + '">' + k[1] + '</span><span class="ai-pt">' + fmtH(trimTxt(p.t, 230), re) + (p.href ? ' <a class="ai-ref" href="' + esc(p.href) + '" target="_blank" rel="noopener">' + esc(p.ref) + "</a>" : "") + "</span></li>"; }).join("") + "</ul></section>";
     var N = arr(a.catatan).filter(Boolean);
     if (N.length) h += '<div class="ai-note"><ul>' + N.map(function (n) { return "<li>" + fmt(n) + "</li>"; }).join("") + "</ul></div>";
-    var S = [];
+    var S = [], seenS = {};
     arr(a.sumber).forEach(function (s) {
-      if (s.id && ctx) { var m = /^K(\d+)$/.exec(s.id), it = m && ctx.items[+m[1] - 1]; if (it) s = it.ch.kind === "sop" ? { kode: it.ch.sop.c, label: it.ch.sop.c + " " + it.ch.sec.t } : { file: it.ch.file, hlm: it.ch.page, label: "Panduan " + it.ch.name + " hlm. " + it.ch.page }; else return; }
-      if (s.pdf) S.push('<a href="' + esc(s.pdf) + '" target="_blank" rel="noopener">' + esc(s.label) + " (PDF)</a>");
-      else if (s.kode && BY[s.kode]) S.push('<a href="#sop/' + s.kode + '">' + esc(s.label || s.kode) + "</a>");
-      else if (s.file) S.push('<a href="panduan/' + encodeURIComponent(s.file) + ".pdf#page=" + (+s.hlm || 1) + '" target="_blank" rel="noopener">' + esc(s.label || s.file) + "</a>");
+      var href = s.pdf || (s.file ? "panduan/" + encodeURIComponent(s.file) + ".pdf#page=" + (+s.hlm || 1) : "");
+      if (!href || seenS[href]) return; seenS[href] = 1;
+      var ext = /^https?:/.test(href);
+      S.push('<li><a href="' + esc(href) + '" target="_blank" rel="noopener"><span class="ai-ico">' + (ext ? "WEB" : "PDF") + "</span><span><b>" + esc(s.label || href) + "</b>" + (s.sub ? "<small>" + esc(s.sub) + "</small>" : "") + '</span><i aria-hidden="true">\u203a</i></a></li>');
     });
-    S = S.filter(function (x, i) { return S.indexOf(x) === i; });
-    if (S.length) h += '<div class="ai-src"><span>Sumber:</span>' + S.join("") + "</div>";
+    if (S.length) h += '<section class="ai-sec ai-rf"><h4>Rujukan</h4><ul class="ai-refs">' + S.join("") + "</ul></section>";
     var M = arr(a.lanjut).filter(Boolean).slice(0, 3);
     if (M.length) h += '<div class="ai-more">' + M.map(function (m) { return '<button type="button" data-ask="' + esc(m) + '">' + esc(m) + "</button>"; }).join("") + "</div>";
     h += '<div class="ai-act"><button type="button" class="link-btn" data-copy>Salin jawaban</button></div>';
@@ -314,7 +345,7 @@
       order.map(function (g) {
         return '<div class="ai-grp"><h3>' + esc(g) + '</h3><div class="ai-tiles">' + groups[g].map(function (b) {
           var n = DATA.filter(function (s) { return b.r.some(function (r) { return s.own && (s.own.has(r) || s.inv.has(r)); }); }).length;
-          return '<button type="button" class="ai-tile' + (b.umum ? " umum" : "") + '" data-bag="' + b.k + '"><span class="ai-mono" aria-hidden="true">' + b.m + "</span><span><b>" + esc(b.n) + "</b><small>" + (b.umum ? "Cari di seluruh SOP" : n + " SOP terkait") + "</small></span></button>";
+          return '<button type="button" class="ai-tile' + (b.umum ? " umum" : "") + '" data-bag="' + b.k + '"><span class="ai-mono" aria-hidden="true">' + b.m + "</span><span><b>" + esc(b.n) + "</b></span></button>";
         }).join("") + "</div></div>";
       }).join("");
   }
