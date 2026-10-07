@@ -370,6 +370,14 @@ html[data-dir=up]{--rvy:-30px}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1!important}.sp-progress{display:none}}
 @media print{.rv{opacity:1!important}.sp-progress{display:none}}
 
+/* ===== Fokus bagian: bagian lain meredup saat satu bagian sedang dibaca ===== */
+:root{--dim:.58;--dim-rgb:6,24,32;--dim-t:.7s}
+#home>section,#home>.stats,footer{position:relative}
+#home>.hero::after,#home>.stats::after,#home>section::after,footer::after{content:"";position:absolute;inset:0;z-index:20;pointer-events:none;background:rgb(var(--dim-rgb));opacity:0;transition:opacity var(--dim-t) cubic-bezier(.4,0,.2,1)}
+html.focus-on .is-dim::after{opacity:var(--dim)}
+@media (max-width:760px){:root{--dim:.5}}
+@media print{#home>.hero::after,#home>.stats::after,#home>section::after,footer::after{display:none}}
+
 /* ===== Sampul buku ===== */
 .pd-cover{position:relative;aspect-ratio:3/4;border-radius:6px 14px 14px 6px;background:linear-gradient(160deg,#14404f 0%,var(--ink) 72%);color:#fdf3cf;padding:22px 18px 18px 28px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 30px -16px rgba(13,42,56,.55),inset 7px 0 0 rgba(0,0,0,.2),inset 9px 0 0 rgba(255,255,255,.07);transition:transform .35s var(--ease),box-shadow .35s}
 .pd-cover::before{content:"";position:absolute;inset:10px 10px 10px 20px;border:1.5px solid rgba(217,184,114,.55);border-radius:3px 9px 9px 3px;pointer-events:none}
@@ -1143,6 +1151,54 @@ html[data-dir=up]{--rvy:-30px}
   rv(document.querySelectorAll("#home .vm>div:first-child"), "rv-l");
   rv(document.querySelectorAll("#home .vm>div:last-child"), "rv-r");
   rv(document.querySelectorAll("#home .leader,#home .stats li,#home .pd-card"), "rv-z");
+})();
+</script>
+<script>
+/* ===== Fokus bagian: saat satu bagian berada di tengah layar, bagian di atas & bawahnya meredup ===== */
+(function(){
+  var home = document.getElementById("home"), hd = document.querySelector(".site-header");
+  if (!home) return;
+  var q = function(s){ return document.querySelector(s); };
+  /* Tiap grup = satu "panggung". Hero + statistik dihitung satu kesatuan. */
+  var groups = [
+    [q("#beranda"), q("#home>.stats")], [q("#profil")], [q("#pengurus")], [q("#program")],
+    [q("#sop-info")], [q("#panduan-info")], [q("#kalender")], [q("#rapot-info")],
+    [q("#aspirasi-info")], [q("#kontak")]
+  ].map(function(g){ return g.filter(Boolean); }).filter(function(g){ return g.length; });
+  var root = document.documentElement, current = -2, busy = false;
+
+  function setActive(i){
+    if (i === current) return; current = i;
+    groups.forEach(function(g, k){
+      g.forEach(function(el){ el.classList.toggle("is-dim", i >= 0 && k !== i); });
+    });
+  }
+  function update(){
+    busy = false;
+    if (home.hidden) { root.classList.remove("focus-on"); setActive(-1); return; }
+    root.classList.add("focus-on");
+    var vh = window.innerHeight, top = hd ? hd.getBoundingClientRect().bottom : 0;
+    var max = root.scrollHeight - vh, y = window.pageYOffset;
+    if (y <= 4) return setActive(0);                                  /* paling atas: beranda */
+    if (max > 0 && y >= max - 4) return setActive(groups.length - 1);  /* paling bawah: footer */
+    var f = top + (vh - top) * 0.5, best = 0, bd = Infinity;
+    groups.forEach(function(g, k){
+      var a = g[0].getBoundingClientRect().top, b = g[g.length - 1].getBoundingClientRect().bottom;
+      var d = f < a ? a - f : f > b ? f - b : 0;
+      if (d < bd) { bd = d; best = k; }
+    });
+    setActive(best);
+  }
+  function req(){ if (!busy) { busy = true; requestAnimationFrame(update); } }
+  window.addEventListener("scroll", req, {passive:true});
+  window.addEventListener("resize", req);
+  window.addEventListener("hashchange", function(){ setTimeout(req, 60); });
+  window.addEventListener("popstate", function(){ setTimeout(req, 60); });
+  window.addEventListener("load", req);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(req);
+  /* Pantau saat beranda ditampilkan / disembunyikan oleh router halaman */
+  if (window.MutationObserver) new MutationObserver(function(){ current = -2; req(); }).observe(home, {attributes:true, attributeFilter:["hidden"]});
+  update();
 })();
 </script>
 <script src="rapot.js?v=1"></script>
