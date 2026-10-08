@@ -91,10 +91,7 @@ li:last-child .tk .v{stroke-dashoffset:1;transition:stroke-dashoffset .35s .95s}
 @keyframes iktick{from{stroke-dashoffset:1}}
 @keyframes ikpop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
 .tk .c{transform-box:fill-box;transform-origin:center}
-.sp-pen{left:-2%;bottom:7%;width:108px;height:11px;border-radius:6px 0 0 6px;background:linear-gradient(90deg,#082a21 0 68%,#d9b872 68% 72%,#082a21 72%);clip-path:polygon(0 0,88% 0,100% 50%,88% 100%,0 100%);transform:rotate(-24deg);transform-origin:100% 50%}
-:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .sp-pen{animation:ikpen 2.2s cubic-bezier(.5,0,.3,1) both}
-@keyframes ikpen{0%,100%{transform:rotate(-24deg)}30%{transform:translate(4px,32px) rotate(-16deg)}40%{transform:translate(4px,34px) rotate(-14deg)}55%{transform:translate(4px,32px) rotate(-16deg)}}
-.ik-sop.open .ik-card{transform:rotate(0) translateY(-14px) scale(1.07)!important}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .ik-sop.open .ik-card{transform:rotate(0) translateY(-14px) scale(1.07)!important}
 .ik-sop.open li:last-child .c{fill:var(--g2)!important;stroke:var(--g2)!important}.ik-sop.open li:last-child .v{stroke-dashoffset:0!important}
 
 /* ---------- Rapot ---------- */
@@ -143,3 +140,65 @@ li:last-child .tk .v{stroke-dashoffset:1;transition:stroke-dashoffset .35s .95s}
 .bk-back{transition:left .95s cubic-bezier(.5,0,.2,1),width .95s cubic-bezier(.5,0,.2,1)}
 .ik-book.open .bk-back{left:-101%!important;width:202%!important;border-radius:9px!important;background:var(--grain),linear-gradient(150deg,var(--g2),var(--g1) 72%)!important;box-shadow:0 18px 28px -16px rgba(13,42,56,.7)}
 .ik-book.open .bk-base{left:3px;width:calc(100% - 6px)}
+
+/* ----- Sampul buku: lebih lega dan bersih ----- */
+.bk-f{align-items:flex-start;text-align:left;justify-content:flex-start;padding:20px 12px 15px 22px}
+.bk-f::before,.bk-f::after{display:none}
+.bk-f .emb{width:30px;height:30px;box-shadow:0 0 0 1.5px #f4de95}
+.bk-f em{margin:auto 0 0;font:600 7.5px var(--sans);letter-spacing:.22em;color:#d9c995}
+.bk-f span.r{width:22px;height:2px;margin:7px 0 8px;background:#d9b872;opacity:1}
+.bk-f strong{font:700 20px/1 var(--serif);margin:0;white-space:nowrap}
+.bk-f small{font:500 8px var(--sans);color:#9fc3bc;margin-top:8px}
+
+/* ----- Buku di daftar panduan: sampul membuka di tempat, tidak melewati tetangga ----- */
+.pd-stage{perspective:1600px;perspective-origin:0 50%}
+.pd-book.open .pd-cover{transform:rotateY(-88deg)!important;opacity:0;transition:transform .7s cubic-bezier(.5,0,.2,1),opacity .15s .55s}
+.pd-book.open .pd-inside{transform:translateY(-4px);transition:transform .5s .3s}
+
+/* ----- Proker ----- */
+.ik-pro .ik-bind{left:5%;top:7%;width:58%;height:76%;transform:rotate(-5deg);padding-left:18px}.ik-pro .ik-bind b{font-size:28px}
+.ik-pro .ik-card{right:5%;bottom:6%;width:60%;height:68%;border-radius:14px;transform:rotate(3deg);padding:14px 12px;display:flex;flex-direction:column;gap:14px}
+.ik-pro .ik-card em{font-size:8.5px}
+.pr-top{display:flex;justify-content:space-between;align-items:center}
+.pr-flag{width:20px;height:24px;overflow:visible;margin-top:-4px}
+.pr-flag .pole{fill:none;stroke:var(--g1);stroke-width:1.8;stroke-linecap:round}
+.pr-flag .flg{fill:#e4b73a;transform-box:fill-box;transform-origin:left center}
+.pr-grid{position:relative;display:grid;align-content:space-evenly;flex:1;background:repeating-linear-gradient(90deg,transparent 0 calc(33.33% - 1px),#e6dcb0 calc(33.33% - 1px) 33.33%)}
+.pr-grid s{display:block;height:10px;border-radius:9px;margin-left:var(--o);width:var(--w);background:var(--g2);text-decoration:none;transform-origin:left}
+.pr-grid s:nth-child(2){background:#e4b73a}.pr-grid s:nth-child(3){background:#7aa89a}.pr-grid s:nth-child(4){background:#c9a45c}
+.pr-now{position:absolute;top:-4px;bottom:-4px;left:38%;width:2px;background:var(--g1);border-radius:2px}
+.pr-now::before{content:"";position:absolute;left:-3px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--g1)}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .pr-grid s{animation:ikbar .8s cubic-bezier(.3,.7,.2,1) both}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .pr-grid s:nth-child(2){animation-delay:.2s}:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .pr-grid s:nth-child(3){animation-delay:.4s}:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .pr-grid s:nth-child(4){animation-delay:.6s}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .pr-now{animation:iknow 1.6s cubic-bezier(.4,0,.2,1) .2s both}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .pr-flag .flg{animation:ikwave 1.1s ease-in-out infinite}
+@keyframes iknow{from{left:0}}
+@keyframes ikwave{0%,100%{transform:skewY(0) scaleX(1)}50%{transform:skewY(-9deg) scaleX(.86)}}
+
+/* ----- Pujian dan Kritik ----- */
+.as-n{width:56%;height:62%;border-radius:16px;padding:15px 14px;display:flex;flex-direction:column;gap:8px;transition:transform .7s cubic-bezier(.3,1.25,.5,1);box-shadow:0 18px 26px -16px rgba(13,42,56,.6)}
+.as-n b{font:700 22px/1 var(--serif);margin-top:2px}
+.as-n s{display:block;height:6px;border-radius:9px;text-decoration:none}.as-n s+s{width:62%}
+.as-ic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;position:relative}
+.as-ic svg{width:20px;height:20px;overflow:visible}
+.as-p{left:4%;top:6%;background:#fbeaa4;color:#2b2710;border:1px solid #e3d170;transform:rotate(-5deg)}
+.as-p .as-ic{background:var(--g1)}.as-p svg{fill:#f4de95;transform-origin:center;transform-box:fill-box}
+.as-p s{background:rgba(43,39,16,.18)}
+.as-k{right:4%;bottom:6%;background:var(--grain),linear-gradient(155deg,var(--g2),var(--g1) 75%);color:#f4efdc;transform:rotate(4deg)}
+.as-k .as-ic{background:#e4b73a}.as-k svg{fill:none;stroke:var(--g1);stroke-width:1.6;stroke-linejoin:round}.as-k svg .d{fill:var(--g1);stroke:none;transform-box:fill-box;transform-origin:center}
+.as-k s{background:rgba(255,255,255,.22)}
+.as-up{position:absolute;left:18px;top:6px;pointer-events:none;font-style:normal}
+.as-up u{position:absolute;text-decoration:none;font-size:13px;color:#c3412f;opacity:0}
+.as-up u:nth-child(2){left:14px;font-size:10px}.as-up u:nth-child(3){left:-4px;font-size:9px}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-p{transform:rotate(-9deg) translate(-6px,-9px)}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-k{transform:rotate(7deg) translate(6px,8px)}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-p svg{animation:ikbeat .8s ease-in-out infinite}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-up u{animation:ikrise 1.8s ease-out infinite}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-up u:nth-child(2){animation-delay:.5s}:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-up u:nth-child(3){animation-delay:1s}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-k .d{animation:ikdot .9s ease-in-out infinite}
+:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-k .d:nth-child(3){animation-delay:.15s}:is(.ik:hover,.pd-teaser:hover .ik,.ik.play) .as-k .d:nth-child(4){animation-delay:.3s}
+@keyframes ikbeat{0%,100%{transform:scale(1)}30%{transform:scale(1.28)}60%{transform:scale(.95)}}
+@keyframes ikrise{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-34px) rotate(12deg)}}
+@keyframes ikdot{0%,100%{transform:translateY(0)}40%{transform:translateY(-3px)}}
+.ik-asp.open .as-p{transform:rotate(-1deg) translate(18px,22px)!important}
+.ik-asp.open .as-k{transform:rotate(1deg) translate(-18px,-22px)!important}
