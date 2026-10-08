@@ -163,7 +163,7 @@ function pdChips(){
 }
 function book(b,i){
   const p=bparts(b),na=pst.av[b.f]===false;
-  return '<article class="pd-book'+(na?' na':'')+'" style="--i:'+i+'"><div class="pd-cover"><span class="pd-mark"></span><small>BUKU PANDUAN</small><b class="pd-kick">'+esc(p[0])+'</b><h4>'+esc(p[1])+'</h4><i class="pd-foot">BEM STDIIS · Kabinet Samasta</i>'+(na?'<span class="pd-ribbon">Belum ada</span>':'')+'</div>'
+  return '<article class="pd-book'+(na?' na':'')+'" style="--i:'+i+'"><div class="pd-stage"><div class="pd-inside" aria-hidden="true"><strong>'+esc(p[1])+'</strong><s></s><s></s><s></s><s></s></div><div class="pd-cover"><span class="pd-mark"></span><small>BUKU PANDUAN</small><b class="pd-kick">'+esc(p[0])+'</b><h4>'+esc(p[1])+'</h4><i class="pd-foot">BEM STDIIS · Kabinet Samasta</i>'+(na?'<span class="pd-ribbon">Belum ada</span>':'')+'</div></div>'
    +'<div class="pd-act"><a class="btn btn-line pd-open" '+(na?'aria-disabled="true"':'href="'+b.u+'" target="_blank" rel="noopener"')+'>Buka</a><a class="btn btn-gold pd-dl" '+(na?'aria-disabled="true"':'href="'+b.u+'" download="Buku Panduan '+esc(b.n)+'.pdf"')+'>Unduh PDF</a></div>'
    +'<p class="pd-msg" role="status" hidden>Buku panduan ini belum tersedia di server. Pastikan file '+b.u+' sudah diunggah.</p></article>';
 }
