@@ -23,9 +23,13 @@
   }
   CURT.forEach(function (k) { k.s = strip(k.c); });
   function Aurora(strength) {
-    var ac = document.createElement("canvas"), ax = ac.getContext("2d"), lw = 1, lh = 1;
+    var ac = document.createElement("canvas"), ax = ac.getContext("2d"), lw = 1, lh = 1, rw = 1, rh = 1;
     return {
-      size: function (W, H) { lw = Math.max(8, Math.ceil(W / 6)); lh = Math.max(8, Math.ceil(H / 6)); ac.width = lw; ac.height = lh; },
+      /* Aurora hanya menempati sudut kanan atas: lebar maks. 50% / 560px, tinggi maks. 55% / 340px. */
+      size: function (W, H) {
+        rw = Math.min(W * .5, 560); rh = Math.min(H * .55, 340);
+        lw = Math.max(8, Math.ceil(rw / 6)); lh = Math.max(8, Math.ceil(rh / 6)); ac.width = lw; ac.height = lh;
+      },
       draw: function (cx, W, H, t) {
         ax.globalCompositeOperation = "source-over"; ax.clearRect(0, 0, lw, lh); ax.globalCompositeOperation = "lighter";
         for (var j = 0; j < CURT.length; j++) {
@@ -40,8 +44,14 @@
           }
         }
         ax.globalAlpha = 1;
+        /* Pudarkan ke arah kiri-bawah: pusat terang di pojok kanan atas, tepi menghilang halus. */
+        ax.save(); ax.globalCompositeOperation = "destination-in"; ax.setTransform(1, 0, 0, lh / lw, lw, 0);
+        var m = ax.createRadialGradient(0, 0, 0, 0, 0, lw);
+        m.addColorStop(0, "rgba(0,0,0,1)"); m.addColorStop(.35, "rgba(0,0,0,.75)");
+        m.addColorStop(.7, "rgba(0,0,0,.25)"); m.addColorStop(1, "rgba(0,0,0,0)");
+        ax.fillStyle = m; ax.fillRect(-lw, 0, lw, lw); ax.restore();
         cx.save(); cx.globalCompositeOperation = "lighter"; cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = "high";
-        cx.drawImage(ac, 0, 0, lw, lh, 0, 0, W, H); cx.restore();
+        cx.drawImage(ac, 0, 0, lw, lh, W - rw, 0, rw, rh); cx.restore();
       }
     };
   }
