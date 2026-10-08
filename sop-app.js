@@ -161,9 +161,11 @@ function pdChips(){
     h+='<button type="button" class="chip" data-b="'+b.f+'" aria-pressed="'+(pst.sel===b.f)+'">'+esc(bparts(b)[1])+'</button>';});
   $("pd-chips").innerHTML=h;
 }
+const ACC=["#e4b73a","#2fa384","#7aa89a","#c9a45c","#3b8fb0"];
 function book(b,i){
-  const p=bparts(b),na=pst.av[b.f]===false;
-  return '<article class="pd-book'+(na?' na':'')+'" style="--i:'+i+'"><div class="pd-stage"><div class="pd-inside" aria-hidden="true"><strong>'+esc(p[1])+'</strong><s></s><s></s><s></s><s></s></div><div class="pd-cover"><span class="pd-mark"></span><small>BUKU PANDUAN</small><b class="pd-kick">'+esc(p[0])+'</b><h4>'+esc(p[1])+'</h4><i class="pd-foot">BEM STDIIS · Kabinet Samasta</i>'+(na?'<span class="pd-ribbon">Belum ada</span>':'')+'</div></div>'
+  const p=bparts(b),na=pst.av[b.f]===false,acc=ACC[(p[0].length*7+p[0].charCodeAt(0))%ACC.length];
+  return '<article class="pd-book'+(na?' na':'')+'" style="--i:'+i+';--acc:'+acc+'"><div class="pd-scene" aria-hidden="true"><div class="pd-bind"><b class="foil">'+esc(p[0])+'</b><i class="pd-mark"></i></div>'
+   +'<div class="pd-sheet"><b class="sp-clip"></b><i class="pd-rib"></i><em>Buku panduan</em><strong>'+esc(p[1])+'</strong><s></s><s></s>'+(na?'<span class="pd-ribbon">Belum ada</span>':'')+'</div></div>'
    +'<div class="pd-act"><a class="btn btn-line pd-open" '+(na?'aria-disabled="true"':'href="'+b.u+'" target="_blank" rel="noopener"')+'>Buka</a><a class="btn btn-gold pd-dl" '+(na?'aria-disabled="true"':'href="'+b.u+'" download="Buku Panduan '+esc(b.n)+'.pdf"')+'>Unduh PDF</a></div>'
    +'<p class="pd-msg" role="status" hidden>Buku panduan ini belum tersedia di server. Pastikan file '+b.u+' sudah diunggah.</p></article>';
 }
