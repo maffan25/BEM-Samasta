@@ -23,9 +23,13 @@
   }
   CURT.forEach(function (k) { k.s = strip(k.c); });
   function Aurora(strength) {
-    var ac = document.createElement("canvas"), ax = ac.getContext("2d"), lw = 1, lh = 1;
+    var ac = document.createElement("canvas"), ax = ac.getContext("2d"), lw = 1, lh = 1, sH = 1, x0 = .4;
     return {
-      size: function (W, H) { lw = Math.max(8, Math.ceil(W / 6)); lh = Math.max(8, Math.ceil(H / 6)); ac.width = lw; ac.height = lh; },
+      /* Aurora tipis di pojok kanan atas: tinggi dibatasi (px), memudar ke kiri dan ke bawah */
+      size: function (W, H) {
+        sH = Math.min(H, W < 700 ? 130 : 200); x0 = W < 700 ? .5 : .42;
+        lw = Math.max(8, Math.ceil(W / 6)); lh = Math.max(8, Math.ceil(sH / 6)); ac.width = lw; ac.height = lh;
+      },
       draw: function (cx, W, H, t) {
         ax.globalCompositeOperation = "source-over"; ax.clearRect(0, 0, lw, lh); ax.globalCompositeOperation = "lighter";
         for (var j = 0; j < CURT.length; j++) {
@@ -40,8 +44,14 @@
           }
         }
         ax.globalAlpha = 1;
+        var m = ax.createLinearGradient(lw * x0, 0, lw * .9, 0);
+        m.addColorStop(0, "rgba(0,0,0,0)"); m.addColorStop(1, "rgba(0,0,0,1)");
+        ax.globalCompositeOperation = "destination-in"; ax.fillStyle = m; ax.fillRect(0, 0, lw, lh);
+        m = ax.createLinearGradient(0, 0, 0, lh);
+        m.addColorStop(0, "rgba(0,0,0,1)"); m.addColorStop(.55, "rgba(0,0,0,.8)"); m.addColorStop(1, "rgba(0,0,0,0)");
+        ax.fillStyle = m; ax.fillRect(0, 0, lw, lh);
         cx.save(); cx.globalCompositeOperation = "lighter"; cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = "high";
-        cx.drawImage(ac, 0, 0, lw, lh, 0, 0, W, H); cx.restore();
+        cx.drawImage(ac, 0, 0, lw, lh, 0, 0, W, sH); cx.restore();
       }
     };
   }
@@ -127,7 +137,7 @@
   var hero = document.getElementById("beranda"), foot = document.getElementById("kontak");
   if (hero) Field(hero, 7000, true, 1);
   if (foot) Field(foot, 9000, false, .55);
-  /* Panel acara di kalender: langit kecil dengan bintang melayang dan bintang jatuh */
+  /* Panel acara di kalender: bintang melayang dan bintang jatuh, tanpa aurora */
   var pan = document.querySelector("#kalender .panel");
-  if (pan) Field(pan, 5200, true, .4, { k: .62, gap: .6 });
+  if (pan) Field(pan, 5200, true, 0, { k: .62, gap: .6 });
 })();
