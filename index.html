@@ -539,6 +539,112 @@ html.focus-on .is-dim::after{opacity:var(--dim)}
 </style>
 <link rel="stylesheet" href="ai.css?v=5">
 <link rel="stylesheet" href="ikon.css?v=4">
+<style id="profil-css">
+/* ===== Profil pengurus: avatar, penanda pimpinan, kartu profil ===== */
+.av{--s:40px;position:relative;flex:none;width:var(--s);height:var(--s);border-radius:50%;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#1b5b5c,var(--ink));color:var(--gold);font:700 calc(var(--s)*.38)/1 var(--serif);letter-spacing:.02em;box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--line)}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+.av.noimg img{display:none}
+.crown{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#ffe98f,var(--gold) 55%,#eab92a);color:#3d2e00;font:700 11.5px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:5px 11px 5px 8px;box-shadow:0 2px 8px -2px rgba(var(--glow),.8),inset 0 0 0 1px rgba(138,106,47,.35);white-space:nowrap;max-width:100%}
+.crown svg{width:13px;height:13px;flex:none}
+.crown.soft{background:var(--sand);box-shadow:inset 0 0 0 1px var(--champagne);color:var(--bronze)}
+
+/* Pimpinan inti */
+.leader{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;font:inherit;color:inherit;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s,border-color .25s;width:100%}
+.leader:hover{transform:translateY(-3px);box-shadow:0 1px 2px rgba(13,42,56,.06),0 18px 34px -16px rgba(13,42,56,.32);border-color:var(--champagne)}
+.leader .av{--s:76px;margin-bottom:16px;box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--gold)}
+.leader .crown{margin-bottom:10px}
+.crown-slot{display:block;height:26px;margin-bottom:10px}
+.leader .l-more{margin-top:auto;padding-top:14px;font-size:13px;font-weight:600;color:var(--indigo);display:inline-flex;gap:6px;align-items:center}
+.leader .l-more::after{content:"→";transition:transform .25s var(--ease)}
+.leader:hover .l-more::after{transform:translateX(4px)}
+
+/* Unit */
+.u-head{display:flex;align-items:center;gap:9px;min-width:0;max-width:38%;flex:0 1 auto;font-size:13.5px;color:var(--muted)}
+.u-head .av{--s:28px;box-shadow:0 0 0 1.5px var(--paper),0 0 0 3px var(--gold)}
+.u-head span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.u-head b{font-weight:600;color:var(--ink)}
+.u-body .mlist{counter-reset:u;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:20px;list-style:none;padding-top:14px}
+.u-body .mlist li{display:block;padding:0;border:0;counter-increment:none}
+.u-body .mlist li::before{content:none}
+.u-body .mlist li.m-item{counter-increment:u}
+.mbtn{display:grid;grid-template-columns:26px 40px minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-bottom:1px solid var(--line);padding:9px 8px;border-radius:12px;cursor:pointer;transition:background .2s}
+.mbtn:hover{background:rgba(248,210,74,.16)}
+.mbtn .no{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;text-align:center}
+.mbtn .no::before{content:counter(u)}
+.mbtn .nm{min-width:0;font-size:15px;line-height:1.35;overflow-wrap:anywhere}
+.mbtn .sub{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+.mbtn .go{width:8px;height:8px;border-top:2px solid var(--champagne);border-right:2px solid var(--champagne);transform:rotate(45deg);margin-right:4px;transition:transform .2s,border-color .2s}
+.mbtn:hover .go{transform:rotate(45deg) translate(2px,-2px);border-color:var(--ink)}
+.mbtn:focus-visible{outline-offset:-2px}
+/* kartu pimpinan unit */
+.u-body .mlist li.m-lead{grid-column:1/-1;margin-bottom:10px}
+.m-lead .mbtn{grid-template-columns:auto minmax(0,1fr) auto;gap:18px;padding:18px 20px;border:1px solid var(--champagne);border-radius:18px;background:radial-gradient(120% 140% at 0% 0%,#fff3b8 0,var(--sand) 38%,var(--paper) 100%);box-shadow:0 12px 28px -18px rgba(138,106,47,.7),inset 0 0 0 1px rgba(255,255,255,.7);position:relative;overflow:hidden}
+.m-lead .mbtn::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(var(--glow),.45),transparent 68%);pointer-events:none}
+.m-lead .mbtn:hover{background:radial-gradient(120% 140% at 0% 0%,#ffeea0 0,#f9efc4 40%,var(--paper) 100%)}
+.m-lead .av{--s:68px;box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--gold)}
+.m-lead .tx{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.m-lead .nm{font:600 clamp(18px,2.2vw,22px)/1.25 var(--serif)}
+.m-lead .sub{margin:0}
+.m-lead .go{margin-right:6px}
+
+/* Kartu profil (jendela) */
+dialog.pf{border:0;padding:0;background:transparent;color:var(--ink);width:min(780px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 24px);overflow:visible;margin:auto}
+dialog.pf::backdrop{background:rgba(9,28,38,.62);backdrop-filter:blur(5px)}
+dialog.pf[open]{animation:pfIn .38s var(--ease)}
+dialog.pf[open]::backdrop{animation:pfFade .3s ease-out}
+@keyframes pfIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes pfFade{from{opacity:0}to{opacity:1}}
+html.pf-open{overflow:hidden}
+.pf-card{position:relative;display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);background:var(--paper);border-radius:28px;overflow:hidden;box-shadow:0 40px 90px -24px rgba(5,20,28,.75),0 0 0 1px rgba(255,255,255,.4) inset;max-height:calc(100dvh - 24px)}
+.pf-photo{position:relative;min-height:100%;background:linear-gradient(160deg,#1c6a64 0,var(--ink) 70%);display:grid;place-items:center;overflow:hidden}
+.pf-photo::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 50% at 80% 0%,rgba(var(--glow),.28),transparent 70%)}
+.pf-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.pf-photo::after{content:"";position:absolute;inset:auto 0 0 0;height:38%;background:linear-gradient(transparent,rgba(13,42,56,.55));pointer-events:none}
+.pf-photo.noimg img{display:none}
+.pf-mono{position:relative;z-index:1;width:132px;height:132px;border-radius:50%;display:grid;place-items:center;font:600 48px/1 var(--serif);color:var(--gold);box-shadow:0 0 0 2px rgba(var(--glow),.55),0 0 0 10px rgba(var(--glow),.12)}
+.pf-photo:not(.noimg) .pf-mono{display:none}
+.pf-info{padding:36px 36px 28px;display:flex;flex-direction:column;gap:14px;min-width:0;overflow:auto}
+.pf-name{font:600 clamp(25px,3.2vw,32px)/1.18 var(--serif);overflow-wrap:anywhere;text-wrap:balance}
+.pf-role{margin-top:-6px;color:var(--muted);font-size:15px}
+.pf-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;margin-top:2px}
+.pf-facts div{min-width:0;border-left:2px solid var(--gold);padding-left:12px}
+.pf-facts dt{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.pf-facts dd{font-size:15px;line-height:1.4;overflow-wrap:anywhere;margin-top:2px}
+.pf-motto{font:italic 400 17px/1.55 var(--serif);color:#2b4652;background:var(--sand);border-radius:16px;padding:14px 18px 14px 20px;position:relative}
+.pf-motto::before{content:"\201C";position:absolute;left:8px;top:-4px;font:700 38px/1 var(--serif);color:var(--champagne)}
+.pf-ig{align-self:flex-start;display:inline-flex;gap:8px;align-items:center;font-weight:600;font-size:14.5px;color:var(--indigo);border:1.5px solid var(--line);border-radius:999px;padding:7px 16px 7px 12px;transition:background .2s,border-color .2s}
+.pf-ig:hover{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.pf-ig svg{width:17px;height:17px}
+.pf-empty{color:var(--muted);font-size:14.5px;background:var(--sand);border-radius:14px;padding:12px 16px}
+.pf-nav{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.pf-nav span{flex:1;text-align:center;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pf-nav button{font:600 14px var(--sans);border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer;transition:background .2s,border-color .2s}
+.pf-nav button:hover:not(:disabled){background:var(--gold);border-color:var(--gold)}
+.pf-nav button:disabled{opacity:.35;cursor:default}
+.pf-x{position:absolute;right:14px;top:14px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,251,239,.92);color:var(--ink);font-size:20px;line-height:1;cursor:pointer;box-shadow:0 4px 14px -4px rgba(13,42,56,.5);transition:transform .2s,background .2s}
+.pf-x:hover{background:var(--gold);transform:rotate(90deg)}
+@media (max-width:980px){.u-head{display:none}}
+@media (max-width:680px){
+  dialog.pf{margin:auto auto 0;width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}
+  .pf-card{grid-template-columns:minmax(0,1fr);border-radius:26px 26px 18px 18px;overflow:auto;max-height:calc(100dvh - 16px)}
+  .pf-photo{min-height:0;height:clamp(230px,44dvh,340px)}
+  .pf-photo img{object-position:50% 18%}
+  .pf-photo.noimg{height:170px}
+  .pf-photo.noimg .pf-mono{width:92px;height:92px;font-size:34px}
+  .pf-info{padding:24px 22px 22px;overflow:visible}
+  .pf-mono{width:108px;height:108px;font-size:40px}
+  .pf-nav{position:sticky;bottom:0;background:var(--paper);margin:0 -22px -22px;padding:12px 22px calc(12px + env(safe-area-inset-bottom))}
+}
+@media (max-width:600px){
+  .u-body .mlist{grid-template-columns:minmax(0,1fr)}
+  .m-lead .mbtn{padding:14px;gap:14px}
+  .m-lead .av{--s:58px}
+  .m-lead .go{display:none}
+  .m-lead .mbtn{grid-template-columns:auto minmax(0,1fr)}
+  .leader .av{--s:68px}
+}
+@media (max-width:380px){.pf-facts{grid-template-columns:minmax(0,1fr)}}
+</style>
 </head>
 
 <body>
@@ -929,23 +1035,115 @@ html.focus-on .is-dim::after{opacity:var(--dim)}
   </div>
 </footer>
 
-<script src="anggota.js?v=1"></script>
+<dialog class="pf" id="pf-dlg" aria-labelledby="pf-name">
+  <div class="pf-card">
+    <button type="button" class="pf-x" id="pf-x" aria-label="Tutup profil">&times;</button>
+    <div class="pf-photo" id="pf-photo"><span class="pf-mono" id="pf-mono"></span></div>
+    <div class="pf-info">
+      <div id="pf-badge"></div>
+      <h3 class="pf-name" id="pf-name"></h3>
+      <p class="pf-role" id="pf-role"></p>
+      <dl class="pf-facts" id="pf-facts"></dl>
+      <div id="pf-extra"></div>
+      <div class="pf-nav"><button type="button" id="pf-prev">&larr; Sebelumnya</button><span id="pf-pos"></span><button type="button" id="pf-next">Berikutnya &rarr;</button></div>
+    </div>
+  </div>
+</dialog>
+
+<script src="anggota.js?v=2"></script>
 <script>
-/* Nama pengurus dibaca dari anggota.js (diedit lewat admin-anggota.html).
-   Bila file itu tidak terbaca, daftar bawaan di HTML tetap dipakai. */
+/* Pengurus dibaca dari anggota.js (diedit lewat admin-anggota.html): nama, tanda pimpinan, foto, identitas.
+   Klik nama membuka satu kartu profil bersama (tidak menggeser item lain). */
 (function(){
   var A = window.ANGGOTA; if (!A || !A.unit) return;
   function esc(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function ini(n){
+    var w = String(n).replace(/[.,]/g, " ").split(/\s+/).filter(function(x){ return x && !/^(cds|m)$/i.test(x); });
+    return ((w[0] || "?").charAt(0) + (w.length > 1 ? w[1].charAt(0) : "")).toUpperCase();
+  }
+  var STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z"/></svg>';
+  var IG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></svg>';
+  function av(p, extra){
+    return '<span class="av' + (extra ? " " + extra : "") + '" aria-hidden="true">' + (p.foto ? '<img src="' + esc(p.foto) + '" alt="" loading="lazy" decoding="async" onerror="this.parentNode.classList.add(\'noimg\')">' : "") + '<b>' + esc(ini(p.nama)) + '</b></span>';
+  }
+  function crown(t, soft){ return t ? '<span class="crown' + (soft ? " soft" : "") + '">' + STAR + esc(t) + '</span>' : ""; }
+  function sub(p){ return [p.prodi, p.angkatan].filter(Boolean).join(" · "); }
+
+  var PEOPLE = [], SCOPES = [];
+  function add(p, scope){ p.id = PEOPLE.length; p.scope = scope; PEOPLE.push(p); SCOPES[scope].push(p.id); return p.id; }
+
+  /* Pimpinan inti */
   var L = document.querySelector("#pengurus .leaders");
-  if (L && A.pimpinan && A.pimpinan.length) L.innerHTML = A.pimpinan.map(function(p){
-    return '<article class="leader"><p>' + esc(p.jabatan) + '</p><h4>' + esc(p.nama) + '</h4></article>'; }).join("");
+  if (L && A.pimpinan && A.pimpinan.length){
+    SCOPES.push([]);
+    var anyBadge = A.pimpinan.some(function(q){ return q.peran; });
+    L.innerHTML = A.pimpinan.map(function(q){
+      var p = {nama: q.nama, jabatan: q.jabatan, badge: q.peran || "", foto: q.foto, panggilan: q.panggilan, prodi: q.prodi, angkatan: q.angkatan, asal: q.asal, instagram: q.instagram, motto: q.motto, unit: "Pimpinan inti BEM STDIIS", lead: !!q.peran};
+      var id = add(p, 0);
+      return '<button type="button" class="leader" data-pid="' + id + '" aria-haspopup="dialog">' + av(p) + (p.badge ? crown(p.badge) : (anyBadge ? '<span class="crown-slot" aria-hidden="true"></span>' : "")) + '<p>' + esc(p.jabatan) + '</p><h4>' + esc(p.nama) + '</h4><span class="l-more">Lihat profil</span></button>';
+    }).join("");
+  }
+
+  /* Kementerian, biro, inspektorat */
   [].forEach.call(document.querySelectorAll("#pengurus .units"), function(box){
     var t = box.previousElementSibling ? box.previousElementSibling.textContent.trim() : "";
     var items = A.unit.filter(function(u){ return u.grup === t; });
     if (!items.length) return;
     box.innerHTML = items.map(function(u){
-      return '<details class="unit"><summary><span class="u-name">' + esc(u.nama) + '</span><span class="unit-meta"></span><span class="chev" aria-hidden="true"></span></summary><div class="u-body"><ol>' +
-        (u.anggota || []).map(function(n){ return '<li>' + esc(n) + '</li>'; }).join("") + '</ol></div></details>'; }).join("");
+      var sc = SCOPES.push([]) - 1, names = u.anggota || [], pr = u.profil || [], jk = u.jabatanKepala || "Pimpinan", head = "", lis = "";
+      names.forEach(function(n, i){
+        var q = pr[i] || {}, lead = i === 0;
+        var p = {nama: n, jabatan: lead ? jk : "Anggota", badge: q.peran || (lead ? jk : ""), foto: q.foto, panggilan: q.panggilan, prodi: q.prodi, angkatan: q.angkatan, asal: q.asal, instagram: q.instagram, motto: q.motto, unit: u.nama, lead: lead};
+        var id = add(p, sc);
+        if (lead){
+          head = '<span class="u-head">' + av(p) + '<span><b>' + esc(jk) + '</b> ' + esc(n) + '</span></span>';
+          lis += '<li class="m-lead"><button type="button" class="mbtn" data-pid="' + id + '" aria-haspopup="dialog">' + av(p) + '<span class="tx">' + crown(p.badge) + '<span class="nm">' + esc(n) + '</span>' + (sub(p) ? '<span class="sub">' + esc(sub(p)) + '</span>' : "") + '</span><i class="go" aria-hidden="true"></i></button></li>';
+        } else {
+          lis += '<li class="m-item"><button type="button" class="mbtn" data-pid="' + id + '" aria-haspopup="dialog"><span class="no" aria-hidden="true"></span>' + av(p) + '<span><span class="nm">' + esc(n) + '</span>' + (q.peran ? '<span class="sub">' + esc(q.peran) + '</span>' : (sub(p) ? '<span class="sub">' + esc(sub(p)) + '</span>' : "")) + '</span><i class="go" aria-hidden="true"></i></button></li>';
+        }
+      });
+      return '<details class="unit"><summary><span class="u-name">' + esc(u.nama) + '</span>' + head + '<span class="unit-meta"></span><span class="chev" aria-hidden="true"></span></summary><div class="u-body"><ol class="mlist">' + lis + '</ol></div></details>';
+    }).join("");
+  });
+
+  /* Kartu profil */
+  var dlg = document.getElementById("pf-dlg"), cur = -1;
+  if (!dlg) return;
+  function $(i){ return document.getElementById(i); }
+  function show(id){
+    var p = PEOPLE[id]; if (!p) return; cur = id;
+    var ph = $("pf-photo"), old = ph.querySelector("img"); if (old) old.remove();
+    ph.classList.remove("noimg");
+    if (p.foto){ var im = new Image(); im.alt = ""; im.decoding = "async"; im.onerror = function(){ ph.classList.add("noimg"); im.remove(); }; im.src = p.foto; ph.insertBefore(im, ph.firstChild); }
+    else ph.classList.add("noimg");
+    $("pf-mono").textContent = ini(p.nama);
+    $("pf-badge").innerHTML = crown(p.badge, !p.lead);
+    $("pf-name").textContent = p.nama;
+    $("pf-role").textContent = p.jabatan === "Anggota" ? p.unit : (p.lead && p.scope === 0 ? p.jabatan : p.jabatan + " · " + p.unit);
+    var F = [["Nama panggilan", p.panggilan], ["Program studi", p.prodi], ["Angkatan", p.angkatan], ["Asal daerah", p.asal]].filter(function(x){ return x[1]; });
+    $("pf-facts").innerHTML = F.map(function(x){ return '<div><dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd></div>'; }).join("");
+    var ig = String(p.instagram || "").replace(/^@/, "").replace(/[^A-Za-z0-9._]/g, ""), x = "";
+    if (p.motto) x += '<blockquote class="pf-motto">' + esc(p.motto) + '</blockquote>';
+    if (ig) x += '<a class="pf-ig" href="https://instagram.com/' + ig + '" target="_blank" rel="noopener noreferrer">' + IG + '@' + esc(ig) + '</a>';
+    if (!F.length && !x) x = '<p class="pf-empty">Profil lengkap akan segera dilengkapi.</p>';
+    $("pf-extra").innerHTML = x;
+    var sc = SCOPES[p.scope], pos = sc.indexOf(id);
+    $("pf-pos").textContent = (pos + 1) + " dari " + sc.length;
+    $("pf-prev").disabled = pos <= 0; $("pf-next").disabled = pos >= sc.length - 1;
+    var card = dlg.querySelector(".pf-card"), inf = dlg.querySelector(".pf-info"); card.scrollTop = 0; inf.scrollTop = 0;
+  }
+  function step(d){ var sc = SCOPES[PEOPLE[cur].scope], i = sc.indexOf(cur) + d; if (i >= 0 && i < sc.length) show(sc[i]); }
+  function open(id){ show(id); if (!dlg.open) dlg.showModal(); document.documentElement.classList.add("pf-open"); }
+  dlg.addEventListener("close", function(){ document.documentElement.classList.remove("pf-open"); });
+  dlg.addEventListener("click", function(e){ if (e.target === dlg) dlg.close(); });
+  $("pf-x").onclick = function(){ dlg.close(); };
+  $("pf-prev").onclick = function(){ step(-1); };
+  $("pf-next").onclick = function(){ step(1); };
+  dlg.addEventListener("keydown", function(e){
+    if (e.key === "ArrowLeft"){ step(-1); e.preventDefault(); } else if (e.key === "ArrowRight"){ step(1); e.preventDefault(); }
+  });
+  document.getElementById("pengurus").addEventListener("click", function(e){
+    var b = e.target.closest("[data-pid]"); if (b) open(+b.getAttribute("data-pid"));
   });
 })();
 </script>

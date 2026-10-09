@@ -80,12 +80,48 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weigh
 .mrow.hit input{border-color:var(--gold);box-shadow:0 0 0 3px rgba(248,210,74,.4)}
 @media (max-width:520px){.mrow.lead{grid-template-columns:1fr}.ico button{width:34px;height:34px}}
 
+
+[hidden]{display:none!important}
+dialog{margin:auto}
+/* ---- foto, identitas, pimpinan unit ---- */
+.avb{position:relative;width:44px;height:44px;border-radius:50%;border:0;padding:0;cursor:pointer;overflow:hidden;background:linear-gradient(145deg,#1b5b5c,var(--ink));color:var(--gold);font:700 15px var(--serif);display:grid;place-items:center;box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--line);transition:box-shadow .2s,transform .15s;flex:none}
+.avb:hover{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--gold);transform:scale(1.05)}
+.avb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+.avb.noimg img{display:none}
+.avb i{position:absolute;right:0;bottom:0;width:13px;height:13px;border-radius:50%;background:var(--green);border:2px solid #fff;display:none}
+.avb.has i{display:block}
+.mrow{grid-template-columns:28px 44px minmax(0,1fr) auto}
+.mrow.lead{grid-template-columns:minmax(120px,30%) minmax(0,1fr) 44px}
+.lbox{background:linear-gradient(135deg,#fff7d6,#fffbef 70%);border:1px solid #ecd67a;border-radius:14px;padding:14px;margin:6px 0 14px}
+.lbox .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.lbox .tg{font:700 11.5px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:#6b4f00;background:var(--gold);border-radius:999px;padding:4px 12px}
+.lbox .top input{flex:1;min-width:150px;padding:7px 12px;font-size:14px}
+.lbox .lr{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center}
+.ico button.k:hover{border-color:#c79a00;color:#8a6a00}
+.sub-h{font:700 12.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
+dialog.big{width:min(640px,calc(100vw - 24px))}
+.pbody{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:start}
+.pph{display:grid;gap:10px;justify-items:stretch}
+.pfr{aspect-ratio:4/5;border-radius:16px;overflow:hidden;position:relative;background:linear-gradient(160deg,#1c6a64,var(--ink));display:grid;place-items:center;color:var(--gold);font:600 40px var(--serif);box-shadow:0 8px 20px -10px rgba(13,42,56,.6)}
+.pfr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.pfr.noimg img{display:none}
+.pph small{color:var(--muted);font-size:12.5px;line-height:1.4}
+.pf-fields{display:grid;gap:12px}
+.cropw{display:grid;gap:14px;justify-items:center}
+.cropv{position:relative;width:280px;max-width:100%;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:#0d2a38;touch-action:none;cursor:grab;box-shadow:0 0 0 3px var(--gold)}
+.cropv:active{cursor:grabbing}
+.cropv canvas{display:block;width:100%;height:100%}
+.cropv::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px) 0 33.3%/100% 33.3%,linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px) 33.3% 0/33.3% 100%;opacity:.7}
+.zoomr{display:flex;gap:10px;align-items:center;width:280px;max-width:100%;font-size:13px;color:var(--muted)}
+.zoomr input{padding:0;border:0;accent-color:#c79a00;box-shadow:none}
+@media (max-width:560px){.pbody{grid-template-columns:1fr}.pph{grid-template-columns:110px 1fr;align-items:center}.pfr{font-size:32px}}
+@media (max-width:520px){.mrow{grid-template-columns:24px 40px minmax(0,1fr) auto}.mrow.lead{grid-template-columns:1fr 44px}.mrow.lead input[data-l=j]{grid-column:1/-1}.mrow.lead{grid-template-columns:minmax(0,1fr) 44px}.avb{width:40px;height:40px}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><span class="tag">Khusus pengelola</span><h1>Editor Anggota</h1><p>Ganti nama pimpinan dan anggota setiap kementerian, biro, atau inspektorat di sini. Setelah selesai, unduh <b>anggota.js</b> lalu unggah ke GitHub.</p></div></header>
+<header><div class="wrap"><span class="tag">Khusus pengelola</span><h1>Editor Anggota</h1><p>Ganti nama, pasang foto, dan isi identitas pimpinan serta anggota setiap kementerian, biro, atau inspektorat. Setelah selesai, unduh <b>anggota.js</b> (dan <b>foto.zip</b> bila ada foto baru) lalu unggah ke GitHub.</p></div></header>
 
-<div class="status" id="status" role="status"><div class="wrap"><i class="dot"></i><span id="stxt"></span><span style="flex:1"></span><button class="btn gold sm" id="dl">Unduh anggota.js</button></div></div>
+<div class="status" id="status" role="status"><div class="wrap"><i class="dot"></i><span id="stxt"></span><span style="flex:1"></span><button class="btn gold sm" id="dl">Unduh anggota.js</button><button class="btn dark sm" id="dlz" hidden>Unduh foto.zip</button></div></div>
 
 <main class="wrap">
   <div class="banner" id="draft" hidden><span>Ada draf yang belum diterbitkan dari sesi sebelumnya di perangkat ini.</span><button class="btn sm dark" id="draft-ok">Pulihkan draf</button><button class="btn sm" id="draft-no">Buang</button></div>
@@ -95,11 +131,12 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weigh
   <details class="how" open>
     <summary>Cara menerbitkan perubahan ke situs</summary>
     <ol>
-      <li>Ketik langsung di kolom nama untuk mengganti. Tekan <b>Enter</b> untuk menambah nama di bawahnya, tanda panah untuk memindah urutan, dan tanda silang untuk menghapus.</li>
-      <li>Mengganti banyak nama sekaligus? Tekan <b>Tempel daftar</b> pada kementerian atau biro itu, lalu tempel satu nama per baris.</li>
-      <li>Selesai, tekan <b>Unduh anggota.js</b>.</li>
-      <li>Buka repositori situs di GitHub, tekan <b>Add file</b>, lalu <b>Upload files</b>, dan seret <b>anggota.js</b>. Nama harus persis sama sehingga file lama tertimpa.</li>
-      <li>Tekan <b>Commit changes</b>, tunggu 1 sampai 2 menit, lalu muat ulang situs. Daftar di halaman Kepengurusan, hitungan anggota, dan pilihan nama di form Pujian dan Kritik ikut berubah sendiri.</li>
+      <li>Ketik langsung di kolom nama untuk mengganti. Tekan <b>Enter</b> untuk menambah nama di bawahnya, tanda panah untuk memindah urutan, dan tanda silang untuk menghapus. Tanda <b>&#9733;</b> menjadikan seseorang pimpinan unit (Menteri, Kepala Biro, atau Kepala Inspektorat).</li>
+      <li>Tekan <b>lingkaran foto</b> di samping nama untuk memasang foto, mengatur posisinya, dan mengisi identitas (panggilan, prodi, angkatan, asal, Instagram, motto). Titik hijau berarti profil sudah terisi.</li>
+      <li>Mengganti banyak nama sekaligus? Tekan <b>Tempel daftar</b>. Foto dan identitas nama yang sama tetap dipertahankan.</li>
+      <li>Selesai, tekan <b>Unduh anggota.js</b>. Bila ada foto baru, tekan juga <b>Unduh foto.zip</b> lalu ekstrak sehingga muncul folder <b>foto</b>.</li>
+      <li>Buka repositori situs di GitHub, tekan <b>Add file</b>, lalu <b>Upload files</b>, dan seret <b>anggota.js</b> bersama folder <b>foto</b>. Nama harus persis sama sehingga file lama tertimpa.</li>
+      <li>Tekan <b>Commit changes</b>, tunggu 1 sampai 2 menit, lalu muat ulang situs. Kepengurusan, hitungan anggota, rapot, dan pilihan nama di form Pujian dan Kritik ikut berubah sendiri.</li>
     </ol>
     <div class="act" style="padding-bottom:16px">
       <button class="btn sm" id="copy">Salin kode</button>
@@ -121,54 +158,141 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weigh
   </form>
 </dialog>
 
+<dialog id="pdlg" class="big">
+  <form method="dialog" id="pform" novalidate>
+    <div class="fh" id="ptitle">Foto &amp; identitas</div>
+    <div class="fb" id="pview-form">
+      <div class="pbody">
+        <div class="pph">
+          <div class="pfr" id="pfr"><span id="pmono"></span></div>
+          <div class="act" style="gap:6px"><button type="button" class="btn sm dark" id="pickph">Pilih foto</button><button type="button" class="btn sm red" id="rmph">Hapus</button></div>
+          <small>Paling bagus: wajah di tengah, cahaya cukup, latar polos. Foto otomatis dipotong rasio 4:5.</small>
+          <input type="file" id="phfile" accept="image/*" hidden>
+        </div>
+        <div class="pf-fields">
+          <label>Tanda khusus di kartu <small>Kosongkan untuk anggota biasa. Pimpinan unit otomatis memakai sebutannya (mis. Menteri).</small><input id="p-peran" maxlength="40" placeholder="mis. Kepala Sekjen, Koordinator Divisi"></label>
+          <div class="row2"><label>Nama panggilan<input id="p-panggilan" maxlength="30"></label><label>Angkatan<input id="p-angkatan" maxlength="30" placeholder="mis. 2024 / Semester 5"></label></div>
+          <div class="row2"><label>Program studi<input id="p-prodi" maxlength="50"></label><label>Asal daerah<input id="p-asal" maxlength="40"></label></div>
+          <label>Instagram <small>tanpa @</small><input id="p-instagram" maxlength="40" autocapitalize="off" autocomplete="off"></label>
+          <label>Motto / kata singkat <small>maksimal 140 huruf</small><textarea id="p-motto" maxlength="140" style="min-height:70px"></textarea></label>
+        </div>
+      </div>
+    </div>
+    <div class="fb" id="pview-crop" hidden>
+      <div class="cropw">
+        <div class="cropv" id="cropv"><canvas id="cropc" width="560" height="700"></canvas></div>
+        <div class="zoomr"><span>&minus;</span><input type="range" id="zoom" min="1" max="3" step="0.01" value="1" aria-label="Perbesar"><span>+</span></div>
+        <small style="color:var(--muted);text-align:center">Geser foto untuk mengatur posisi, geser slider untuk memperbesar.</small>
+      </div>
+    </div>
+    <div class="ff" id="pff-form"><button class="btn" type="button" id="pcancel">Batal</button><button class="btn gold" type="submit">Simpan</button></div>
+    <div class="ff" id="pff-crop" hidden><button class="btn" type="button" id="ccancel">Kembali</button><button class="btn gold" type="button" id="cok">Pakai foto ini</button></div>
+  </form>
+</dialog>
+
 <div class="toast" id="toast"><span id="ttxt"></span></div>
 
 <script src="anggota.js"></script>
 <script>
 (function(){
-  var KEY = "bem-anggota-draft-v1";
+  var KEY = "bem-anggota-draft-v2";
+  var PF = ["foto","panggilan","prodi","angkatan","asal","instagram","motto","peran"];
+  var JK = {"Kementerian":"Menteri","Biro":"Kepala Biro","Pengawas":"Kepala Inspektorat Jenderal"};
   function $(id){ return document.getElementById(id); }
   function esc(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
   function nm(s){ return String(s == null ? "" : s).replace(/\s+/g, " ").trim(); }
+  function ini(n){ var w = nm(n).replace(/[.,]/g, " ").split(" ").filter(function(x){ return x && !/^(cds|m)$/i.test(x); }); return ((w[0] || "?").charAt(0) + (w[1] ? w[1].charAt(0) : "")).toUpperCase(); }
+  function isData(s){ return /^data:image\//.test(s || ""); }
+
+  /* profil: hanya isian yang terisi yang disimpan */
+  function cp(p){
+    var o = {}; p = p || {};
+    PF.forEach(function(k){
+      var v = k === "foto" ? String(p[k] || "").trim() : nm(p[k]);
+      if (k === "instagram") v = v.replace(/^@/, "").replace(/[^A-Za-z0-9._]/g, "");
+      if (v) o[k] = v;
+    });
+    return o;
+  }
   function clean(m){
     return {
-      pimpinan: (m.pimpinan || []).map(function(p){ return {jabatan: nm(p.jabatan), nama: nm(p.nama)}; }).filter(function(p){ return p.jabatan || p.nama; }),
-      unit: (m.unit || []).map(function(u){ return {grup: u.grup, nama: nm(u.nama), anggota: (u.anggota || []).map(nm).filter(Boolean)}; })
+      pimpinan: (m.pimpinan || []).map(function(p){ var o = cp(p); o.jabatan = nm(p.jabatan); o.nama = nm(p.nama); return o; }).filter(function(p){ return p.jabatan || p.nama; }),
+      unit: (m.unit || []).map(function(u){
+        var names = [], profs = [];
+        (u.anggota || []).forEach(function(n, i){ n = nm(n); if (!n) return; names.push(n); profs.push(cp((u.profil || [])[i])); });
+        return {grup: u.grup, nama: nm(u.nama), jabatanKepala: nm(u.jabatanKepala) || JK[u.grup] || "Pimpinan", anggota: names, profil: profs};
+      })
     };
   }
   function copy(o){ return JSON.parse(JSON.stringify(o)); }
-  var SITE = clean(window.ANGGOTA || {pimpinan: [], unit: []}), SITESIG = JSON.stringify(SITE);
-  var M = copy(SITE), downloaded = false, q = "", tT, editU = -1;
-
-  function dirty(){ return JSON.stringify(clean(M)) !== SITESIG; }
-  function save(){ try { localStorage.setItem(KEY, JSON.stringify(M)); } catch (e) {} }
-  function status(){
-    var d = dirty(), st = $("status"), total = clean(M).unit.reduce(function(a, u){ return a + u.anggota.length; }, 0);
-    st.className = "status" + (d ? (downloaded ? " done" : " dirty") : "");
-    $("stxt").innerHTML = !d ? "Sama dengan versi di situs. <b>" + total + " anggota</b>." :
-      downloaded ? "<b>File sudah diunduh.</b> Tinggal unggah <b>anggota.js</b> ke GitHub." : "<b>Ada perubahan belum diterbitkan.</b>";
+  /* Susun profil sejajar dengan anggota agar aman saat diurutkan */
+  function align(m){
+    m.unit.forEach(function(u){ u.profil = u.profil || []; while (u.profil.length < u.anggota.length) u.profil.push({}); u.profil.length = u.anggota.length; });
+    return m;
   }
-  function touch(){ downloaded = false; save(); status(); }
-  function toast(msg){ $("ttxt").textContent = msg; $("toast").classList.add("on"); clearTimeout(tT); tT = setTimeout(function(){ $("toast").classList.remove("on"); }, 2600); }
+  var SITE = clean(window.ANGGOTA || {pimpinan: [], unit: []}), SITESIG = JSON.stringify(SITE);
+  var M = align(copy(SITE)), dlJs = false, dlZip = false, q = "", tT, editU = -1, quotaWarned = false;
 
+  function pendCount(){
+    var n = 0, seen = {};
+    function chk(f){ if (isData(f) && !seen[f]){ seen[f] = 1; n++; } }
+    M.pimpinan.forEach(function(p){ chk(p.foto); });
+    M.unit.forEach(function(u){ (u.profil || []).forEach(function(p){ chk(p && p.foto); }); });
+    return n;
+  }
+  function dirty(){ return JSON.stringify(clean(M)) !== SITESIG; }
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(M)); }
+    catch (e) { if (!quotaWarned){ quotaWarned = true; toast("Draf foto terlalu besar untuk disimpan otomatis. Unduh file sebelum menutup halaman."); } }
+  }
+  function status(){
+    var d = dirty(), st = $("status"), c = clean(M), total = c.unit.reduce(function(a, u){ return a + u.anggota.length; }, 0), pend = pendCount();
+    var need = pend > 0 && !dlZip;
+    st.className = "status" + (d ? (dlJs && !need ? " done" : " dirty") : "");
+    $("stxt").innerHTML = !d ? "Sama dengan versi di situs. <b>" + total + " anggota</b>." :
+      (dlJs && !need) ? "<b>File sudah diunduh.</b> Tinggal unggah ke GitHub." :
+      need ? "<b>Ada " + pend + " foto baru.</b> Unduh <b>anggota.js</b> dan <b>foto.zip</b>." : "<b>Ada perubahan belum diterbitkan.</b>";
+    $("dlz").hidden = pend === 0;
+    $("dlz").textContent = "Unduh foto.zip (" + pend + ")";
+  }
+  function touch(){ dlJs = false; dlZip = false; save(); status(); }
+  function toast(msg){ $("ttxt").textContent = msg; $("toast").classList.add("on"); clearTimeout(tT); tT = setTimeout(function(){ $("toast").classList.remove("on"); }, 3200); }
+
+  /* ---- akses profil ---- */
+  function prof(t, u, i){
+    if (t === "p") return M.pimpinan[i];
+    var L = M.unit[u]; align(M); return L.profil[i] || (L.profil[i] = {});
+  }
+  function avb(t, u, i, name, p){
+    var has = Object.keys(cp(p)).length > 0;
+    return '<button type="button" class="avb' + (has ? " has" : "") + '" data-a="prof" data-t="' + t + '" data-u="' + u + '" data-i="' + i + '" title="Foto &amp; identitas" aria-label="Foto dan identitas ' + esc(name) + '">' +
+      (p && p.foto ? '<img src="' + esc(p.foto) + '" alt="" onerror="this.parentNode.classList.add(\'noimg\')">' : "") + '<span>' + esc(ini(name)) + '</span><i></i></button>';
+  }
   function row(u, i, n, total, hit){
-    return '<div class="mrow' + (hit ? " hit" : "") + '"><span class="n">' + (i + 1) + '</span><input data-u="' + u + '" data-i="' + i + '" value="' + esc(n) + '" maxlength="80" placeholder="Nama lengkap" aria-label="Nama anggota ' + (i + 1) + '"><span class="ico"><button type="button" data-a="up" data-u="' + u + '" data-i="' + i + '" aria-label="Naikkan"' + (i === 0 ? " disabled" : "") + '>&#8593;</button><button type="button" data-a="down" data-u="' + u + '" data-i="' + i + '" aria-label="Turunkan"' + (i === total - 1 ? " disabled" : "") + '>&#8595;</button><button type="button" class="x" data-a="del" data-u="' + u + '" data-i="' + i + '" aria-label="Hapus">&#10005;</button></span></div>';
+    var p = prof("u", u, i);
+    return '<div class="mrow' + (hit ? " hit" : "") + '"><span class="n">' + i + '</span>' + avb("u", u, i, n, p) + '<input data-u="' + u + '" data-i="' + i + '" value="' + esc(n) + '" maxlength="80" placeholder="Nama lengkap" aria-label="Nama anggota ' + i + '"><span class="ico"><button type="button" class="k" data-a="lead" data-u="' + u + '" data-i="' + i + '" title="Jadikan pimpinan unit" aria-label="Jadikan pimpinan unit">&#9733;</button><button type="button" data-a="up" data-u="' + u + '" data-i="' + i + '" aria-label="Naikkan"' + (i === 1 ? " disabled" : "") + '>&#8593;</button><button type="button" data-a="down" data-u="' + u + '" data-i="' + i + '" aria-label="Turunkan"' + (i === total - 1 ? " disabled" : "") + '>&#8595;</button><button type="button" class="x" data-a="del" data-u="' + u + '" data-i="' + i + '" aria-label="Hapus">&#10005;</button></span></div>';
   }
   function render(focus){
     var s = q.toLowerCase(), h = '<div class="grp">Pimpinan inti</div><div class="pcard" style="padding-top:18px">';
     M.pimpinan.forEach(function(p, i){
       var hit = s && (p.nama + " " + p.jabatan).toLowerCase().indexOf(s) >= 0;
       if (s && !hit) return;
-      h += '<div class="mrow lead' + (hit ? " hit" : "") + '"><input data-l="j" data-i="' + i + '" value="' + esc(p.jabatan) + '" maxlength="60" aria-label="Jabatan"><input data-l="n" data-i="' + i + '" value="' + esc(p.nama) + '" maxlength="80" placeholder="Nama lengkap" aria-label="Nama ' + esc(p.jabatan) + '"></div>';
+      h += '<div class="mrow lead' + (hit ? " hit" : "") + '"><input data-l="j" data-i="' + i + '" value="' + esc(p.jabatan) + '" maxlength="60" aria-label="Jabatan"><input data-l="n" data-i="' + i + '" value="' + esc(p.nama) + '" maxlength="80" placeholder="Nama lengkap" aria-label="Nama ' + esc(p.jabatan) + '">' + avb("p", 0, i, p.nama, p) + '</div>';
     });
     h += '</div>';
     var cur = "";
     M.unit.forEach(function(u, ui){
+      if (!u.anggota.length) u.anggota.push("");
+      align(M);
       var match = !s || u.anggota.some(function(n){ return n.toLowerCase().indexOf(s) >= 0; }) || u.nama.toLowerCase().indexOf(s) >= 0;
       if (!match) return;
       if (u.grup !== cur){ cur = u.grup; h += '<div class="grp">' + esc(cur) + '</div>'; }
-      h += '<details class="pcard" ' + (s || ui === focus ? "open" : "") + ' data-ud="' + ui + '"><summary>' + esc(u.nama) + '<span class="cnt">' + u.anggota.length + ' anggota</span></summary>';
-      u.anggota.forEach(function(n, i){ h += row(ui, i, n, u.anggota.length, s && n.toLowerCase().indexOf(s) >= 0); });
+      var cnt = u.anggota.filter(function(n){ return nm(n); }).length;
+      h += '<details class="pcard" ' + (s || ui === focus ? "open" : "") + ' data-ud="' + ui + '"><summary>' + esc(u.nama) + '<span class="cnt">' + cnt + ' anggota</span></summary>';
+      h += '<div class="lbox"><div class="top"><span class="tg">&#9733; Pimpinan unit</span><input data-k="jk" data-u="' + ui + '" value="' + esc(u.jabatanKepala || "") + '" maxlength="50" placeholder="Sebutan, mis. Menteri" aria-label="Sebutan pimpinan ' + esc(u.nama) + '"></div>' +
+        '<div class="lr">' + avb("u", ui, 0, u.anggota[0], prof("u", ui, 0)) + '<input data-u="' + ui + '" data-i="0" value="' + esc(u.anggota[0]) + '" maxlength="80" placeholder="Nama lengkap pimpinan" aria-label="Nama pimpinan"></div></div>';
+      if (u.anggota.length > 1) h += '<div class="sub-h">Anggota</div>';
+      u.anggota.forEach(function(n, i){ if (i > 0) h += row(ui, i, n, u.anggota.length, s && n.toLowerCase().indexOf(s) >= 0); });
       h += '<div class="addrow"><button type="button" class="btn sm dark" data-a="add" data-u="' + ui + '">+ Tambah nama</button><button type="button" class="btn sm" data-a="bulk" data-u="' + ui + '">Tempel daftar</button></div></details>';
     });
     $("root").innerHTML = h; status();
@@ -177,53 +301,184 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weigh
   var root = $("root");
   root.addEventListener("input", function(e){
     var t = e.target; if (t.tagName !== "INPUT") return;
+    if (t.getAttribute("data-k") === "jk"){ M.unit[+t.getAttribute("data-u")].jabatanKepala = t.value; touch(); return; }
     var i = +t.getAttribute("data-i");
     if (t.hasAttribute("data-l")) M.pimpinan[i][t.getAttribute("data-l") === "j" ? "jabatan" : "nama"] = t.value;
     else M.unit[+t.getAttribute("data-u")].anggota[i] = t.value;
     touch();
   });
+  function insertAt(u, i, name){ var L = M.unit[u]; align(M); L.anggota.splice(i, 0, name); L.profil.splice(i, 0, {}); }
   root.addEventListener("keydown", function(e){
-    var t = e.target; if (e.key !== "Enter" || t.tagName !== "INPUT" || t.hasAttribute("data-l")) return;
+    var t = e.target; if (e.key !== "Enter" || t.tagName !== "INPUT" || t.hasAttribute("data-l") || t.hasAttribute("data-k")) return;
     e.preventDefault();
     var u = +t.getAttribute("data-u"), i = +t.getAttribute("data-i");
-    M.unit[u].anggota.splice(i + 1, 0, ""); touch(); render(u);
+    insertAt(u, i + 1, ""); touch(); render(u);
     var n = root.querySelector('input[data-u="' + u + '"][data-i="' + (i + 1) + '"]'); if (n) n.focus();
   });
+  function swap(u, a, b){ var L = M.unit[u]; align(M); [L.anggota, L.profil].forEach(function(arr){ var x = arr[a]; arr[a] = arr[b]; arr[b] = x; }); }
   root.addEventListener("click", function(e){
     var b = e.target.closest("[data-a]"); if (!b) return;
-    var a = b.getAttribute("data-a"), u = +b.getAttribute("data-u"), i = +b.getAttribute("data-i"), L = M.unit[u].anggota;
-    if (a === "add"){ L.push(""); touch(); render(u); var n = root.querySelector('input[data-u="' + u + '"][data-i="' + (L.length - 1) + '"]'); if (n) n.focus(); }
+    var a = b.getAttribute("data-a"), u = +b.getAttribute("data-u"), i = +b.getAttribute("data-i");
+    if (a === "prof"){ openProfile(b.getAttribute("data-t"), u, i); return; }
+    var L = M.unit[u].anggota;
+    if (a === "add"){ insertAt(u, L.length, ""); touch(); render(u); var n = root.querySelector('input[data-u="' + u + '"][data-i="' + (L.length - 1) + '"]'); if (n) n.focus(); }
     if (a === "del"){
       if (L[i] && !confirm("Hapus " + L[i] + " dari " + M.unit[u].nama + "?")) return;
-      L.splice(i, 1); touch(); render(u); toast("Nama dihapus.");
+      L.splice(i, 1); M.unit[u].profil.splice(i, 1); touch(); render(u); toast("Nama dihapus.");
     }
-    if (a === "up" && i > 0){ var x = L[i]; L[i] = L[i - 1]; L[i - 1] = x; touch(); render(u); }
-    if (a === "down" && i < L.length - 1){ var y = L[i]; L[i] = L[i + 1]; L[i + 1] = y; touch(); render(u); }
+    if (a === "up" && i > 1){ swap(u, i, i - 1); touch(); render(u); }
+    if (a === "down" && i < L.length - 1){ swap(u, i, i + 1); touch(); render(u); }
+    if (a === "lead" && i > 0){ if (!confirm("Jadikan " + (L[i] || "orang ini") + " sebagai " + (M.unit[u].jabatanKepala || "pimpinan") + " " + M.unit[u].nama + "? Pimpinan lama menjadi anggota biasa.")) return; swap(u, 0, i); touch(); render(u); toast("Pimpinan unit diganti."); }
     if (a === "bulk"){ editU = u; $("ftitle").textContent = "Tempel daftar: " + M.unit[u].nama; $("f-list").value = L.join("\n"); $("err").textContent = ""; $("dlg").showModal(); $("f-list").focus(); }
   });
   $("form").addEventListener("submit", function(e){
     e.preventDefault();
     var list = $("f-list").value.split(/\r?\n/).map(nm).filter(Boolean);
     if (editU < 0) return;
-    M.unit[editU].anggota = list; $("dlg").close(); touch(); render(editU); toast("Daftar diganti: " + list.length + " nama.");
+    var U = M.unit[editU], old = {}; align(M);
+    U.anggota.forEach(function(n, i){ if (nm(n)) old[nm(n).toLowerCase()] = U.profil[i]; });
+    U.profil = list.map(function(n){ return old[n.toLowerCase()] || {}; });
+    U.anggota = list; $("dlg").close(); touch(); render(editU); toast("Daftar diganti: " + list.length + " nama. Foto dan identitas nama yang sama tetap dipertahankan.");
   });
   $("cancel").onclick = function(){ $("dlg").close(); };
   $("q").addEventListener("input", function(e){ q = e.target.value.trim(); render(); });
 
-  function output(){
-    var c = clean(M), L = [];
-    L.push("/* anggota.js: data nama pengurus BEM STDIIS.\n   Jangan diedit manual. Gunakan admin-anggota.html, lalu unduh file ini dan unggah ke GitHub.\n   Terakhir dibuat: " + new Date().toLocaleString("id-ID") + " */");
+  /* ================= Dialog foto & identitas ================= */
+  var PC = null, pPhoto = "", crop = null;
+  function nameOf(c){ return c.t === "p" ? M.pimpinan[c.i].nama : M.unit[c.u].anggota[c.i]; }
+  function paintPhoto(){
+    var f = $("pfr"), old = f.querySelector("img"); if (old) old.remove();
+    f.classList.toggle("noimg", !pPhoto);
+    if (pPhoto){ var im = new Image(); im.alt = ""; im.onerror = function(){ f.classList.add("noimg"); }; im.src = pPhoto; f.insertBefore(im, f.firstChild); }
+    $("rmph").hidden = !pPhoto; $("pickph").textContent = pPhoto ? "Ganti foto" : "Pilih foto";
+  }
+  function pview(mode){
+    var c = mode === "crop";
+    $("pview-form").hidden = c; $("pff-form").hidden = c; $("pview-crop").hidden = !c; $("pff-crop").hidden = !c;
+    $("ptitle").textContent = c ? "Atur foto" : "Foto & identitas: " + nameOf(PC);
+  }
+  function openProfile(t, u, i){
+    PC = {t: t, u: u, i: i};
+    var p = cp(prof(t, u, i)); pPhoto = p.foto || "";
+    PF.forEach(function(k){ if (k !== "foto") $("p-" + k).value = p[k] || ""; });
+    $("pmono").textContent = ini(nameOf(PC));
+    paintPhoto(); pview("form"); $("pdlg").showModal();
+  }
+  $("pform").addEventListener("submit", function(e){
+    e.preventDefault();
+    var o = {foto: pPhoto};
+    PF.forEach(function(k){ if (k !== "foto") o[k] = $("p-" + k).value; });
+    o = cp(o);
+    if (PC.t === "p"){ var P = M.pimpinan[PC.i]; PF.forEach(function(k){ delete P[k]; }); for (var k in o) P[k] = o[k]; }
+    else { align(M); M.unit[PC.u].profil[PC.i] = o; }
+    $("pdlg").close(); touch(); var keep = PC.t === "u" ? PC.u : undefined; render(keep); toast("Tersimpan di draf.");
+  });
+  $("pcancel").onclick = function(){ $("pdlg").close(); };
+  $("rmph").onclick = function(){ pPhoto = ""; paintPhoto(); };
+  $("pickph").onclick = function(){ $("phfile").click(); };
+
+  /* Pemotong foto 4:5 (geser + zoom) */
+  var CV = $("cropc"), cx = CV.getContext("2d"), VW = 560, VH = 700;
+  function clampC(){
+    var w = crop.img.naturalWidth * crop.sc, h = crop.img.naturalHeight * crop.sc;
+    crop.ox = Math.min(0, Math.max(VW - w, crop.ox)); crop.oy = Math.min(0, Math.max(VH - h, crop.oy));
+  }
+  function drawC(){
+    cx.fillStyle = "#0d2a38"; cx.fillRect(0, 0, VW, VH);
+    cx.drawImage(crop.img, crop.ox, crop.oy, crop.img.naturalWidth * crop.sc, crop.img.naturalHeight * crop.sc);
+  }
+  function setZoom(z){
+    var cxm = VW / 2, cym = VH / 2, k = (crop.base * z) / crop.sc;
+    crop.ox = cxm - (cxm - crop.ox) * k; crop.oy = cym - (cym - crop.oy) * k; crop.sc = crop.base * z; clampC(); drawC();
+  }
+  $("phfile").addEventListener("change", function(e){
+    var f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    if (!/^image\//.test(f.type)){ toast("File harus berupa gambar."); return; }
+    var url = URL.createObjectURL(f), im = new Image();
+    im.onload = function(){
+      var base = Math.max(VW / im.naturalWidth, VH / im.naturalHeight);
+      crop = {img: im, url: url, base: base, sc: base, ox: 0, oy: 0};
+      crop.ox = (VW - im.naturalWidth * base) / 2; crop.oy = (VH - im.naturalHeight * base) * 0.18; /* condong ke atas agar wajah tidak terpotong */
+      clampC(); $("zoom").value = 1; drawC(); pview("crop");
+    };
+    im.onerror = function(){ URL.revokeObjectURL(url); toast("Foto tidak bisa dibuka. Coba format JPG atau PNG."); };
+    im.src = url;
+  });
+  var drag = null;
+  $("cropv").addEventListener("pointerdown", function(e){ if (!crop) return; drag = {x: e.clientX, y: e.clientY, ox: crop.ox, oy: crop.oy}; this.setPointerCapture(e.pointerId); });
+  $("cropv").addEventListener("pointermove", function(e){
+    if (!drag) return; var r = this.getBoundingClientRect(), k = VW / r.width;
+    crop.ox = drag.ox + (e.clientX - drag.x) * k; crop.oy = drag.oy + (e.clientY - drag.y) * k; clampC(); drawC();
+  });
+  ["pointerup", "pointercancel"].forEach(function(n){ $("cropv").addEventListener(n, function(){ drag = null; }); });
+  $("zoom").addEventListener("input", function(){ if (crop) setZoom(+this.value); });
+  function endCrop(){ if (crop){ URL.revokeObjectURL(crop.url); crop = null; } }
+  $("ccancel").onclick = function(){ endCrop(); pview("form"); };
+  $("cok").onclick = function(){
+    var o = document.createElement("canvas"); o.width = 360; o.height = 450;
+    var k = 360 / VW, c = o.getContext("2d"); c.fillStyle = "#0d2a38"; c.fillRect(0, 0, 360, 450);
+    c.imageSmoothingQuality = "high";
+    c.drawImage(crop.img, crop.ox * k, crop.oy * k, crop.img.naturalWidth * crop.sc * k, crop.img.naturalHeight * crop.sc * k);
+    pPhoto = o.toDataURL("image/jpeg", 0.82); endCrop(); paintPhoto(); pview("form");
+  };
+  $("pdlg").addEventListener("close", endCrop);
+
+  /* ================= Keluaran: anggota.js + foto.zip ================= */
+  function slug(s){ return nm(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 36) || "foto"; }
+  function hash(s){ var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  function build(){
+    var c = clean(M), files = [], map = {};
+    function fix(p, name){
+      if (!isData(p.foto)) return;
+      if (!map[p.foto]){ map[p.foto] = "foto/" + slug(name) + "-" + hash(p.foto) + ".jpg"; files.push({path: map[p.foto], data: p.foto}); }
+      p.foto = map[p.foto];
+    }
+    c.pimpinan.forEach(function(p){ fix(p, p.nama); });
+    c.unit.forEach(function(u){ u.profil.forEach(function(p, i){ fix(p, u.anggota[i]); }); });
+    var L = [];
+    L.push("/* anggota.js: data pengurus BEM STDIIS (nama, foto, identitas).\n   Jangan diedit manual. Gunakan admin-anggota.html, lalu unduh file ini dan unggah ke GitHub.\n   Terakhir dibuat: " + new Date().toLocaleString("id-ID") + " */");
     L.push("window.ANGGOTA = {");
     L.push(' "pimpinan": [\n' + c.pimpinan.map(function(p){ return "  " + JSON.stringify(p); }).join(",\n") + "\n ],");
     L.push(' "unit": [\n' + c.unit.map(function(u){ return "  " + JSON.stringify(u); }).join(",\n") + "\n ]");
     L.push("};");
-    return L.join("\n") + "\n";
+    return {js: L.join("\n") + "\n", files: files};
+  }
+  function output(){ return build().js; }
+  function save2(blob, name){
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  }
+  /* ZIP sederhana tanpa kompresi (JPEG sudah terkompresi) */
+  var CRC = (function(){ var t = [], n, k, c; for (n = 0; n < 256; n++){ c = n; for (k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  function crc32(b){ var c = 0xFFFFFFFF; for (var i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+  function u8(dataUri){ var s = atob(dataUri.split(",")[1]), b = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; }
+  function zip(files){
+    var enc = new TextEncoder(), parts = [], cen = [], off = 0, d = new Date();
+    var dt = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)) & 0xFFFF, dd = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xFFFF;
+    files.forEach(function(f){
+      var name = enc.encode(f.path), data = u8(f.data), crc = crc32(data), h = new DataView(new ArrayBuffer(30));
+      h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true); h.setUint16(10, dt, true); h.setUint16(12, dd, true);
+      h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+      parts.push(h.buffer, name, data);
+      var c = new DataView(new ArrayBuffer(46));
+      c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, 0, true); c.setUint16(12, dt, true); c.setUint16(14, dd, true);
+      c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+      cen.push(c.buffer, name);
+      off += 30 + name.length + data.length;
+    });
+    var csz = 0; cen.forEach(function(x){ csz += x.byteLength || x.length; });
+    var e = new DataView(new ArrayBuffer(22));
+    e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, csz, true); e.setUint32(16, off, true);
+    return new Blob(parts.concat(cen, [e.buffer]), {type: "application/zip"});
   }
   $("dl").onclick = function(){
-    var blob = new Blob([output()], {type: "text/javascript"}), a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = "anggota.js"; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
-    downloaded = true; status(); toast("anggota.js diunduh. Sekarang unggah ke GitHub.");
+    var r = build(); save2(new Blob([r.js], {type: "text/javascript"}), "anggota.js");
+    dlJs = true; status();
+    toast(r.files.length && !dlZip ? "anggota.js diunduh. Jangan lupa unduh foto.zip juga." : "anggota.js diunduh. Sekarang unggah ke GitHub.");
+  };
+  $("dlz").onclick = function(){
+    var r = build(); if (!r.files.length){ toast("Tidak ada foto baru."); return; }
+    save2(zip(r.files), "foto.zip"); dlZip = true; status(); toast("foto.zip diunduh. Ekstrak, lalu unggah folder foto ke GitHub.");
   };
   $("copy").onclick = function(){
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(output()).then(function(){ toast("Kode disalin."); }, function(){ toast("Gagal menyalin. Gunakan tombol unduh."); });
@@ -237,24 +492,25 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}label small{font-weigh
       try {
         var t = String(r.result), a = t.indexOf("{", t.indexOf("window.ANGGOTA")), b = t.lastIndexOf("}"), o = JSON.parse(t.slice(a, b + 1));
         if (!o || !o.unit) throw 0;
-        M = clean(o); touch(); render(); toast("File dimuat.");
+        M = align(clean(o)); touch(); render(); toast("File dimuat.");
       } catch (x) { alert("Format file tidak dikenali. Gunakan anggota.js yang dibuat oleh editor ini."); }
     };
     r.readAsText(f); e.target.value = "";
   });
   $("reset").onclick = function(){
-    if (!confirm("Kembalikan semua nama ke versi yang sedang tayang di situs? Perubahanmu akan hilang.")) return;
-    M = copy(SITE); downloaded = false; try { localStorage.removeItem(KEY); } catch (e) {} render(); toast("Dikembalikan ke versi situs.");
+    if (!confirm("Kembalikan semua data ke versi yang sedang tayang di situs? Perubahanmu akan hilang.")) return;
+    M = align(copy(SITE)); dlJs = dlZip = false; try { localStorage.removeItem(KEY); } catch (e) {} render(); toast("Dikembalikan ke versi situs.");
   };
   try {
     var d = JSON.parse(localStorage.getItem(KEY) || "null");
     if (d && d.unit && JSON.stringify(clean(d)) !== SITESIG){
       $("draft").hidden = false;
-      $("draft-ok").onclick = function(){ M = clean(d); $("draft").hidden = true; render(); };
+      $("draft-ok").onclick = function(){ M = align(clean(d)); $("draft").hidden = true; render(); };
       $("draft-no").onclick = function(){ try { localStorage.removeItem(KEY); } catch (e) {} $("draft").hidden = true; };
     }
   } catch (e) {}
-  window.addEventListener("beforeunload", function(e){ if (dirty() && !downloaded){ e.preventDefault(); e.returnValue = ""; } });
+  window.addEventListener("beforeunload", function(e){ if (dirty() && !(dlJs && (pendCount() === 0 || dlZip))){ e.preventDefault(); e.returnValue = ""; } });
+  window.__bem = {build: build, zip: zip};
   render();
 })();
 </script>
