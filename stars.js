@@ -75,10 +75,10 @@
         var z = Math.random();                       /* 0 jauh ... 1 dekat */
         stars.push({
           x: Math.random() * W, y: Math.random() * H, z: z,
-          r: 0.6 + z * 1.4, v: 3 + z * 13,
+          r: 0.55 + z * 1.35, v: 3 + z * 13,
           ph: Math.random() * 6.28, sp: rnd(0.4, 1.4),
           c: TINT[(Math.random() * TINT.length) | 0],
-          sparkle: z > (opt.sparkZ || 0.6)
+          sparkle: z > 0.86
         });
       }
     }
@@ -96,20 +96,11 @@
         s.x += s.v * dt * 0.3; s.y -= s.v * dt * 0.17;      /* melayang sangat pelan ke kanan atas */
         if (s.x > W + 4) s.x = -4; if (s.y < -4) { s.y = H + 4; s.x = Math.random() * W; }
         var a = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(s.ph + t * s.sp));
-        var al = a * (0.55 + s.z * 0.45);
+        cx.fillStyle = "rgba(" + s.c + "," + (a * (0.55 + s.z * 0.45)).toFixed(3) + ")";
+        cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.2832); cx.fill();
         if (s.sparkle) {
-          var R = 2.6 + s.z * 3.6 + 2.2 * a, w = R * 0.2, c = s.c;
-          var gl = cx.createRadialGradient(s.x, s.y, 0, s.x, s.y, R * 1.5);
-          gl.addColorStop(0, "rgba(" + c + "," + (al * 0.5).toFixed(3) + ")"); gl.addColorStop(1, "rgba(" + c + ",0)");
-          cx.fillStyle = gl; cx.beginPath(); cx.arc(s.x, s.y, R * 1.5, 0, 6.2832); cx.fill();
-          cx.fillStyle = "rgba(" + c + "," + Math.min(1, al + 0.15).toFixed(3) + ")";
-          cx.beginPath();
-          cx.moveTo(s.x, s.y - R); cx.quadraticCurveTo(s.x + w, s.y - w, s.x + R, s.y);
-          cx.quadraticCurveTo(s.x + w, s.y + w, s.x, s.y + R); cx.quadraticCurveTo(s.x - w, s.y + w, s.x - R, s.y);
-          cx.quadraticCurveTo(s.x - w, s.y - w, s.x, s.y - R); cx.fill();
-        } else {
-          cx.fillStyle = "rgba(" + s.c + "," + al.toFixed(3) + ")";
-          cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.2832); cx.fill();
+          var L = 3 + 4 * a; cx.strokeStyle = "rgba(" + s.c + "," + (a * 0.55).toFixed(3) + ")"; cx.lineWidth = 0.8;
+          cx.beginPath(); cx.moveTo(s.x - L, s.y); cx.lineTo(s.x + L, s.y); cx.moveTo(s.x, s.y - L); cx.lineTo(s.x, s.y + L); cx.stroke();
         }
       }
       if (shoot && !reduce) {
@@ -153,5 +144,5 @@
   if (foot) Field(foot, 9000, true, .55, { gap: 1.4 });
   /* Panel acara di kalender: bintang melayang dan bintang jatuh, tanpa aurora */
   var pan = document.querySelector("#kalender .panel");
-  if (pan) Field(pan, 5200, true, 0, { k: .62, gap: .8, sparkZ: .74 });
+  if (pan) Field(pan, 5200, true, 0, { k: .62, gap: .8 });
 })();
