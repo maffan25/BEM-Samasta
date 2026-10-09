@@ -1,8 +1,8 @@
 /* pengumuman.js: teks berjalan "Info terbaru" BEM STDIIS.
    Jangan diedit manual. Gunakan admin-pengumuman.html, lalu unduh file ini dan unggah ke GitHub.
-   Terakhir dibuat: 9/10/2026, 15.04.17 */
+   Terakhir dibuat: 9/10/2026, 15.06.53 */
 window.PENGUMUMAN = {
- "otomatis": true,
+ "otomatis": false,
  "besok": "BESOK",
  "hariini": "HARI INI",
  "ingat": "JANGAN LUPA",
@@ -10,8 +10,8 @@ window.PENGUMUMAN = {
   {
    "id": "p1791412145927",
    "teks": "Mohon maaf saya tidak dapat hadir malam ini 🙏🏻🙏🏻🙏🏻",
-   "mulai": "2026-10-08",
-   "sampai": "2026-10-08",
+   "mulai": "2026-10-09",
+   "sampai": "2026-10-09",
    "penting": false,
    "aktif": true
   }
