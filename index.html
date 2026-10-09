@@ -603,20 +603,22 @@ html.pf-open{overflow:hidden}
 .pf-photo.noimg img{display:none}
 .pf-mono{position:relative;z-index:1;width:132px;height:132px;border-radius:50%;display:grid;place-items:center;font:600 48px/1 var(--serif);color:var(--gold);box-shadow:0 0 0 2px rgba(var(--glow),.55),0 0 0 10px rgba(var(--glow),.12)}
 .pf-photo:not(.noimg) .pf-mono{display:none}
-.pf-info{padding:36px 36px 28px;display:flex;flex-direction:column;gap:14px;min-width:0;overflow:auto}
+.pf-info{padding:36px 36px 28px;display:flex;flex-direction:column;gap:16px;min-width:0;overflow:auto}
 .pf-name{font:600 clamp(25px,3.2vw,32px)/1.18 var(--serif);overflow-wrap:anywhere;text-wrap:balance}
 .pf-role{margin-top:-6px;color:var(--muted);font-size:15px}
 .pf-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;margin-top:2px}
 .pf-facts div{min-width:0;border-left:2px solid var(--gold);padding-left:12px}
 .pf-facts dt{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .pf-facts dd{font-size:15px;line-height:1.4;overflow-wrap:anywhere;margin-top:2px}
-.pf-motto{font:italic 400 17px/1.55 var(--serif);color:#2b4652;background:var(--sand);border-radius:16px;padding:14px 18px 14px 20px;position:relative}
-.pf-motto::before{content:"\201C";position:absolute;left:8px;top:-4px;font:700 38px/1 var(--serif);color:var(--champagne)}
-.pf-ig{align-self:flex-start;display:inline-flex;gap:8px;align-items:center;font-weight:600;font-size:14.5px;color:var(--indigo);border:1.5px solid var(--line);border-radius:999px;padding:7px 16px 7px 12px;transition:background .2s,border-color .2s}
+.pf-extra{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.pf-extra:empty{display:none}
+.pf-motto{align-self:stretch;font:italic 400 17px/1.6 var(--serif);color:#2b4652;background:var(--sand);border-radius:16px;padding:22px 20px 16px 46px;position:relative;margin:0}
+.pf-motto::before{content:"\201C";position:absolute;left:16px;top:14px;font:700 40px/1 var(--serif);color:var(--champagne)}
+.pf-ig{display:inline-flex;gap:8px;align-items:center;margin-bottom:2px;font-weight:600;font-size:14.5px;color:var(--indigo);border:1.5px solid var(--line);border-radius:999px;padding:7px 16px 7px 12px;transition:background .2s,border-color .2s}
 .pf-ig:hover{background:var(--gold);border-color:var(--gold);color:var(--ink)}
 .pf-ig svg{width:17px;height:17px}
 .pf-empty{color:var(--muted);font-size:14.5px;background:var(--sand);border-radius:14px;padding:12px 16px}
-.pf-nav{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.pf-nav{margin-top:auto;padding-top:16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
 .pf-nav span{flex:1;text-align:center;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .pf-nav button{font:600 14px var(--sans);border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer;transition:background .2s,border-color .2s}
 .pf-nav button:hover:not(:disabled){background:var(--gold);border-color:var(--gold)}
@@ -627,13 +629,13 @@ html.pf-open{overflow:hidden}
 @media (max-width:680px){
   dialog.pf{margin:auto auto 0;width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}
   .pf-card{grid-template-columns:minmax(0,1fr);border-radius:26px 26px 18px 18px;overflow:auto;max-height:calc(100dvh - 16px)}
-  .pf-photo{min-height:0;height:clamp(230px,44dvh,340px)}
+  .pf-photo{min-height:0;height:clamp(190px,30dvh,300px)}
   .pf-photo img{object-position:50% 18%}
   .pf-photo.noimg{height:170px}
   .pf-photo.noimg .pf-mono{width:92px;height:92px;font-size:34px}
-  .pf-info{padding:24px 22px 22px;overflow:visible}
+  .pf-info{padding:24px 22px 22px;overflow:visible;gap:16px}
   .pf-mono{width:108px;height:108px;font-size:40px}
-  .pf-nav{position:sticky;bottom:0;background:var(--paper);margin:0 -22px -22px;padding:12px 22px calc(12px + env(safe-area-inset-bottom))}
+  .pf-nav{position:sticky;bottom:0;background:var(--paper);margin:8px -22px -22px;padding:14px 22px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -10px 14px -10px rgba(13,42,56,.18)}
 }
 @media (max-width:600px){
   .u-body .mlist{grid-template-columns:minmax(0,1fr)}
@@ -1044,7 +1046,7 @@ html.pf-open{overflow:hidden}
       <h3 class="pf-name" id="pf-name"></h3>
       <p class="pf-role" id="pf-role"></p>
       <dl class="pf-facts" id="pf-facts"></dl>
-      <div id="pf-extra"></div>
+      <div class="pf-extra" id="pf-extra"></div>
       <div class="pf-nav"><button type="button" id="pf-prev">&larr; Sebelumnya</button><span id="pf-pos"></span><button type="button" id="pf-next">Berikutnya &rarr;</button></div>
     </div>
   </div>
