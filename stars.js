@@ -65,7 +65,7 @@
     host.style.isolation = "isolate";
     host.appendChild(cv);
     var au = auroraStrength ? Aurora(auroraStrength) : null;
-    var W = 0, H = 0, stars = [], star = null, nextShoot = 2 + Math.random() * 3, visible = false, last = 0, raf = 0, acc = 0, t = 0;
+    var W = 0, H = 0, stars = [], shots = [], nextShoot = 1.5 + Math.random() * 2, visible = false, last = 0, raf = 0, acc = 0, t = 0;
 
     function rnd(a, b) { return a + Math.random() * (b - a); }
     function seed() {
@@ -75,10 +75,10 @@
         var z = Math.random();                       /* 0 jauh ... 1 dekat */
         stars.push({
           x: Math.random() * W, y: Math.random() * H, z: z,
-          r: 0.55 + z * 1.35, v: 3 + z * 13,
-          ph: Math.random() * 6.28, sp: rnd(0.6, 2.2),
+          r: 0.6 + z * 1.4, v: 3 + z * 13,
+          ph: Math.random() * 6.28, sp: rnd(0.4, 1.4),
           c: TINT[(Math.random() * TINT.length) | 0],
-          sparkle: z > 0.86
+          sparkle: z > (opt.sparkZ || 0.6)
         });
       }
     }
@@ -93,25 +93,39 @@
       if (au) au.draw(cx, W, H, t + 3);
       for (var i = 0; i < stars.length; i++) {
         var s = stars[i];
-        s.x += s.v * dt * 0.8; s.y -= s.v * dt * 0.45;      /* melayang pelan ke kanan atas */
+        s.x += s.v * dt * 0.3; s.y -= s.v * dt * 0.17;      /* melayang sangat pelan ke kanan atas */
         if (s.x > W + 4) s.x = -4; if (s.y < -4) { s.y = H + 4; s.x = Math.random() * W; }
         var a = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(s.ph + t * s.sp));
-        cx.fillStyle = "rgba(" + s.c + "," + (a * (0.55 + s.z * 0.45)).toFixed(3) + ")";
-        cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.2832); cx.fill();
+        var al = a * (0.55 + s.z * 0.45);
         if (s.sparkle) {
-          var L = 3 + 4 * a; cx.strokeStyle = "rgba(" + s.c + "," + (a * 0.55).toFixed(3) + ")"; cx.lineWidth = 0.8;
-          cx.beginPath(); cx.moveTo(s.x - L, s.y); cx.lineTo(s.x + L, s.y); cx.moveTo(s.x, s.y - L); cx.lineTo(s.x, s.y + L); cx.stroke();
+          var R = 2.6 + s.z * 3.6 + 2.2 * a, w = R * 0.2, c = s.c;
+          var gl = cx.createRadialGradient(s.x, s.y, 0, s.x, s.y, R * 1.5);
+          gl.addColorStop(0, "rgba(" + c + "," + (al * 0.5).toFixed(3) + ")"); gl.addColorStop(1, "rgba(" + c + ",0)");
+          cx.fillStyle = gl; cx.beginPath(); cx.arc(s.x, s.y, R * 1.5, 0, 6.2832); cx.fill();
+          cx.fillStyle = "rgba(" + c + "," + Math.min(1, al + 0.15).toFixed(3) + ")";
+          cx.beginPath();
+          cx.moveTo(s.x, s.y - R); cx.quadraticCurveTo(s.x + w, s.y - w, s.x + R, s.y);
+          cx.quadraticCurveTo(s.x + w, s.y + w, s.x, s.y + R); cx.quadraticCurveTo(s.x - w, s.y + w, s.x - R, s.y);
+          cx.quadraticCurveTo(s.x - w, s.y - w, s.x, s.y - R); cx.fill();
+        } else {
+          cx.fillStyle = "rgba(" + s.c + "," + al.toFixed(3) + ")";
+          cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.2832); cx.fill();
         }
       }
       if (shoot && !reduce) {
-        if (!star) { nextShoot -= dt; if (nextShoot <= 0) { star = { x: rnd(W * 0.35, W * 1.05), y: rnd(-10, H * 0.35), life: 0, len: rnd(90, 150) * KS, sp: rnd(520, 700) * KS }; nextShoot = rnd(5, 9) * GAP; } }
-        else {
+        nextShoot -= dt;
+        if (nextShoot <= 0 && shots.length < 2) {
+          shots.push({ x: rnd(W * 0.3, W * 1.05), y: rnd(-10, H * 0.4), life: 0, len: rnd(90, 150) * KS, sp: rnd(520, 700) * KS });
+          nextShoot = rnd(2.2, 4.5) * GAP;
+        }
+        for (var k = shots.length - 1; k >= 0; k--) {
+          var star = shots[k];
           star.life += dt; var d = star.sp * dt; star.x -= d * 0.86; star.y += d * 0.5;
           var f = Math.max(0, 1 - star.life / 1.1), tx = star.x + star.len * 0.86, ty = star.y - star.len * 0.5;
           var g = cx.createLinearGradient(star.x, star.y, tx, ty);
           g.addColorStop(0, "rgba(255,244,190," + (0.95 * f).toFixed(3) + ")"); g.addColorStop(1, "rgba(255,244,190,0)");
           cx.strokeStyle = g; cx.lineWidth = 1.6; cx.lineCap = "round"; cx.beginPath(); cx.moveTo(star.x, star.y); cx.lineTo(tx, ty); cx.stroke();
-          if (star.life > 1.1 || star.x < -160 || star.y > H + 160) star = null;
+          if (star.life > 1.1 || star.x < -160 || star.y > H + 160) shots.splice(k, 1);
         }
       }
     }
@@ -136,8 +150,8 @@
 
   var hero = document.getElementById("beranda"), foot = document.getElementById("kontak");
   if (hero) Field(hero, 7000, true, 1);
-  if (foot) Field(foot, 9000, false, .55);
+  if (foot) Field(foot, 9000, true, .55, { gap: 1.4 });
   /* Panel acara di kalender: bintang melayang dan bintang jatuh, tanpa aurora */
   var pan = document.querySelector("#kalender .panel");
-  if (pan) Field(pan, 5200, true, 0, { k: .62, gap: .6 });
+  if (pan) Field(pan, 5200, true, 0, { k: .62, gap: .8, sparkZ: .74 });
 })();
