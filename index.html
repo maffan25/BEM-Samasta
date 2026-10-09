@@ -629,8 +629,11 @@ html.pf-open{overflow:hidden}
 @media (max-width:680px){
   dialog.pf{margin:auto auto 0;width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}
   .pf-card{grid-template-columns:minmax(0,1fr);border-radius:26px 26px 18px 18px;overflow:auto;max-height:calc(100dvh - 16px)}
-  .pf-photo{min-height:0;height:clamp(190px,30dvh,300px)}
-  .pf-photo img{object-position:50% 18%}
+  .pf-photo{min-height:0;height:clamp(210px,35dvh,320px)}
+  .pf-photo::before{background:var(--pf-bg,none) center/cover no-repeat;filter:blur(20px) saturate(1.1);transform:scale(1.25);opacity:.9}
+  .pf-photo.noimg::before{background:radial-gradient(70% 50% at 80% 0%,rgba(var(--glow),.28),transparent 70%);filter:none;transform:none;opacity:1}
+  .pf-photo img{object-fit:contain;object-position:50% 50%;filter:drop-shadow(0 10px 24px rgba(5,20,28,.45))}
+  .pf-photo::after{display:none}
   .pf-photo.noimg{height:170px}
   .pf-photo.noimg .pf-mono{width:92px;height:92px;font-size:34px}
   .pf-info{padding:24px 22px 22px;overflow:visible;gap:16px}
@@ -1116,6 +1119,7 @@ html.pf-open{overflow:hidden}
     var p = PEOPLE[id]; if (!p) return; cur = id;
     var ph = $("pf-photo"), old = ph.querySelector("img"); if (old) old.remove();
     ph.classList.remove("noimg");
+    ph.style.setProperty("--pf-bg", p.foto ? 'url("' + String(p.foto).replace(/"/g, "%22") + '")' : "none");
     if (p.foto){ var im = new Image(); im.alt = ""; im.decoding = "async"; im.onerror = function(){ ph.classList.add("noimg"); im.remove(); }; im.src = p.foto; ph.insertBefore(im, ph.firstChild); }
     else ph.classList.add("noimg");
     $("pf-mono").textContent = ini(p.nama);
