@@ -8,7 +8,7 @@ const BY={};DATA.forEach((s,i)=>{BY[s.c]=s;s.i=i;});
 const gk=s=>{const n=GORD.indexOf(pre(s.c));return n<12?n+1:13;};
 const GNAME={};DATA.forEach(s=>{const k=gk(s);if(k<13)GNAME[k]=s.g;});GNAME[13]="SOP Khusus Unit";
 const $=id=>document.getElementById(id);
-const aspapp=$("asp-app"),rapapp=$("rapot-app");
+const aspapp=$("asp-app"),rapapp=$("rapot-app"),cnapp=$("corner-app");
 const esc=t=>String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ABBR={Sekjen:"Sekretaris Jenderal",Irjen:"Inspektur / Inspektorat Jenderal",Wapres:"Wakil Presiden",Kabiro:"Kepala Biro"};
 function fmt(t){
@@ -145,7 +145,7 @@ function renderDoc(s){
 /* ---- rute ---- */
 function setNav(k){document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("active",!!k&&a.getAttribute("href")==="#"+k));}
 function resetState(){st.q="";st.role=null;st.grp=null;st.y=0;$("sp-q").value="";chips();}
-function showHome(){if(!app.hidden)resetState();if(!pdapp.hidden)resetPd();home.hidden=false;app.hidden=true;pdapp.hidden=true;aspapp.hidden=true;rapapp.hidden=true;document.title=TITLE0;if(spy)spy.disconnect();}
+function showHome(){if(!app.hidden)resetState();if(!pdapp.hidden)resetPd();home.hidden=false;app.hidden=true;pdapp.hidden=true;aspapp.hidden=true;rapapp.hidden=true;if(cnapp)cnapp.hidden=true;document.title=TITLE0;if(spy)spy.disconnect();}
 /* ---- Buku panduan ---- */
 const PDIR="panduan/";/* folder PDF buku panduan. Nama file: lihat daftar di bawah */
 const PG=[["Pimpinan",[["Presiden","presiden"],["Wakil Presiden","wakil-presiden"],["Sekretaris Jenderal","sekretaris-jenderal"]]],
@@ -161,11 +161,9 @@ function pdChips(){
     h+='<button type="button" class="chip" data-b="'+b.f+'" aria-pressed="'+(pst.sel===b.f)+'">'+esc(bparts(b)[1])+'</button>';});
   $("pd-chips").innerHTML=h;
 }
-const ACC=["#e4b73a","#2fa384","#7aa89a","#c9a45c","#3b8fb0"];
 function book(b,i){
-  const p=bparts(b),na=pst.av[b.f]===false,acc=ACC[(p[0].length*7+p[0].charCodeAt(0))%ACC.length];
-  return '<article class="pd-book'+(na?' na':'')+'" style="--i:'+i+';--acc:'+acc+'"><div class="pd-scene" aria-hidden="true"><div class="pd-bind"><b class="foil">'+esc(p[0])+'</b><i class="pd-mark"></i></div>'
-   +'<div class="pd-sheet"><b class="sp-clip"></b><i class="pd-rib"></i><em>Buku panduan</em><strong>'+esc(p[1])+'</strong><s></s><s></s>'+(na?'<span class="pd-ribbon">Belum ada</span>':'')+'</div></div>'
+  const p=bparts(b),na=pst.av[b.f]===false;
+  return '<article class="pd-book'+(na?' na':'')+'" style="--i:'+i+'"><div class="pd-cover"><span class="pd-mark"></span><small>BUKU PANDUAN</small><b class="pd-kick">'+esc(p[0])+'</b><h4>'+esc(p[1])+'</h4><i class="pd-foot">BEM STDIIS · Kabinet Samasta</i>'+(na?'<span class="pd-ribbon">Belum ada</span>':'')+'</div>'
    +'<div class="pd-act"><a class="btn btn-line pd-open" '+(na?'aria-disabled="true"':'href="'+b.u+'" target="_blank" rel="noopener"')+'>Buka</a><a class="btn btn-gold pd-dl" '+(na?'aria-disabled="true"':'href="'+b.u+'" download="Buku Panduan '+esc(b.n)+'.pdf"')+'>Unduh PDF</a></div>'
    +'<p class="pd-msg" role="status" hidden>Buku panduan ini belum tersedia di server. Pastikan file '+b.u+' sudah diunggah.</p></article>';
 }
@@ -184,7 +182,7 @@ function pdCheck(){
 function resetPd(){pst.q="";pst.sel=null;$("pd-q").value="";pdChips();}
 function openPd(){
   if(!app.hidden)resetState();
-  app.hidden=true;aspapp.hidden=true;rapapp.hidden=true;home.hidden=true;pdapp.hidden=false;setNav("panduan");
+  app.hidden=true;aspapp.hidden=true;rapapp.hidden=true;if(cnapp)cnapp.hidden=true;home.hidden=true;pdapp.hidden=false;setNav("panduan");
   document.title="Buku Panduan | BEM STDIIS";if(spy)spy.disconnect();
   pdRender(true);window.scrollTo(0,0);pdCheck();
 }
@@ -192,20 +190,25 @@ let cur=location.hash;
 function route(){
   const h=cur,m=h.match(/^#sop\/(SOP-[A-Z]+-\d{3})$/);
   if(/^#sop(\/|$)/.test(h)){
-    if(!pdapp.hidden)resetPd();pdapp.hidden=true;aspapp.hidden=true;rapapp.hidden=true;home.hidden=true;app.hidden=false;setNav("sop");
+    if(!pdapp.hidden)resetPd();pdapp.hidden=true;aspapp.hidden=true;rapapp.hidden=true;if(cnapp)cnapp.hidden=true;home.hidden=true;app.hidden=false;setNav("sop");
     if(m&&BY[m[1]]){lv.hidden=true;dv.hidden=false;renderDoc(BY[m[1]]);window.scrollTo(0,0);}
     else{if(!dv.hidden)document.title=TITLE0;dv.hidden=true;lv.hidden=false;renderList();window.scrollTo(0,st.y||0);}
   }else if(h==="#panduan"){
     openPd();
   }else if(h==="#aspirasi"){
     if(!pdapp.hidden)resetPd();if(!app.hidden)resetState();
-    app.hidden=true;pdapp.hidden=true;rapapp.hidden=true;home.hidden=true;aspapp.hidden=false;setNav("aspirasi");
+    app.hidden=true;pdapp.hidden=true;rapapp.hidden=true;if(cnapp)cnapp.hidden=true;home.hidden=true;aspapp.hidden=false;setNav("aspirasi");
     document.title="Pujian dan Kritik | BEM STDIIS";if(spy)spy.disconnect();window.scrollTo(0,0);
   }else if(h==="#rapot"){
     if(!pdapp.hidden)resetPd();if(!app.hidden)resetState();
     app.hidden=true;pdapp.hidden=true;aspapp.hidden=true;home.hidden=true;rapapp.hidden=false;setNav("rapot");
     document.title="Rapot Anggota | BEM STDIIS";if(spy)spy.disconnect();if(window.RAPOT_OPEN)window.RAPOT_OPEN();window.scrollTo(0,0);
+  }else if(/^#corner\/./.test(h)){
+    if(!pdapp.hidden)resetPd();if(!app.hidden)resetState();
+    app.hidden=true;pdapp.hidden=true;aspapp.hidden=true;rapapp.hidden=true;home.hidden=true;cnapp.hidden=false;setNav("corner");
+    if(spy)spy.disconnect();if(window.CORNER_ROUTE)window.CORNER_ROUTE(h);window.scrollTo(0,0);
   }else{
+    if(window.CORNER_LEAVE&&cnapp&&!cnapp.hidden)window.CORNER_LEAVE();
     const was=home.hidden;showHome();
     if(was){const el=h.length>1&&document.getElementById(h.slice(1));window.scrollTo(0,0);if(el)el.scrollIntoView();}
   }
@@ -229,7 +232,7 @@ document.addEventListener("click",e=>{
   const a=e.target.closest('a[href^="#"]');if(!a)return;
   const h=a.getAttribute("href");if(h.length<2)return;
   e.preventDefault();
-  if(/^#(sop(\/|$)|panduan$|aspirasi$|rapot$)/.test(h)||home.hidden){go(h);return;}
+  if(/^#(sop(\/|$)|panduan$|aspirasi$|rapot$|corner\/.)/.test(h)||home.hidden){go(h);return;}
   const el=document.getElementById(h.slice(1));
   try{history.pushState(null,"",h);}catch(x){}cur=h;
   if(el)el.scrollIntoView({behavior:"smooth"});
