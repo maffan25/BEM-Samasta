@@ -539,7 +539,6 @@ html.focus-on .is-dim::after{opacity:var(--dim)}
 </style>
 <link rel="stylesheet" href="ai.css?v=5">
 <link rel="stylesheet" href="ikon.css?v=4">
-<link rel="stylesheet" href="corner.css?v=1">
 <style id="profil-css">
 /* ===== Profil pengurus: avatar, penanda pimpinan, kartu profil ===== */
 .av{--s:40px;position:relative;flex:none;width:var(--s);height:var(--s);border-radius:50%;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#1b5b5c,var(--ink));color:var(--gold);font:700 calc(var(--s)*.38)/1 var(--serif);letter-spacing:.02em;box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--line)}
@@ -673,7 +672,6 @@ html.pf-open{overflow:hidden}
       <a href="#rapot">Rapot</a>
       <a href="#kalender">Kalender</a>
       <a href="#aspirasi">Aspirasi</a>
-      <a href="#corner">Corner</a>
     </nav>
   </div>
   <div class="ticker" role="region" aria-label="Info kegiatan terbaru">
@@ -912,28 +910,6 @@ html.pf-open{overflow:hidden}
   </div>
 </section>
 
-<!-- ========== SAMASTA CORNER ========== -->
-<section id="corner">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Samasta Corner</h2>
-      <p>Ruang kerja digital tiap kementerian dan biro: absensi lewat kode QR, penilaian kegiatan, dan layanan dalam satu tempat.</p>
-    </div>
-    <div class="cn-card">
-      <div class="cn-top">
-        <button type="button" class="cn-cone" id="cn-cone" aria-label="Kerucut Samasta Corner. Ketuk untuk memutarnya"></button>
-        <div class="cn-copy">
-          <h3>Corner kementerian dan biro</h3>
-          <p>Setiap kementerian punya ruangnya sendiri. Mulai dari Inspektorat Jenderal: buat kode QR absensi, kumpulkan penilaian peserta, lalu baca pembukuan dan ringkasan acara secara otomatis.</p>
-          <span class="cn-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 11-2.400-5.700M20 4v4.500h-4.500"/></svg>Ketuk kerucut atau gulir untuk memutarnya</span>
-        </div>
-      </div>
-      <div class="cn-divider"><span>Pilih corner</span></div>
-      <div class="cn-orbs" id="cn-orbs" role="list"></div>
-    </div>
-  </div>
-</section>
-
 </main>
 <main id="asp-app" hidden>
   <div class="sp-top"><div class="wrap">
@@ -1031,15 +1007,6 @@ html.pf-open{overflow:hidden}
   <dialog id="rp-dlg" aria-labelledby="rp-name"><div id="rp-sheet"></div></dialog>
 </main>
 
-<main id="corner-app" hidden>
-  <div class="sp-top cn-pgtop"><div class="wrap">
-    <p class="sp-crumb" id="cn-crumb"></p>
-    <div id="cn-head"></div>
-    <div class="cn-tabs" id="cn-tabs" role="navigation" aria-label="Menu event" hidden></div>
-  </div></div>
-  <div class="cn-body"><div class="wrap" id="cn-out" aria-live="polite"></div></div>
-</main>
-
 <footer id="kontak">
   <div class="wrap">
     <div class="foot">
@@ -1059,7 +1026,6 @@ html.pf-open{overflow:hidden}
           <li><a href="#sop">SOP</a></li>
           <li><a href="#kalender">Kalender</a></li>
           <li><a href="#aspirasi">Aspirasi</a></li>
-          <li><a href="#corner">Corner</a></li>
         </ul>
       </div>
       <div>
@@ -1440,7 +1406,7 @@ html.pf-open{overflow:hidden}
   var groups = [
     [q("#beranda"), q("#home>.stats")], [q("#profil")], [q("#pengurus")], [q("#program")],
     [q("#sop-info")], [q("#panduan-info")], [q("#kalender")], [q("#rapot-info")],
-    [q("#aspirasi-info")], [q("#corner")], [q("#kontak")]
+    [q("#aspirasi-info")], [q("#kontak")]
   ].map(function(g){ return g.filter(Boolean); }).filter(function(g){ return g.length; });
   var root = document.documentElement, current = -2, busy = false;
 
@@ -1481,14 +1447,8 @@ html.pf-open{overflow:hidden}
 <script src="ikon.js?v=2" defer></script>
 <script src="rapot.js?v=1"></script>
 <script src="rapot-app.js?v=1"></script>
-<script src="qr.js?v=1"></script>
-<script src="corner-data.js"></script>
-<script src="corner-config.js?v=1"></script>
-<script src="corner-core.js?v=1"></script>
-<script src="corner-cone.js?v=1"></script>
-<script src="corner-app.js?v=1"></script>
 <script src="sop-data.js"></script>
-<script src="sop-app.js?v=6"></script>
+<script src="sop-app.js?v=5"></script>
 <script src="aspirasi-config.js?v=4"></script>
 <script src="aspirasi.js?v=4"></script>
 <script>
