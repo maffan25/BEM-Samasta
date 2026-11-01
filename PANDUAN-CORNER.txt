@@ -1,0 +1,76 @@
+PANDUAN SAMASTA CORNER (versi 2)
+================================
+
+FILE CORNER
+- corner.css, corner-form.css                         : tampilan
+- corner-home.js, corner-app.js, corner-pages.js,
+  corner-form.js, corner-icons.js, qr.js              : logika (tidak perlu diedit)
+- corner-pin.js                                       : gerbang PIN (logika, tidak perlu diedit)
+- corner-data.js                                      : data corner, menu, event, pertanyaan, kata penutup, PIN
+                                                        (diedit lewat admin-corner.html)
+- corner-config.js                                    : alamat Google Apps Script (diisi sekali)
+- admin-corner.html                                   : editor admin
+- apps-script-corner.gs.txt                           : kode backend Google Sheets
+
+FILE LAIN YANG DIUBAH
+- index.html : tautan CSS/JS, menu "Corner", section #corner, halaman #corner-app.
+- ikon.css, ikon.js, rapot.js : berkas milikmu (dari Download.zip), tidak diubah.
+  Kerucut Corner memakai struktur .ik milikmu (miring, putar saat terlihat/diklik, bayangan).
+
+MENGELOLA DI ADMIN (admin-corner.html)
+Tab Corner  : tambah/edit/urutkan corner (nama, ikon bola, warna, status Aktif atau Segera hadir).
+              Tombol "Menu" mengatur isi corner. Jenis menu:
+                Info       teks bebas
+                Profil     pengertian, prinsip, tugas (tab interaktif), struktur organisasi interaktif
+                           (otomatis dari anggota.js: ketua = anggota pertama unit)
+                Event      absensi barcode + pembukuan
+                Dokumen    daftar SOP milik unit (dari sop-data.js) + buku panduan (PDF)
+                Daftar anggota, Tautan (#sop, #rapot, atau https://...)
+Tab Event   : tambah event, pilih target peserta, atur absensi (otomatis/dibuka/ditutup).
+              Satu event bisa memakai pertanyaan dan kata penutup sendiri.
+Tab Penilaian:
+              - Pertanyaan: ketik sendiri semua pertanyaan. Jenis: Bintang 1-5, Jawaban singkat,
+                Jawaban panjang. Tiap pertanyaan bisa Wajib atau Opsional.
+                Satu pertanyaan bintang ditandai "Nilai utama" (dipakai grafik kepuasan).
+              - Kata penutup: judul + pesan setelah peserta selesai. Pakai {nama}, {event}, {corner}.
+Setelah selesai tekan "Unduh corner-data.js" lalu unggah ke GitHub (menimpa file lama).
+
+PIN CORNER
+- Corner (bola di beranda) hanya terbuka dengan PIN. PIN awal: 020503. Bola aktif berlencana gembok.
+- Peserta yang memindai barcode TIDAK memerlukan PIN. Setelah mengirim, mereka hanya melihat kata penutup
+  (tanpa tombol ke mana pun).
+- Mengubah atau mematikan PIN: admin-corner.html > tab PIN > Simpan PIN > Unduh corner-data.js > unggah ke GitHub.
+  PIN disimpan sebagai sidik SHA-256 + garam, bukan teks. Terbuka selama tab dipakai; salah 5 kali = tunggu 60 detik.
+- Situs ini statis, jadi PIN menghalangi pengunjung biasa, bukan orang yang membongkar kode sumber.
+
+MENGAKTIFKAN ABSENSI KE GOOGLE SHEETS (sekali saja)
+1. Buat Google Sheet BARU khusus Corner (jangan Sheet Aspirasi: ini memuat nama dan NIM).
+2. Ekstensi > Apps Script. Tempel isi apps-script-corner.gs.txt.
+3. Isi KODE_AKSES (minimal 6 karakter) = kode rahasia Irjen untuk membuka Pembukuan.
+4. Jalankan fungsi "setup" sekali (beri izin).
+5. Terapkan > Deployment baru > Aplikasi web. Jalankan sebagai: Saya. Akses: Siapa saja.
+6. Salin URL berakhiran /exec ke corner-config.js (window.CORNER_ENDPOINT).
+   Tes: buka URL itu di browser, harus muncul "ok":true, "sheet":"terhubung", "kode":"sudah diatur".
+7. Bila kode skrip diubah, buat Deployment BARU, lalu perbarui URL.
+CATATAN: jika kamu sudah memakai skrip versi pertama, tempel ulang kode baru dan deploy ulang.
+Format data berubah (kolom "Jawaban" berisi JSON), jadi hapus tab "Absensi" lama agar dibuat ulang.
+
+ALUR PEMAKAIAN
+1. Beranda > Samasta Corner > bola Irjen > Event > Absensi > pilih event > barcode tampil
+   (layar penuh untuk proyektor, unduh poster PNG, cetak, salin tautan).
+2. Peserta scan, lalu masuk antarmuka imersif: sambutan > identitas > satu pertanyaan per layar
+   > tinjau > selesai (kata penutup + konfeti, tanpa tombol lanjutan).
+3. Irjen: Event > Pembukuan > kode akses > pilih event.
+   Tab Kehadiran (centang hadir, silang belum hadir), Ringkasan (narasi otomatis + grafik),
+   Jawaban tulis (semua jawaban singkat/panjang per pertanyaan). Ada Unduh CSV dan Cetak/PDF.
+
+CATATAN PENTING
+- Sebelum CORNER_ENDPOINT diisi, Corner berjalan dalam "mode uji" (data hanya di peramban itu).
+  Barcode harus dibuat dari alamat situs yang sudah tayang agar bisa dipindai ponsel lain,
+  atau isi CORNER_BASE di corner-config.js.
+- Satu NIM hanya bisa mengisi satu kali per event (dicek di server).
+- Absensi terbuka sejak hari acara sampai "bukaHari" (default 2) hari setelah acara selesai.
+- Pencocokan hadir memakai nama yang dipilih dari anggota.js. Bila nama di sana diubah,
+  isian lama dengan nama lama tampil di "Di luar daftar target".
+- Pertanyaan yang diubah setelah ada jawaban: jawaban lama tetap tersimpan lengkap dengan
+  teks pertanyaannya, dan tampil sebagai pertanyaan terpisah di rekap.
