@@ -3,10 +3,18 @@
 (function () {
   "use strict";
   var reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  var DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+  var DPR = Math.min(window.devicePixelRatio || 1, 1.25);
   var TINT = ["255,255,255", "255,255,255", "255,255,255", "248,210,74", "248,210,74", "150,230,205"];
 
-  function Field(host, density, shoot) {
+  var SPR = {};
+  function sprite(c) {                              /* titik bulat dipra-render sekali per warna */
+    if (SPR[c]) return SPR[c];
+    var k = document.createElement("canvas"); k.width = k.height = 32;
+    var g = k.getContext("2d"); g.fillStyle = "rgb(" + c + ")"; g.beginPath(); g.arc(16, 16, 15, 0, 6.2832); g.fill();
+    return (SPR[c] = k);
+  }
+
+  function Field(host, density, shoot, cap) {
     var cv = document.createElement("canvas"), cx = cv.getContext("2d");
     cv.setAttribute("aria-hidden", "true");
     cv.style.cssText = "position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block";
@@ -17,7 +25,8 @@
 
     function rnd(a, b) { return a + Math.random() * (b - a); }
     function seed() {
-      var n = Math.max(24, Math.min(150, Math.round(W * H / density)));
+      var n = Math.max(24, Math.min(cap || 150, Math.round(W * H / density)));
+      if (document.documentElement.dataset.lite === "1") n = Math.round(n / 2);
       stars = [];
       for (var i = 0; i < n; i++) {
         var z = Math.random();                       /* 0 jauh ... 1 dekat */
@@ -43,14 +52,13 @@
         s.x += s.v * dt * 0.8; s.y -= s.v * dt * 0.45;      /* melayang pelan ke kanan atas */
         if (s.x > W + 4) s.x = -4; if (s.y < -4) { s.y = H + 4; s.x = Math.random() * W; }
         var a = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(s.ph + t * s.sp));
-        cx.fillStyle = "rgba(" + s.c + "," + (a * (0.55 + s.z * 0.45)).toFixed(3) + ")";
-        cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.2832); cx.fill();
+        cx.globalAlpha = a * (0.55 + s.z * 0.45); cx.drawImage(sprite(s.c), s.x - s.r, s.y - s.r, s.r * 2, s.r * 2); cx.globalAlpha = 1;
         if (s.sparkle) {
           var L = 3 + 4 * a; cx.strokeStyle = "rgba(" + s.c + "," + (a * 0.55).toFixed(3) + ")"; cx.lineWidth = 0.8;
           cx.beginPath(); cx.moveTo(s.x - L, s.y); cx.lineTo(s.x + L, s.y); cx.moveTo(s.x, s.y - L); cx.lineTo(s.x, s.y + L); cx.stroke();
         }
       }
-      if (shoot && !reduce) {
+      if (shoot && !reduce && document.documentElement.dataset.lite !== "1") {
         if (!star) { nextShoot -= dt; if (nextShoot <= 0) { star = { x: rnd(W * 0.35, W * 1.05), y: rnd(-10, H * 0.35), life: 0, len: rnd(90, 150), sp: rnd(520, 700) }; nextShoot = rnd(5, 9); } }
         else {
           star.life += dt; var d = star.sp * dt; star.x -= d * 0.86; star.y += d * 0.5;
@@ -62,13 +70,14 @@
         }
       }
     }
-    function paused() { var ai = document.getElementById("ai-app"); return document.hidden || (ai && !ai.hidden); }
+    function paused() { var ai = document.getElementById("ai-app"); return document.hidden || document.documentElement.classList.contains("win-open") || (ai && !ai.hidden); }
     function loop(now) {
       raf = 0; if (!visible) return;
       if (paused()) { last = 0; raf = requestAnimationFrame(loop); return; }
       var dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now;
       acc += dt;
-      if (acc >= 1 / 40) { draw(acc); acc = 0; }               /* ~40 gambar per detik */
+      var fps = document.documentElement.dataset.lite === "1" ? 20 : 30;
+      if (acc >= 1 / fps) { draw(acc); acc = 0; }              /* 30 gambar/detik cukup untuk gerak pelan */
       raf = requestAnimationFrame(loop);
     }
     function start() { if (!raf && !reduce) { last = 0; raf = requestAnimationFrame(loop); } }
@@ -81,7 +90,7 @@
     size();
   }
 
-  var hero = document.getElementById("beranda"), foot = document.getElementById("kontak");
-  if (hero) Field(hero, 7000, true);
-  if (foot) Field(foot, 9000, false);
+  /* MyOffice: satu langit bintang di belakang seluruh aplikasi */
+  var sky = document.querySelector(".bg .stack");
+  if (sky) Field(sky, 6500, true, 240);
 })();
